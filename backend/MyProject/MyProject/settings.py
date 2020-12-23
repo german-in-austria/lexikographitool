@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'account',
     'collection',
     'group',
+    'post',
 ]
 
 MIDDLEWARE = [

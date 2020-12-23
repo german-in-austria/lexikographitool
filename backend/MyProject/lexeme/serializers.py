@@ -105,7 +105,7 @@ class LexemeCreateSerializer(serializers.ModelSerializer):
             'category': {'validators': []},
         }
 
-    def get_username_from_author(selfself, lexeme):
+    def get_username_from_author(self, lexeme):
         username = lexeme.author.username
         return username
 

@@ -1,5 +1,6 @@
 export default class Collection{
-    constructor(name) {
+    constructor(name, description) {
         this.name =name;
+        this.description =description;
     }
 }

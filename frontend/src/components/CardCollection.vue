@@ -2,12 +2,12 @@
   <div>
     <v-hover v-slot="{ hover }">
       <v-card
+        outlined
         :to="'/collections/' + collection.id"
-        :elevation="hover ? 12 : 2"
-        class="mx-auto"
-        max-width="300"
+        :elevation="hover ? 2 : 0"
       >
         <v-card-title>{{ collection.name }}</v-card-title>
+        <v-card-subtitle>{{collection.description}}</v-card-subtitle>
       </v-card>
     </v-hover>
   </div>

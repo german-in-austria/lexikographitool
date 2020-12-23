@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from django.db.models import Q
 
 from .models import Collection
-from .serializers import CollectionSerializer
+from .serializers import CollectionSerializer, CollectionSimpleSerializer
 from lexeme.models import Lexeme
 from group.models import Group
 
@@ -42,7 +42,7 @@ def get_collections(request):
     collections = Collection.objects.filter(
         Q(author=account) | Q(group__members =account)
         ).distinct()    
-    serializer = CollectionSerializer(collections, many=True)
+    serializer = CollectionSimpleSerializer(collections, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])

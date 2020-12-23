@@ -2,9 +2,8 @@
 <div>
 <v-hover v-slot="{ hover }">
   <v-card
-  :elevation="hover ? 12 : 2"
-      class="mx-auto"
-      max-width="300"
+  :elevation="hover ? 4 : 0"
+  outlined
       :to="'lexeme/' + card.id"
   >
 

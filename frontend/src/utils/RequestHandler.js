@@ -3,6 +3,7 @@ import Etymology from "@/objects/Etymology";
 import Pronunciation from "@/objects/Pronunciation";
 import DExample from "@/objects/DExample";
 import Category from "@/objects/Category";
+import Post from "../objects/Post";
 
 
 let methods = {
@@ -109,8 +110,15 @@ let methods = {
     getCollectionsByOwner() {
         return axios.get('collections/owner/')
     },
-    getCardsCreated(){
+    getCardsCreated() {
         return axios.get('own_cards/')
+    },
+    getPosts() {
+        return axios.get('posts/')
+    },
+    createPost(text, parent) {
+        const post = new Post(text,parent)
+        return axios.post('post/', post)
     }
 
 }
