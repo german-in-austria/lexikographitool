@@ -21,7 +21,7 @@
         </div>
       </div>
       <br>
-      <p>Dialect: {{card.dialect}}</p>
+      <p>Dialekt: {{card.dialect}}</p>
     </v-card-text>
     <v-card-actions>
       <v-btn icon>

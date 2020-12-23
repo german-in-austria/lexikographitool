@@ -7,6 +7,7 @@ urlpatterns = [
 
     path('origin/<str:zip_or_place>/', origin_by_zip_or_place),
     path('cards/', card_list),
+    path('own_cards/', card_own),
     path('lexeme/', create_lexeme),
     path('dialect/', create_dialect),
     path('etymology/', create_etymology),

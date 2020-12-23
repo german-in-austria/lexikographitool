@@ -88,12 +88,13 @@ export default {
       this.groupDescription = ''
     }
   },
-  created(){
-      RequestHandler.getMyGroups()
-          .then(response => (
-              this.groups = response.data
-          ))
-  }
+  beforeRouteEnter(to, from, next) {
+    RequestHandler.getMyGroups().then((response) =>
+      next((vm) => {
+        (vm.groups = response.data);
+      })
+    );
+  },
 }
 </script>
 
