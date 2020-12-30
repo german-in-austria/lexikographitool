@@ -38,7 +38,8 @@
 
           <v-col>
             <v-sheet
-                min-height="70vh"
+                min-height="85vh"
+                max-height="85vh"
                 rounded="lg"
             >
               <router-view/>
@@ -86,4 +87,5 @@ export default {
 
 <style>
 /*-webkit-appearance: none;*/
+
 </style>

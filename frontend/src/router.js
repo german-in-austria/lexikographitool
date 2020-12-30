@@ -7,6 +7,7 @@ import CollectionsDetail from "@/views/CollectionsDetail";
 import LexemeDetail from "@/views/LexemeDetail";
 import Groups from "@/views/Groups";
 import GroupDetail from "@/views/GroupDetail";
+import PostDetail from "@/views/PostDetail";
 
 Vue.use(Router);
 
@@ -36,6 +37,10 @@ export default new Router({
         path: '/lexeme/:id',
         name: 'lexeme',
         component: LexemeDetail
+    },{
+        path: '/posting/:id',
+        name: 'post',
+        component: PostDetail
     },
         {
             path: '/card-create',

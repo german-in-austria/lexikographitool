@@ -119,7 +119,10 @@ let methods = {
     createPost(text, parent) {
         const post = new Post(text,parent)
         return axios.post('post/', post)
-    }
+    },
+    getPost(id) {
+        return axios.get('post/' +id + '/')
+    },
 
 }
 

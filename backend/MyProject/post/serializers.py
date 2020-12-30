@@ -5,14 +5,14 @@ from account.serializers import UserNameSerializer
 
 
 class PostSerializer(serializers.ModelSerializer):
-    # author = UserNameSerializer()
+    author = UserNameSerializer()
     # children = serializers.ListSerializer(read_only=True, child=RecursiveField())
     children = serializers.SerializerMethodField(read_only=True)
 
 
     class Meta:
         model = Post
-        fields = ['id', 'text', 'parent', 'children']
+        fields = ['id', 'text', 'parent', 'author', 'children']
 
     def get_children(self, obj):
         children = Post.objects.filter(parent=obj)

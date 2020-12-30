@@ -1,44 +1,91 @@
 <template>
   <div>
-    <v-row no-gutters>
-      <v-col >
-        <p class="text-h5 ">meine Wörter</p>
-        <div v-for="card in ownCards" :key="card.id">
-          <card-dialect :card="card" class="ma-5" ></card-dialect>
-        </div>
-      </v-col>
-      <v-col>
-        <p class="text-h5">meine Sammlungen</p>
-        <collection-create-button class="ma-5" @created=collectionCreated></collection-create-button>
+    <v-container style="max-height: 85vh">
+      <v-row no-gutters>
+        <v-col>
+          <p class="text-h5">meine Wörter</p>
+        </v-col>
+        <v-col>
+          <p class="text-h5">meine Sammlungen</p>
+        </v-col>
+        <v-col>
+          <p class="text-h5">allgemeines Wörterbuch</p>
+        </v-col>
+        <v-col>
+          <p class="text-h5">aktuelle Aufrufe</p>
+        </v-col>
+      </v-row>
+      <v-row no-gutters>
+        <v-col>
+          <v-hover v-slot="{ hover }">
+            <v-card
+              :to="'card-create'"
+              class="mt-1 mr-5"
+              :elevation="hover ? 4 : 0"
+              outlined
+            >
+              <v-card-actions class="justify-center"
+                ><v-icon
+                  size="48
+"
+                  >mdi-plus</v-icon
+                ></v-card-actions
+              >
+            </v-card>
+          </v-hover>
+          <perfect-scrollbar>
+            <div v-for="card in ownCards" :key="card.id">
+              <card-dialect :card="card" class="mt-1 mr-5"></card-dialect>
+            </div>
+          </perfect-scrollbar>
+        </v-col>
+        <v-col>
 
-        <div v-for="collection in collections" :key="collection.id">
-          <card-collection :collection="collection" class="ma-5"></card-collection>
-        </div>
-      </v-col>
-      <v-col>
-        <p class="text-h5">allgemeines Wörterbuch</p>
-        <div v-for="card in cards" :key="card.id">
-          <card-dialect :card="card" class="ma-5"></card-dialect>
-        </div>
-      </v-col>
-      <v-col>
-        <p class="text-h5">aktuelle Aufrufe</p>
-        <v-textarea
-          label="neuer Aufruf"
-          v-model="postText"
-          outlined
-          rows="3"
-          row-height="25"
-          no-resize
-          append-icon="mdi-send"
-          @click:append="createPost"
-          class="ma-5"
-        ></v-textarea>
-        <div v-for="post in posts" :key="post.id">
-        <card-post :post="post" class="ma-5"></card-post>
-        </div>
-      </v-col>
-    </v-row>
+          <collection-create-button
+            class="mt-1 mr-5"
+            @created="collectionCreated"
+          ></collection-create-button>
+          <perfect-scrollbar>
+            <div v-for="collection in collections" :key="collection.id">
+              <card-collection
+                :collection="collection"
+                class="mt-1 mr-5"
+              ></card-collection>
+            </div>
+          </perfect-scrollbar>
+        </v-col>
+        <v-col>
+          <perfect-scrollbar>
+            <div v-for="card in cards" :key="card.id">
+              <card-dialect :card="card" class="mt-1 mr-5"></card-dialect>
+            </div>
+          </perfect-scrollbar>
+        </v-col>
+        <v-col>
+          <v-list-item>
+            <v-textarea
+              label="neuer Aufruf"
+              v-model="postText"
+              outlined
+              rows="3"
+              row-height="25"
+              no-resize
+              append-icon="mdi-send"
+              @click:append="createPost"
+              class="mt-1 mr-5"
+              ref="textField"
+              required
+              :rules="[(v) => !!v || 'Bitte gib einen Text ein']"
+            ></v-textarea>
+          </v-list-item>
+          <perfect-scrollbar>
+            <v-list-item v-for="post in posts" :key="post.id">
+              <card-post :post="post" class="mt-1 mr-5"></card-post>
+            </v-list-item>
+          </perfect-scrollbar>
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
@@ -46,18 +93,23 @@
 import RequestHandler from "@/utils/RequestHandler";
 import CardDialect from "../components/CardDialect.vue";
 import CardCollection from "../components/CardCollection.vue";
-import CardPost from '../components/CardPost.vue';
-import CollectionCreateButton from '../components/CollectionCreateButton.vue';
+import CardPost from "../components/CardPost.vue";
+import CollectionCreateButton from "../components/CollectionCreateButton.vue";
 
 export default {
-  components: { CardDialect, CardCollection, CardPost, CollectionCreateButton },
+  components: {
+    CardDialect,
+    CardCollection,
+    CardPost,
+    CollectionCreateButton,
+  },
 
   data: () => ({
     cards: [],
     ownCards: [],
     collections: [],
     posts: [],
-    postText: '',
+    postText: "",
   }),
 
   async created() {
@@ -70,18 +122,25 @@ export default {
     );
     RequestHandler.getPosts().then((response) => (this.posts = response.data));
   },
-  methods:{
-      createPost(){
-        RequestHandler.createPost(this.postText, null).then((response)=>{
-            this.postText = ''
-            this.posts.push(response.data)
+  methods: {
+    createPost() {
+      if (this.$refs.postText.validate()) {
+        RequestHandler.createPost(this.postText, null).then((response) => {
+          this.postText = "";
+          this.posts.push(response.data);
         });
-      },
-      
-    collectionCreated(value){
-      this.collections.push(value)
+      }
     },
-  }
+
+    collectionCreated(value) {
+      this.collections.push(value);
+    },
+  },
 };
 </script>
 
+<style scoped>
+.ps {
+  height: 600px;
+}
+</style>

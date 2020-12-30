@@ -1,13 +1,13 @@
 <template>
   <div>
     <v-row>
-      <v-col cols="12" sd="4" md="4"> 
+      <v-col cols="12" sd="4" md="3"> 
         <collection-create-button @created=collectionCreated></collection-create-button>
       </v-col>
       <v-col
         cols="12"
         sd="4"
-        md="4"
+        md="3"
         v-for="collection in collections"
         :key="collection.id"
       >

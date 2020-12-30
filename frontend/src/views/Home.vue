@@ -4,12 +4,15 @@
       <home-logged-in></home-logged-in>
     </div>
     <div v-else>
+      <perfect-scrollbar>
       <v-row>
-        <v-col cols="12" sd="4" md="4" v-for="card in cards" :key="card.id">
-          <CardDialect :card="card"></CardDialect>
-        </v-col>
         
+        <v-col cols="12" sd="4" md="3" v-for="card in cards" :key="card.id">
+          <CardDialect :card="card" class="ma-0"></CardDialect>
+        </v-col>
       </v-row>
+        </perfect-scrollbar>
+
     </div>
   </div>
 </template>
@@ -43,4 +46,7 @@ export default {
 </script>
 
 <style scoped>
+.ps{
+  height: 820px;
+}
 </style>
