@@ -123,6 +123,9 @@ let methods = {
     getPost(id) {
         return axios.get('post/' +id + '/')
     },
+    getLexemes(page){
+        return axios.get('/lexemes/?page=' + page )
+    }
 
 }
 

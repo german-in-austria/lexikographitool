@@ -15,18 +15,10 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework import filters
 from .serializers import *
 from .models import *
-
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view
 
 # Lexeme
-
-
-def get_lexeme_by_id(id):
-    try:
-        return Lexeme.objects.get(id=id)
-    except Lexeme.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
 
 @api_view(['GET'])
 def card_list(request):
@@ -57,7 +49,10 @@ def card_own(request):
 @api_view(['GET'])
 def get_lexeme(request, lexemeId):
     if request.method == 'GET':
-        lexeme = get_lexeme_by_id(lexemeId)
+        try:
+            lexeme = Lexeme.objects.get(id=lexemeId)
+        except Lexeme.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializers = LexemeDetailSerializer(lexeme)
         return Response(serializers.data)
 
@@ -77,6 +72,16 @@ class LexemeListView(ListAPIView):
     serializer_class = LexemeSimpleSerializer
     filter_backends = [SearchFilter]
     search_fields = ['word']
+
+class LexemeView(ListAPIView):
+    queryset = Lexeme.objects.all()
+    serializer_class = CardSerializer
+    pagination_class = PageNumberPagination
+    pagination_class.page_size = 4
+    filter_backends = [SearchFilter]
+    search_fields = ['word', 'dialectWord']
+
+
 
 
 @api_view(['POST'])

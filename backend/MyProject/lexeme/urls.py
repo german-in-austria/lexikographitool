@@ -19,5 +19,6 @@ urlpatterns = [
     path('lexeme_by_word/<word>/', lexeme_first_by_word),
     path('category/<pk>/', create_category),
     path('lexeme/<lexemeId>/', get_lexeme),
+    path('lexemes/', LexemeView.as_view()),
 
 ]
