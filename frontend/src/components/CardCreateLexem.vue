@@ -1,47 +1,49 @@
-<template><div>
-  <v-col><v-row>
-    <v-combobox
-  v-model="value"
-  :items="items"
+<template>
+  <div>
+    <v-col>
+      <v-row>
+        <v-combobox
 
-  item-text="word"
-  label="Hauptlexem"
-  hide-no-data
+            v-model="value"
+            :items="items"
+            item-text="word"
+            label="Hauptlexem"
+            hide-no-data
 
-  menu-props="closeOnClick"
-  :return-object="false"
-  :search-input.sync="load"
-  :loading="isLoading"
-  @change="loadLexeme"
-  @keyup.enter = "loadLexeme"
-  append-icon=""
-  :rules="rules"
-required
-    >
+            menu-props="closeOnClick"
+            :return-object="false"
+            :search-input.sync="load"
+            :loading="isLoading"
+            @change="loadLexeme"
+            @keyup.enter="loadLexeme"
+            append-icon=""
+            :rules="rules"
+            required
+        >
 
 
-  </v-combobox>
-  </v-row>
-  </v-col>
+        </v-combobox>
+      </v-row>
+    </v-col>
 
-</div>
+  </div>
 </template>
 
 <script>
 import RequestHandler from "@/utils/RequestHandler";
+
 export default {
-name: "CardCreateLexem",
-  data : () =>({
+  name: "CardCreateLexem",
+  data: () => ({
     isLoading: false,
     items: [],
     load: null,
     value: null
   }),
-  props:['rules'],
+  props: ['rules'],
   watch: {
-    load () {
-      this.$emit('inputData',this.load);
-      console.log('oben')
+    load() {
+      this.$emit('inputData', this.load);
       if (this.load.length != 1) return
 
       this.isLoading = true
@@ -56,11 +58,10 @@ name: "CardCreateLexem",
     },
   },
   methods: {
-  loadLexeme() {
-    console.log(this.value)
-    this.$emit('inputData',this.value);
-    this.$emit('loadLexeme', this.value)
-  }
+    loadLexeme() {
+      this.$emit('inputData', this.value);
+      this.$emit('loadLexeme', this.value)
+    }
   }
 }
 </script>

@@ -13,10 +13,14 @@ from rest_framework.views import APIView
 from django.db.models import Q
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import filters
+
+from .pagination import MyPagination
 from .serializers import *
 from .models import *
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view
+import random
+
 
 # Lexeme
 
@@ -25,6 +29,20 @@ def card_list(request):
     if request.method == 'GET':
         cards = Lexeme.objects.all()
         serializers = CardSerializer(cards, many=True)
+        return Response(serializers.data)
+
+
+@api_view(['GET'])
+def get_random_lexemes(request):
+    if request.method == 'GET':
+        lexeme_id_list = Lexeme.objects.all().values_list('id', flat=True)
+        print(lexeme_id_list)
+
+        random_lexeme_list = random.sample(list(lexeme_id_list), min(len(lexeme_id_list), 5))
+
+        cards = list(Lexeme.objects.filter(id__in=random_lexeme_list))
+        random.shuffle(cards)
+        serializers = CardSerializer(cards, many=True, context={'request': request})
         return Response(serializers.data)
 
 
@@ -73,22 +91,28 @@ class LexemeListView(ListAPIView):
     filter_backends = [SearchFilter]
     search_fields = ['word']
 
+
 class LexemeView(ListAPIView):
     queryset = Lexeme.objects.all()
     serializer_class = CardSerializer
-    pagination_class = PageNumberPagination
-    pagination_class.page_size = 4
+    pagination_class = MyPagination
+    pagination_class.page_size = 14
     filter_backends = [SearchFilter]
     search_fields = ['word', 'dialectWord']
 
-
+    def get_serializer_context(self):
+        collection = -1
+        if 'collection' in self.request.GET:
+            collection = self.request.GET['collection']
+        context = super(LexemeView, self).get_serializer_context()
+        context.update({"request": self.request, "collectionId": collection}, )
+        return context
 
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, ])
 def create_lexeme(request):
     account = request.user
-    print(account)
     lexeme = Lexeme(author=account)
     if request.method == 'POST':
         serializer = LexemeCreateSerializer(lexeme, data=request.data)
@@ -122,6 +146,7 @@ class DialectListView(ListAPIView):
     filter_backends = [SearchFilter]
     search_fields = ['dialect']
 
+
 # Etymology
 
 
@@ -134,6 +159,7 @@ def create_etymology(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # Pronunciation
 
@@ -160,6 +186,7 @@ def create_example(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 # Category
 
 
@@ -185,14 +212,48 @@ class CategoryListView(ListAPIView):
     filter_backends = [SearchFilter]
     search_fields = ['category']
 
+
 # Origin
 
 
 @api_view(['GET'])
 def origin_by_zip_or_place(request, zip_or_place):
     addresses = Address.objects.filter(
-        Q(place__icontains=zip_or_place)
+        Q(place__icontains=zip_or_place) | Q(zipcode__startswith=zip_or_place)
     )
     print(addresses[0].place)
     serializers = ZipPlaceSerializer(addresses, many=True)
+    return Response(serializers.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, ])
+def get_home(request):
+    account = request.user
+    location = account.home
+    serializers = ZipPlaceSerializer(location)
+    return Response(serializers.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def create_address(request):
+    if request.method == 'POST':
+        serializer = ZipPlaceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, ])
+def get_locations(request):
+    if request.method == 'GET':
+        if 'zip' in request.GET:
+            locations = Address.objects.filter(zipcode__startswith=request.GET['zip'])
+        elif 'place' in request.GET:
+            locations = Address.objects.filter(place__icontains=request.GET['place'])
+        else:
+            return Response()
+    serializers = ZipPlaceSerializer(locations, many=True)
     return Response(serializers.data, status=status.HTTP_200_OK)

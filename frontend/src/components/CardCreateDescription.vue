@@ -35,7 +35,6 @@ name: "CardCreateDescription",
   watch: {
     load () {
       this.$emit('inputData',this.load);
-      console.log('oben')
       if (this.load.length != 1) return
     },
   }

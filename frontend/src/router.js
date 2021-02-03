@@ -1,57 +1,100 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Home from './views/Home';
-import Collections from "@/views/Collections";
-import CardCreate from "@/components/CardCreate";
-import CollectionsDetail from "@/views/CollectionsDetail";
-import LexemeDetail from "@/views/LexemeDetail";
-import Groups from "@/views/Groups";
-import GroupDetail from "@/views/GroupDetail";
-import PostDetail from "@/views/PostDetail";
-import Database from "@/views/Database";
+import store from "@/store";
 
 Vue.use(Router);
 
-export default new Router({
-    routes:[{
+const router = new Router({
+    mode: 'history',
+    routes: [{
         path: '/',
         name: 'home',
-        component: Home
+
+        component: () => import(/*webpackChunkName: "Home"*/ "./views/Home.vue")
     },
-    {
-        path: '/collections',
-        name: 'collections',
-        component: Collections
-    },{
-        path: '/collections/:id',
-        name: 'collection',
-        component: CollectionsDetail
-    },{
-        path: '/groups/:id',
-        name: 'group',
-        component: GroupDetail
-    },{
-        path: '/groups',
-        name: 'groups',
-        component: Groups
-    },{
-        path: '/lexeme/:id',
-        name: 'lexeme',
-        component: LexemeDetail
-    },{
-        path: '/posting/:id',
-        name: 'post',
-        component: PostDetail
-    }
-    ,{
-        path: '/dataset',
-        name: 'database',
-        component: Database
-    },
+        {
+            path: '/collections',
+            name: 'collections',
+            component: () => import(/*webpackChunkName: "Collections"*/ "./views/Collections.vue"),
+            meta: {requiresAuth: true}
+        }, {
+            path: '/collections/:id',
+            name: 'collection',
+            component: () => import(/*webpackChunkName: "CollectionsDetail"*/ "./views/CollectionsDetail.vue"),
+            meta: {requiresAuth: true}
+        }, {
+            path: '/groups/:id',
+            name: 'group',
+            component: () => import(/*webpackChunkName: "GroupDetail"*/ "./views/GroupDetail.vue"),
+            meta: {requiresAuth: true}
+        }, {
+            path: '/groups/join/:id/:hash',
+            name: 'groupJoin',
+            component: () => import(/*webpackChunkName: "GroupJoin"*/ "./views/GroupJoin.vue"),
+            meta: {requiresAuth: true}
+        }, {
+            path: '/groups',
+            name: 'groups',
+            component: () => import(/*webpackChunkName: "Groups"*/ "./views/Groups.vue"),
+            meta: {requiresAuth: true}
+        }, {
+            path: '/lexeme/:id',
+            name: 'lexeme',
+            component: () => import(/*webpackChunkName: "LexemeDetail"*/ "./views/LexemeDetail.vue")
+        }, {
+            path: '/posting/:id',
+            name: 'post',
+            component: () => import(/*webpackChunkName: "PostDetail"*/ "./views/PostDetail.vue")
+        },
+        {
+            path: '/postings',
+            name: 'postings',
+            component: () => import(/*webpackChunkName: "Postings"*/ "./views/Postings.vue")
+        }
+        , {
+            path: '/dataset',
+            name: 'database',
+            component: () => import(/*webpackChunkName: "Database"*/ "./views/Database.vue")
+        },
         {
             path: '/card-create',
             name: 'card-create',
-            component: CardCreate
+            component: () => import(/*webpackChunkName: "CardCreate"*/ "./components/CardCreate.vue"),
+            meta: {requiresAuth: true}
+        },
+
+        {
+            path: '/account',
+            name: 'account',
+            component: () => import(/*webpackChunkName: "Account"*/ "./views/Settings.vue"),
+            meta: {requiresAuth: true}
+        },
+        {
+            path: '/login',
+            name: 'login',
+            component: () => import(/*webpackChunkName: "Login"*/ "./views/Login.vue"),
         },
     ]
 })
+router.beforeEach((to, from, next) => {
+    document.title = to.meta.title || 'Lexikographietool'
+
+    if ( to.matched.some(record => record.meta.requiresAuth)) {
+        const isAuthenticated = store.getters['auth/authenticated'];
+
+        if (!isAuthenticated) {
+            next({
+                name: "login",
+                query: {
+                    nextUrl: to.fullPath,
+                }
+            });
+        } else {
+            next();
+        }
+    } else {
+        next()
+    }
+})
+
+export default router

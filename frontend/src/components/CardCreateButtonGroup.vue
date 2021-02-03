@@ -25,7 +25,6 @@ export default {
   }),
   updated: function(){
     // this.isLoading = true
-    console.log(this.selected)
     this.value = this.selected;
     // this.isLoading = false
   },

@@ -15,7 +15,7 @@
   append-icon=""
   :required = "!disabled"
   :rules="[v => !!v || disabled || 'Dialekt muss angeführt werden']"
-  
+
 
     >
 
@@ -41,7 +41,6 @@ name: "CardCreateDialect",
   watch: {
     load () {
       this.$emit('inputData',this.load);
-      console.log('oben')
       if (this.load.length != 1) return
 
       this.isLoading = true
@@ -57,7 +56,6 @@ name: "CardCreateDialect",
   },
   methods: {
   loadLexeme() {
-    console.log(this.value)
     this.$emit('inputData',this.value);
     this.$emit('loadLexeme', this.value)
   }

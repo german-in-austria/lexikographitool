@@ -1,150 +1,144 @@
 <template>
-  <div>
-    <v-form v-model="valid" ref="createForm" @submit.prevent="submit">
-      <v-container>
-        <v-row>
-          <v-col>
-            <v-text-field
-              v-model="dialectWord"
-              label="Dialektwort"
-              :rules="[(v) => !!v || 'Dialektwort muss angegeben werde']"
-              required
-            ></v-text-field>
-          </v-col>
-        </v-row>
+  <v-container fluid>
+    <v-tabs
+        v-model="tab"
+        align-with-title
+    >
+      <v-tabs-slider color="yellow"></v-tabs-slider>
 
-        <v-row>
-          <v-col>
-            <CardCreateLexem
-              @loadLexeme="loadLexeme"
-              @inputData="newLexeme"
-              :rules="[
-                (v) =>
-                  !!v ||
-                  !!description ||
-                  'Hauptlexeme oder Beschreibung muss angegeben werden',
-              ]"
-            ></CardCreateLexem>
-          </v-col>
-          <v-col>
-            <CardCreateDescription
-              @inputData="newDescription"
-              :rules="[
-                (v) =>
-                  !!v ||
-                  !!lexeme ||
-                  'Hauptlexeme oder Beschreibung muss angegeben werden',
-              ]"
-            ></CardCreateDescription>
-            <!--            <v-text-field label="Beschreibung" v-model="description"></v-text-field>-->
-          </v-col>
-        </v-row>
+      <v-tab>Einfach</v-tab>
+      <v-tab>Schwierig</v-tab>
+    </v-tabs>
+    <v-tabs-items v-model="tab">
+      <v-tab-item>
+        <v-form v-model="form_simple" ref="form_simple">
+          <v-container>
+            <v-row no-gutters>
 
-        <v-row>
-          <v-col>
-            <card-create-button-group
-              :selected="kind"
-              @inputData="newKind"
-              :items="kinds"
-            ></card-create-button-group>
-            <card-create-category
-              :selected="categories"
-              @inputData="newCategory"
-              >></card-create-category
-            >
-          </v-col>
-        </v-row>
+              <v-col cols="12">
+                <v-text-field
+                    v-model="dialectWord"
+                    label="Dialektwort"
+                    :rules="[(v) => !!v || 'Dialektwort muss angegeben werde']"
+                    required
+                ></v-text-field>
+              </v-col>
 
-        <v-row>
-          <v-col>
-            <card-create-button-group
-              :selected="type"
-              @inputData="newType"
-              :items="kindItems"
-            ></card-create-button-group>
-          </v-col>
-          <v-col>
-            <CardCreateDialect
-              :disabled="type == 'youth-language'"
-              @inputData="newDialect"
-            ></CardCreateDialect>
+              <v-col cols="6">
+                <input-lemma-box label="Lemma" v-model="lexeme" type="lexeme"></input-lemma-box>
+              </v-col>
+              <v-col cols="6">
+                <v-text-field
+                    v-model="description"
+                    label="Beschreibung"
+                    required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="4">
+                <input-multiple label="Beispiele" v-model="examples"></input-multiple>
+              </v-col>
+              <v-col cols="4">
+                <input-multiple label="Aussprache" v-model="pronunciations"></input-multiple>
+              </v-col>
+              <v-col cols="4">
+                <input-multiple label="Etymology" v-model="etymologies"></input-multiple>
+              </v-col>
+              <v-col cols="12">
+                <input-button-group v-model="kind" :items="kindItems"></input-button-group>
+              </v-col>
+              <v-col cols="12">
+                <v-combobox label="Kategorie" v-model="categories" :return-object="false" append-icon="" item-text="category" :items="category_list" multiple></v-combobox>
+              </v-col>
+              <v-col cols="12">
+                <input-lemma-box label="Dialekt" v-model="dialect" type="dialect"></input-lemma-box>
+              </v-col>
+              <v-col cols="12">
+                <card-create-location v-model="location"></card-create-location>
+              </v-col>
+              <v-col>
+                <v-checkbox
+                    v-model="vulgar"
+                    label="Bei diesem Wort handelt es sich um einenen vulgären Ausruck"
+                ></v-checkbox>
+              </v-col>
+              <v-btn color="success" @click="submit">Wort hinzufügen</v-btn>
+            </v-row>
 
-            <!--            <v-text-field label="Welcher Dialekt ist das?" v-model="dialect" :disabled="type =='youth-language'"></v-text-field>-->
-          </v-col>
-        </v-row>
-        <card-create-multiple-dropdown
-          label="Etymologie (Wortherkunft)"
-          @inputData="newEtymology"
-        ></card-create-multiple-dropdown>
-        <card-create-multiple-dropdown
-          label="Aussprache"
-          @inputData="newPronunciation"
-        ></card-create-multiple-dropdown>
-        <card-create-multiple-dropdown
-          label="Beispiel"
-          @inputData="newExample"
-        ></card-create-multiple-dropdown>
-        <card-create-location @inputData="newOrigin"></card-create-location>
-      </v-container>
+          </v-container>
+        </v-form>
+<!--        {{ dialectWord }},-->
+<!--        {{ dialect }}-->
+<!--        {{ lexeme }},-->
+<!--        {{ description }},-->
+<!--        {{ categories }},-->
+<!--        {{ examples }},-->
+<!--        {{ pronunciations }},-->
+<!--        {{ kind }},-->
+<!--        {{ location }}-->
 
-      <v-btn class="mr-4" type="submit"> zum Wörterbuch hinzufügen </v-btn>
-    </v-form>
-  </div>
+      </v-tab-item>
+      <v-tab-item>
+<!--        hallo-->
+      </v-tab-item>
+    </v-tabs-items>
+    <v-snackbar
+        v-model="snackbarSuccessful"
+        :timeout="2000"
+        color="success"
+    >
+      Wort hinzugefügt!
+    </v-snackbar>
+    <v-snackbar
+        v-model="snackbarFailure"
+        :timeout="2000"
+        color="error"
+    >
+      Hoppla! Ein fehler ist aufgetreten.
+    </v-snackbar>
+  </v-container>
 </template>
 
 <script>
 import CardCreateLocation from "@/components/CardCreateLocation";
-import CardCreateLexem from "@/components/CardCreateLexem";
-import CardCreateButtonGroup from "@/components/CardCreateButtonGroup";
-import CardCreateMultipleDropdown from "@/components/CardCreateMultipleDropDown";
-// import Lexeme from "@/objects/Lexeme"
-import CardCreateCategory from "@/components/CardCreateCategory";
-import Category from "@/objects/Category";
-// import DialectWord from "@/objects/DialectWord";
+
+
 import Dialect from "@/objects/Dialect";
 import requestHandler from "@/utils/RequestHandler";
 import Lexeme from "@/objects/Lexeme";
-import CardCreateDescription from "@/components/CardCreateDescription";
-import CardCreateDialect from "@/components/CardCreateDialect";
+import InputLemmaBox from "@/components/InputLemmaBox";
+import InputMultiple from "@/components/InputMultiple";
+import InputButtonGroup from "@/components/InputButtonGroup";
+import RequestHandler from "@/utils/RequestHandler";
 
 export default {
   name: "CardCreate",
   components: {
-    CardCreateDialect,
-    CardCreateDescription,
-    CardCreateCategory,
-    CardCreateMultipleDropdown,
-    CardCreateButtonGroup,
-    CardCreateLexem,
+    InputButtonGroup,
+    InputMultiple,
+    InputLemmaBox,
     CardCreateLocation,
   },
   data: () => ({
-    valid: false,
-    lexeme: "",
-    dialectWord: "",
-    dialect: "",
-    description: "",
+    dialectWord: '',
+    dialect: '',
+    lexeme: '',
+    description: '',
     examples: [],
-    etymologies: [],
     pronunciations: [],
-    kind_to_update: "N",
-    kind: "N",
-    origin: "",
-    type: "",
+    etymologies: [],
+    kind: 'N',
+    location: {id:-1,zipcode: null, place: null},
     categories: [],
+    vulgar: false,
+    form_simple: null,
+    tab: null,
+
+    snackbarSuccessful: false,
+    snackbarFailure: false,
+    valid: false,
+
+    category_list:[],
     kindItems: [
-      {
-        id: 1,
-        name: "Dialekt",
-        value: "dialect",
-      },
-      {
-        id: 2,
-        name: "Jugendsprache",
-        value: "youth-language",
-      },
-    ],
-    kinds: [
       {
         id: 1,
         name: "Substantiv/Nomen",
@@ -174,88 +168,53 @@ export default {
   }),
   methods: {
     async createNewLexeme() {
-      if (this.type == "youth-language") this.dialect = "Jugendsprache";
-      var categories = [];
-      this.categories.forEach((item) => categories.push(new Category(item)));
+      // var categories = [];
+      // this.categories.forEach((item) => categories.push(new Category(item)));
       var lexemeId;
       var lexeme = new Lexeme(
-        this.lexeme,
-        this.description,
-        this.dialectWord,
-        this.kind,
-        this.dialect,
-        this.origin.id
+          this.lexeme,
+          this.description,
+          this.dialectWord,
+          this.kind,
+          this.dialect,
+          this.location.id
       );
       requestHandler
-        .createDialect(new Dialect(this.dialect))
-        .then(() => requestHandler.postLexeme(lexeme))
-        .then((response) => {
-          lexemeId = response.data.id;
-          requestHandler.postEtymologies(this.etymologies, lexemeId);
-          requestHandler.postExamples(this.examples, lexemeId);
-          requestHandler.postPronunciations(this.pronunciations, lexemeId);
-          requestHandler.addCategoriesWithLexeme(this.categories, lexemeId);
-        });
+          .createDialect(new Dialect(this.dialect))
+          .then(() => requestHandler.postLexeme(lexeme))
+          .then((response) => {
+            lexemeId = response.data.id;
+            requestHandler.postEtymologies(this.etymologies, lexemeId);
+            requestHandler.postExamples(this.examples, lexemeId);
+            requestHandler.postPronunciations(this.pronunciations, lexemeId);
+            requestHandler.addCategoriesWithLexeme(this.categories, lexemeId);
+
+            this.snackbarSuccessful = true;
+            this.resetForm();
+          });
     },
     submit() {
-      console.log("Lexem:" + this.lexeme);
-      console.log("Kategorie:" + this.categories);
-      console.log("Dialekt:" + this.dialect);
-      console.log("Beschreibung:" + this.description);
-      console.log("Beispiel:" + this.examples);
-      console.log("Etymologie:" + this.etymologies);
-      console.log("Pronunciations:" + this.pronunciations);
-      console.log("Art:" + this.kind);
-      console.log("Typ:" + this.type);
-      console.log(this.origin);
-
-      if (this.$refs.createForm.validate()) {
+      if (this.$refs.form_simple.validate()) {
         this.createNewLexeme();
       }
     },
-    newLexeme(value) {
-      this.lexeme = value;
-    },
-    newKind(value) {
-      this.kind = value;
-    },
-    newDescription(value) {
-      this.description = value;
-    },
-    newExample(value) {
-      this.examples = value;
-    },
-    newType(value) {
-      this.type = value;
-    },
-    newOrigin(value) {
-      this.origin = value;
-    },
-    newCategory(value) {
-      this.categories = value;
-    },
-    newDialect(value) {
-      this.dialect = value;
-    },
-    newEtymology(value) {
-      this.etymologies = value;
-    },
-    newPronunciation(value) {
-      this.pronunciations = value;
-    },
-    async loadLexeme() {
-      console.log(this.lexeme);
-      requestHandler.getFirsLexemeByName(this.lexeme).then((response) => {
-        this.categories = [];
-        response.data.categories.forEach((c) => {
-          this.categories.indexOf(c.category) === -1
-            ? this.categories.push(c.category)
-            : console.log("This item already exists");
-        });
-        this.kind = response.data.kind;
-      });
+    resetForm() {
+      this.dialectWord = ''
+      this.dialect = ''
+      this.lexeme = ''
+      this.description = ''
+      this.examples = []
+      this.pronunciations = []
+      this.etymologies = []
+      this.kind = 'N'
+      this.categories = []
+      this.vulgar = false
     },
   },
+  mounted() {
+    RequestHandler.searchCategories('').then(response => this.category_list = response.data)
+
+  }
 };
 </script>
 

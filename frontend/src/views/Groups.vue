@@ -1,20 +1,23 @@
 <template>
-  <div>
+  <v-container fluid>
     <v-row>
       <v-col cols="12" sd="4" md="3">
         <v-hover v-slot="{ hover }">
           <v-card
-            @click.prevent="dialog = true"
-            :elevation="hover ? 4 : 0"
-            outlined
-            class="mx-auto"
+              @click.prevent="dialog = true"
+              :elevation="hover ? 4 : 0"
+              outlined
+              class="mx-auto"
           >
             <v-card-actions class="justify-center"
-              ><v-icon
-                size="48
+            >
+              <v-icon
+                  size="48
 "
-                >mdi-plus</v-icon
-              ></v-card-actions
+              >mdi-plus
+              </v-icon
+              >
+            </v-card-actions
             >
           </v-card>
         </v-hover>
@@ -22,10 +25,10 @@
       <v-col cols="12" sd="4" md="3" v-for="group in groups" :key="group.id">
         <v-hover v-slot="{ hover }">
           <v-card
-            :to="'/groups/' + group.id"
-            :elevation="hover ? 4 : 0"
-            class="mx-auto"
-            outlined
+              :to="'/groups/' + group.id"
+              :elevation="hover ? 4 : 0"
+              class="mx-auto"
+              outlined
           >
             <v-card-title>{{ group.name }}</v-card-title>
             <v-card-text>{{ group.description }}</v-card-text>
@@ -41,25 +44,25 @@
         </v-card-title>
         <v-card-text>
           <v-text-field
-            v-model="groupTitle"
-            label="Titel"
-            required
+              v-model="groupTitle"
+              label="Titel"
+              required
           ></v-text-field>
           <v-text-field
-            v-model="groupDescription"
-            label="Beischreibung"
-            required
+              v-model="groupDescription"
+              label="Beischreibung"
+              required
           ></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click.prevent="createGroup()"
-            >erstellen
+          >erstellen
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -76,19 +79,23 @@ export default {
   }),
   methods: {
     createGroup() {
-      RequestHandler.createGroup(
-        new Group(this.groupTitle, this.groupDescription)
-      ).then((response) => this.groups.push(response.data));
-      this.dialog = false;
-      this.groupTitle = "";
-      this.groupDescription = "";
-    },
+      RequestHandler.createGroupSettings(false,
+          false, false, false).then((response) => {
+
+        RequestHandler.createGroup(
+            new Group(this.groupTitle, this.groupDescription,response.data.id)
+        ).then((response) => this.groups.push(response.data));
+        this.dialog = false;
+        this.groupTitle = "";
+        this.groupDescription = "";
+      })
+    }
   },
   beforeRouteEnter(to, from, next) {
     RequestHandler.getMyGroups().then((response) =>
-      next((vm) => {
-        vm.groups = response.data;
-      })
+        next((vm) => {
+          vm.groups = response.data;
+        })
     );
   },
 };

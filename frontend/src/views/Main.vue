@@ -1,17 +1,18 @@
 <template>
-  <v-app id="inspire">
+  <v-app >
     <v-app-bar
-        app
+
         color="white"
         flat
     >
       <v-container class="py-0 fill-height">
         <v-avatar
+            v-if="authenticated"
             class="mr-10"
             color="grey darken-1"
             size="32"
         ></v-avatar>
-        <p v-if="authenticated">{{user.firstname}} {{user.lastname}}</p>
+        <p v-if="authenticated">{{user.username}}</p>
 
 
         <v-spacer></v-spacer>
@@ -23,14 +24,16 @@
           >
             Logout
           </v-btn>
-          <Login v-else></Login>
+          <v-btn v-else to="/login">Login</v-btn>
+
+<!--          <Login v-else></Login>-->
 
         </v-responsive>
       </v-container>
     </v-app-bar>
 
-    <v-main class="grey lighten-3">
-      <v-container>
+    <v-main class="grey lighten-3 " >
+      <v-container  fluid ml-10>
         <v-row>
           <v-col cols="2">
             <Navigation></Navigation>
@@ -40,6 +43,7 @@
             <v-sheet
                 min-height="85vh"
                 max-height="85vh"
+                class="mr-15"
                 rounded="lg"
             >
               <router-view/>
@@ -53,13 +57,12 @@
 
 <script>
 import Navigation from "@/components/Navigation";
-import Login from "@/components/Login";
 import {mapGetters} from "vuex";
 import {mapActions} from "vuex";
 
-console.log('hoi');
 export default {
-  components: {Login, Navigation},
+  components: {Navigation},
+  title:'hallo',
   methods:{
     signOut(){
       this.signOutAction()

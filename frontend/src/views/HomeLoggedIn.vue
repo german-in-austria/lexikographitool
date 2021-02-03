@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <v-container style="max-height: 85vh">
+    <v-container fluid style="height:85vh">
       <v-row no-gutters>
         <v-col>
           <p class="text-h5">meine Wörter</p>
@@ -15,21 +14,24 @@
           <p class="text-h5">aktuelle Aufrufe</p>
         </v-col>
       </v-row>
-      <v-row no-gutters>
-        <v-col>
+      <v-row no-gutters style="height: 100%">
+        <v-col style="height: 85%">
           <v-hover v-slot="{ hover }">
             <v-card
-              :to="'card-create'"
-              class="mt-1 mr-5"
-              :elevation="hover ? 4 : 0"
-              outlined
+                :to="'card-create'"
+                class="mt-1 mr-5 mb-1"
+                :elevation="hover ? 4 : 0"
+                outlined
             >
               <v-card-actions class="justify-center"
-                ><v-icon
-                  size="48
+              >
+                <v-icon
+                    size="48
 "
-                  >mdi-plus</v-icon
-                ></v-card-actions
+                >mdi-plus
+                </v-icon
+                >
+              </v-card-actions
               >
             </v-card>
           </v-hover>
@@ -39,68 +41,47 @@
             </div>
           </perfect-scrollbar>
         </v-col>
-        <v-col>
+        <v-col style="height: 85%">
 
           <collection-create-button
-            class="mt-1 mr-5"
-            @created="collectionCreated"
+              class="mt-1 mr-5 mb-1"
+              @created="collectionCreated"
           ></collection-create-button>
           <perfect-scrollbar>
             <div v-for="collection in collections" :key="collection.id">
               <card-collection
-                :collection="collection"
-                class="mt-1 mr-5"
+                  :collection="collection"
+                  class="mt-1 mr-5"
               ></card-collection>
             </div>
           </perfect-scrollbar>
         </v-col>
-        <v-col>
+        <v-col style="height: 93%">
           <perfect-scrollbar>
             <div v-for="card in cards" :key="card.id">
               <card-dialect :card="card" class="mt-1 mr-5"></card-dialect>
             </div>
           </perfect-scrollbar>
         </v-col>
-        <v-col>
-          <v-list-item>
-            <v-textarea
-              label="neuer Aufruf"
-              v-model="postText"
-              outlined
-              rows="3"
-              row-height="25"
-              no-resize
-              append-icon="mdi-send"
-              @click:append="createPost"
-              class="mt-1 mr-5"
-              ref="textField"
-              required
-              :rules="[(v) => !!v || 'Bitte gib einen Text ein']"
-            ></v-textarea>
-          </v-list-item>
-          <perfect-scrollbar>
-            <v-list-item v-for="post in posts" :key="post.id">
-              <card-post :post="post" class="mt-1 mr-5"></card-post>
-            </v-list-item>
-          </perfect-scrollbar>
+        <v-col style="height: 100%">
+          <home-post-column style="height: 64vh"></home-post-column>
         </v-col>
       </v-row>
     </v-container>
-  </div>
 </template>
 
 <script>
 import RequestHandler from "@/utils/RequestHandler";
 import CardDialect from "../components/CardDialect.vue";
 import CardCollection from "../components/CardCollection.vue";
-import CardPost from "../components/CardPost.vue";
 import CollectionCreateButton from "../components/CollectionCreateButton.vue";
+import HomePostColumn from "@/components/HomePostColumn";
 
 export default {
   components: {
+    HomePostColumn,
     CardDialect,
     CardCollection,
-    CardPost,
     CollectionCreateButton,
   },
 
@@ -113,12 +94,12 @@ export default {
   }),
 
   async created() {
-    RequestHandler.getCards().then((response) => (this.cards = response.data));
+    RequestHandler.getLexemesRandom().then((response) => (this.cards = response.data));
     RequestHandler.getCollections().then(
-      (response) => (this.collections = response.data)
+        (response) => (this.collections = response.data)
     );
     RequestHandler.getCardsCreated().then(
-      (response) => (this.ownCards = response.data)
+        (response) => (this.ownCards = response.data)
     );
     RequestHandler.getPosts().then((response) => (this.posts = response.data));
   },
@@ -141,6 +122,6 @@ export default {
 
 <style scoped>
 .ps {
-  height: 600px;
+  height: 100%;
 }
 </style>

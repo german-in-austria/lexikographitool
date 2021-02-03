@@ -1,7 +1,7 @@
 <template>
-  <div>
-            <card-post :post="post" :recursive="true"></card-post>
-    
+  <div v-if="post">
+    <card-post :post="post" :recursive="true"></card-post>
+
   </div>
 
 </template>
@@ -9,8 +9,9 @@
 <script>
 import RequestHandler from "../utils/RequestHandler.js";
 import CardPost from "../components/CardPost"
+
 export default {
-  components: {CardPost},
+  components: { CardPost},
   data: () => ({
     post: '',
   }),

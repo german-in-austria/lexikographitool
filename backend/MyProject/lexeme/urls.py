@@ -6,6 +6,9 @@ from rest_framework.routers import DefaultRouter
 urlpatterns = [
 
     path('origin/<str:zip_or_place>/', origin_by_zip_or_place),
+    path('home/', get_home),
+    path('location/', create_address),
+    path('locations/', get_locations),
     path('cards/', card_list),
     path('own_cards/', card_own),
     path('lexeme/', create_lexeme),
@@ -20,5 +23,6 @@ urlpatterns = [
     path('category/<pk>/', create_category),
     path('lexeme/<lexemeId>/', get_lexeme),
     path('lexemes/', LexemeView.as_view()),
+    path('lexemes/random/',get_random_lexemes),
 
 ]

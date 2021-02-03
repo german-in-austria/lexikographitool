@@ -11,17 +11,17 @@ CHOICE_KIND = (
 
 
 class Address(models.Model):
-    country_code = models.CharField(max_length=100, null=True)
-    zipcode = models.CharField(max_length=100, null=True)
-    place = models.CharField(max_length=100, null=True)
-    state = models.CharField(max_length=100, null=True)
-    state_code = models.CharField(max_length=100, null=True)
-    province = models.CharField(max_length=100, null=True)
-    province_code = models.CharField(max_length=100, null=True)
-    community = models.CharField(max_length=100, null=True)
-    community_code = models.CharField(max_length=100, null=True)
-    latitude = models.CharField(max_length=100, null=True)
-    longitude = models.CharField(max_length=100, null=True)
+    country_code = models.CharField(max_length=100, null=True, blank=True)
+    zipcode = models.CharField(max_length=100, null=True,blank=True)
+    place = models.CharField(max_length=100, null=True,blank=True)
+    state = models.CharField(max_length=100, null=True,blank=True)
+    state_code = models.CharField(max_length=100, null=True,blank=True)
+    province = models.CharField(max_length=100, null=True,blank=True)
+    province_code = models.CharField(max_length=100, null=True,blank=True)
+    community = models.CharField(max_length=100, null=True,blank=True)
+    community_code = models.CharField(max_length=100, null=True,blank=True)
+    latitude = models.CharField(max_length=100, null=True,blank=True)
+    longitude = models.CharField(max_length=100, null=True,blank=True)
 
 
 class Dialect(models.Model):

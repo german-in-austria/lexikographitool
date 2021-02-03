@@ -9,7 +9,7 @@
       @change="updateParent"
       append-icon=""
       chips
-      
+
   >
 
   </v-combobox>

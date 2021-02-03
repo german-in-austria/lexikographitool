@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-hover v-slot="{ hover }">
-      <v-card :elevation="hover ? 2 : 0" outlined :to="'lexeme/' + card.id">
+      <v-card :elevation="hover ? 2 : 0" outlined :to="'/lexeme/' + card.id">
         <v-card-text>
           <div>{{ card.word }}</div>
           <p class="display-1 text--primary">
@@ -27,9 +27,14 @@
             <v-icon>mdi-thumb-down-outline</v-icon>
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn icon @click.prevent="openCollectionDialog()">
-            <v-icon>mdi-plus</v-icon>
+          <v-btn icon v-if="!card.in_favorites" @click.prevent="addToFavorites">
+            <v-icon >mdi-heart-outline</v-icon>
           </v-btn>
+          <v-btn icon v-else @click.prevent="removeFromFavorites">
+            <v-icon color="red">mdi-heart</v-icon>
+          </v-btn>
+            <CollectionAddLexeme :cardId="card.id"></CollectionAddLexeme>
+
           <v-btn icon>
             <v-icon>mdi-share-variant</v-icon>
           </v-btn>
@@ -37,28 +42,17 @@
       </v-card>
     </v-hover>
 
-    <v-dialog v-model="collectionsDialog" width="500">
-      <v-list>
-        <v-subheader>Meine Sammlungen</v-subheader>
-        <v-list-item v-for="collection in collections" :key="collection.id">
-          <v-list-item-title>
-            {{ collection.name }}
-          </v-list-item-title>
-          <v-list-item-icon>
-            <v-btn icon @click.prevent="addLexemeToCollection(collection.id)">
-              <v-icon>mdi-plus</v-icon>
-            </v-btn>
-          </v-list-item-icon>
-        </v-list-item>
-      </v-list>
-    </v-dialog>
+
+
   </div>
 </template>
 
 
 <script>
 import RequestHandler from "../utils/RequestHandler.js";
+import CollectionAddLexeme from "@/components/CollectionAddLexeme";
 export default {
+  components: {CollectionAddLexeme},
   props: ["card"],
   name: "CardDialect",
   data: () => ({
@@ -70,11 +64,14 @@ export default {
       this.collectionsDialog = true;
       RequestHandler.getCollections().then((response) => {
         this.collections = response.data;
-        console.log(response);
       });
     },
-    addLexemeToCollection(collectionId) {
-      RequestHandler.addLexemeToCollection(collectionId, this.card.id).then();
+    addToFavorites(){
+      RequestHandler.addLexemeToFavorite(this.card.id).then(()=>this.card.in_favorites = true)
+    },
+    removeFromFavorites(){
+      RequestHandler.removeLexemeFromFavorite(this.card.id).then(()=>this.card.in_favorites = false)
+
     },
   },
 };

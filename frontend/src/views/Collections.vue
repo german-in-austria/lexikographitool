@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container fluid>
     <v-row>
       <v-col cols="12" sd="4" md="3"> 
         <collection-create-button @created=collectionCreated></collection-create-button>
@@ -14,7 +14,7 @@
         <card-collection :collection="collection"></card-collection>
       </v-col>
     </v-row>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -36,7 +36,7 @@ export default {
   beforeRouteEnter(to, from, next) {
     RequestHandler.getCollections().then((response) =>
       next((vm) => {
-        (vm.collections = response.data), console.log(response);
+        (vm.collections = response.data);
       })
     );
   },

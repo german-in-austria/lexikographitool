@@ -1,5 +1,5 @@
 <template>
-  <v-app id="inspire">
+  <v-app>
    <Main></Main>
   </v-app>
 </template>
@@ -7,6 +7,6 @@
 <script>
 import Main from "@/views/Main";
 export default {
-  components: {Main}
+  components: {Main},
 }
 </script>

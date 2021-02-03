@@ -29,15 +29,13 @@ export default {
     actions: {
         async signIn({dispatch}, register) {
             let response = await RequestHandler.login(register)
-            dispatch('attempt', response.data.token)
+            await dispatch('attempt', response.data.token)
         },
         async register({dispatch}, register) {
-            console.log(register)
             let response = await RequestHandler.register(register)
             dispatch('attempt', response.data.token)
         },
         signOut({commit}) {
-            console.log('hee')
             commit('SET_USER', null)
             commit('SET_TOKEN', null)
         },

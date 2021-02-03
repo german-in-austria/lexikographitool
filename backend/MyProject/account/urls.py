@@ -7,5 +7,7 @@ urlpatterns = [
     path('register/', registration_view, name='register'),
     path('login/', obtain_auth_token, name='login'),
     path('me/', get_user_from_token, name='me'),
+    path('update/', update_account, name='update'),
+    path('newpassword/', update_password, name='update'),
     path('users/<username>/', get_usernames_startwith, name='getusers'),
 ]

@@ -5,7 +5,6 @@ store.subscribe((mutation) => {
         case 'auth/SET_TOKEN':
 
             if (mutation.payload){
-                console.log('hoi')
 
                 axios.defaults.headers.common['Authorization'] = `Token ${mutation.payload}`
                 localStorage.setItem('token', mutation.payload)

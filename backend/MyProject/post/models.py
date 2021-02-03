@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 
+from lexeme.models import Lexeme
+
 
 class Post(models.Model):
     text = models.CharField(max_length=100)
@@ -11,3 +13,4 @@ class Post(models.Model):
 
     date_created = models.DateTimeField(
         verbose_name='date joined', auto_now_add=True)
+    lexeme = models.ForeignKey(Lexeme, related_name='posts', on_delete=models.CASCADE, null=True, blank=True)

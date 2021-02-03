@@ -1,40 +1,47 @@
 <template>
-  <div>
+  <v-container fluid>
     <div v-if="authenticated">
       <home-logged-in></home-logged-in>
     </div>
     <div v-else>
-      <perfect-scrollbar>
       <v-row>
-        
-        <v-col cols="12" sd="4" md="3" v-for="card in cards" :key="card.id">
-          <CardDialect :card="card" class="ma-0"></CardDialect>
+        <v-col cols="9">
+          <perfect-scrollbar>
+          <v-row>
+            <v-col cols="12" sd="6" md="4" v-for="card in cards" :key="card.id">
+              <CardDialect :card="card" class="ma-0"></CardDialect>
+            </v-col>
+          </v-row>
+          </perfect-scrollbar>
+        </v-col>
+        <v-col cols="3">
+          <home-post-column style="height: 68vh"></home-post-column>
         </v-col>
       </v-row>
-        </perfect-scrollbar>
 
     </div>
-  </div>
+  </v-container>
 </template>
 
 <script>
 import CardDialect from "@/components/CardDialect";
 import RequestHandler from "@/utils/RequestHandler";
-import { mapGetters } from "vuex";
+import {mapGetters} from "vuex";
 import HomeLoggedIn from "./HomeLoggedIn.vue";
+import HomePostColumn from "@/components/HomePostColumn";
 
 export default {
   name: "Home",
-  components: { CardDialect, HomeLoggedIn },
+  components: {HomePostColumn, CardDialect, HomeLoggedIn},
   data: () => ({
     cards: [],
   }),
 
   beforeRouteEnter(to, from, next) {
     RequestHandler.getCards().then((response) =>
-      next((vm) => {
-        vm.cards = response.data;
-      })
+        next((vm) => {
+          vm.cards = response.data;
+        })
     );
   },
   computed: {
@@ -46,7 +53,7 @@ export default {
 </script>
 
 <style scoped>
-.ps{
-  height: 820px;
+.ps {
+  height: 81vh;
 }
 </style>

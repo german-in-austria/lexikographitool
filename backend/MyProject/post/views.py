@@ -1,8 +1,11 @@
+from django.db.models import Q
+from rest_framework.filters import SearchFilter
+
 from .serializers import PostSerializer, PostSimpleSerializer, PostCreateSerializer
 from .models import Post
 from rest_framework.response import Response
 
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action, permission_classes, api_view
 
@@ -31,10 +34,31 @@ def get_post_by_id(request, id):
         serializers = PostSerializer(post)
         return Response(serializers.data)
 
+@api_view(['GET'])
+def get_post_by_lexemes(request, lexemeId):
+    if request.method == 'GET':
+        posts = Post.objects.filter(lexeme=lexemeId)
+        serializers = PostSimpleSerializer(posts, many=True)
+        return Response(serializers.data)
+
 
 @api_view(['GET'])
 def get_posts(request):
     if request.method == 'GET':
-        posts = Post.objects.filter(parent=None)
+        if 'search' in request.GET:
+            posts = Post.objects.filter(Q(parent=None) & Q(lexeme=None) & (Q(text__icontains= request.GET['search'])))
+        else:
+            posts = Post.objects.filter(Q(parent=None) & Q(lexeme=None))
         serializers = PostSimpleSerializer(posts, many=True)
         return Response(serializers.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, ])
+def get_own_posts(request):
+    account = request.user
+    if request.method == 'GET':
+        posts = Post.objects.filter(Q(parent=None) & Q(lexeme=None) & Q(author=account))
+        serializers = PostSimpleSerializer(posts, many=True)
+        return Response(serializers.data)
+
+
