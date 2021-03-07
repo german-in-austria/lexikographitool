@@ -13,7 +13,9 @@
           :append-outer-icon="'mdi-delete-outline'"
           @click:append-outer="remove(i)"
           @click:append="addLine"
-      ></v-text-field>
+      >
+       <template v-slot:prepend v-if="i==0"><slot name='prepend'></slot></template>
+      </v-text-field>
     </div>
   </div>
 </template>

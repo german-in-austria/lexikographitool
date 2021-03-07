@@ -1,102 +1,117 @@
 <template>
-  <v-container fluid>
-    <v-row>
-      <v-col cols="12" sd="4" md="3">
-        <v-hover v-slot="{ hover }">
-          <v-card
-              @click.prevent="dialog = true"
-              :elevation="hover ? 4 : 0"
-              outlined
-              class="mx-auto"
-          >
-            <v-card-actions class="justify-center"
-            >
-              <v-icon
-                  size="48
-"
-              >mdi-plus
-              </v-icon
-              >
-            </v-card-actions
-            >
-          </v-card>
-        </v-hover>
+  <v-container fluid v-scroll='onScroll'>
+    <v-row no-gutters>
+      <span class="text-h3">Gruppen</span>
+    </v-row>
+    <v-row no-gutters class="pt-5">
+      <v-text-field
+        v-model="search"
+        label="Suche"
+        single-line
+        clearable
+        flat
+        solo-inverted
+        hide-details
+        prepend-inner-icon="mdi-magnify"
+        class='pr-5'
+      ></v-text-field>
+      <v-btn-toggle v-model="pub" mandatory :style="$vuetify.breakpoint.xs ? 'flex-direction: column;' : ''">
+        <v-btn large :value="false"> Meine Gruppen </v-btn>
+        <v-btn large :value="true"> öffentliche Gruppen </v-btn>
+      </v-btn-toggle>
+
+      <trash-can-dialog :itemList="groups" :group="true"></trash-can-dialog>
+    </v-row>
+    <v-row no-gutters>
+      <v-col cols="12" sd="4" md="3" v-if="!pub" class="pa-3">
+          <group-create-button></group-create-button>
       </v-col>
-      <v-col cols="12" sd="4" md="3" v-for="group in groups" :key="group.id">
+      <v-col
+        cols="12"
+        sd="4"
+        md="3"
+        v-for="group in groups"
+        :key="group.id"
+        class="pa-3"
+      >
         <v-hover v-slot="{ hover }">
           <v-card
-              :to="'/groups/' + group.id"
-              :elevation="hover ? 4 : 0"
-              class="mx-auto"
-              outlined
+            :to="'/groups/' + group.id"
+            :elevation="hover ? 4 : 0"
+            class="mx-auto"
+            outlined
           >
             <v-card-title>{{ group.name }}</v-card-title>
             <v-card-text>{{ group.description }}</v-card-text>
           </v-card>
         </v-hover>
       </v-col>
+      <p class="text-body-1" v-if="(groups.length == 0) & !!search">
+        Keine Treffer
+      </p>
     </v-row>
-
-    <v-dialog v-model="dialog" width="500">
-      <v-card>
-        <v-card-title>
-          <span class="headline">Neue Gruppe</span>
-        </v-card-title>
-        <v-card-text>
-          <v-text-field
-              v-model="groupTitle"
-              label="Titel"
-              required
-          ></v-text-field>
-          <v-text-field
-              v-model="groupDescription"
-              label="Beischreibung"
-              required
-          ></v-text-field>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click.prevent="createGroup()"
-          >erstellen
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    
   </v-container>
 </template>
 
 <script>
-import RequestHandler from "@/utils/RequestHandler";
-import Group from "@/objects/Group";
+import TrashCanDialog from "../components/TrashCanDialog.vue";
+import Axios from "axios";
+import GroupCreateButton from '../components/GroupCreateButton.vue';
 
 export default {
+  components: { TrashCanDialog,  GroupCreateButton },
   name: "Group",
   data: () => ({
     groups: [],
-    dialog: false,
+    next: null,
+    search: "",
+    pub: false,
+    tab: null,
     groupTitle: "",
     groupDescription: "",
   }),
   methods: {
-    createGroup() {
-      RequestHandler.createGroupSettings(false,
-          false, false, false).then((response) => {
-
-        RequestHandler.createGroup(
-            new Group(this.groupTitle, this.groupDescription,response.data.id)
-        ).then((response) => this.groups.push(response.data));
-        this.dialog = false;
-        this.groupTitle = "";
-        this.groupDescription = "";
-      })
-    }
+    
+    loadGroups() {
+      const public_python_param = this.pub ? "True" : "False";
+      Axios.get(
+        "groups/public/?page=1&page_size=25&public=" +
+          public_python_param +
+          "&search=" +
+          this.search
+      ).then((response) => {
+        this.groups = response.data.results;
+        this.next = response.data.links.next;
+      });
+    },
+    onScroll(e) {
+      console.log(this.next);
+      if (
+        e.target.scrollingElement.scrollTop ===
+          e.target.scrollingElement.scrollTopMax &&
+        !!this.next
+      ) {
+        Axios.get(this.next).then((response) => {
+          this.groups = this.groups.concat(response.data.results);
+          this.next = response.data.links.next;
+        });
+      }
+    },
   },
-  beforeRouteEnter(to, from, next) {
-    RequestHandler.getMyGroups().then((response) =>
-        next((vm) => {
-          vm.groups = response.data;
-        })
-    );
+  mounted() {
+    Axios.get("groups/public/?page=1&public=False&page_size=25").then((response) => {
+      this.groups = response.data.results;
+      this.next = response.data.links.next;
+    });
+  },
+  watch: {
+    pub() {
+      this.loadGroups();
+    },
+    search() {
+      this.loadGroups();
+    },
   },
 };
 </script>

@@ -18,7 +18,7 @@ let methods = {
     },
     postEtymologies(etymologies, wordid) {
         etymologies.forEach((item) => {
-            const obj = new Etymology(item, wordid);
+            const obj = new Etymology(item.value, wordid);
             axios.post('etymology/', obj).catch(err => {
                 console.log(err)
             })
@@ -26,7 +26,7 @@ let methods = {
     },
     postPronunciations(pronunciations, wordid) {
         pronunciations.forEach((item) => {
-            const obj = new Pronunciation(item, wordid);
+            const obj = new Pronunciation(item.value, wordid);
             axios.post('pronunciation/', obj).catch(err => {
                 console.log(err)
             })
@@ -34,7 +34,7 @@ let methods = {
     },
     postExamples(examples, wordid) {
         examples.forEach((item) => {
-            const obj = new DExample(item, wordid);
+            const obj = new DExample(item.value, wordid);
             axios.post('example/', obj).catch(err => {
                 console.log(err)
             })
@@ -125,6 +125,9 @@ let methods = {
     ,
     getCollectionsByOwner() {
         return axios.get('collections/owner/')
+    } ,
+    getPublicGroups() {
+        return axios.get('groups/public/')
     }
     ,
     getCardsCreated() {

@@ -6,13 +6,11 @@
     <div v-else>
       <v-row>
         <v-col cols="9">
-          <perfect-scrollbar>
           <v-row>
             <v-col cols="12" sd="6" md="4" v-for="card in cards" :key="card.id">
               <CardDialect :card="card" class="ma-0"></CardDialect>
             </v-col>
           </v-row>
-          </perfect-scrollbar>
         </v-col>
         <v-col cols="3">
           <home-post-column style="height: 68vh"></home-post-column>

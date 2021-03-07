@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from django.db.models import Q
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import filters
+from post.models import Post
 
 from .pagination import MyPagination
 from .serializers import *
@@ -20,9 +21,76 @@ from .models import *
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view
 import random
+from django.db.models import Count
 
+from datetime import datetime, timedelta
+
+
+class MyCustomOrdering(filters.OrderingFilter):
+    allowed_fields = ['content','word', 'dialectWord', 'kind',
+                      'dialect', 'categories', 'description']
+    allowed_custom_filters = ['content','dialectWord', '-dialectWord',
+                              'date_created', '-date_created', 'word', '-word']
+
+    def get_ordering(self, request, queryset, view):
+        """
+        Ordering is set by a comma delimited ?ordering=... query parameter.
+
+        The `ordering` query parameter can be overridden by setting
+        the `ordering_param` value on the OrderingFilter or by
+        specifying an `ORDERING_PARAM` value in the API settings.
+        """
+        params = request.query_params.get(self.ordering_param)
+        if params:
+            fields = [param.strip() for param in params.split(',')]
+            # care with that - this will alow only custom ordering!
+            ordering = [f for f in fields if f in self.allowed_custom_filters]
+
+            if ordering:
+                return ordering
+
+        # No ordering was included, or all the ordering fields were invalid
+        return self.get_default_ordering(view)
+
+    def filter_queryset(self, request, queryset, view):
+        ordering = self.get_ordering(request, queryset, view)
+        if ordering:
+            queryset = queryset.order_by(*ordering)
+
+        flt = {}
+
+        for param in request.query_params:
+            for fld in self.allowed_fields:
+
+                if param.startswith(fld):
+                    flt[param] = request.query_params[param]
+
+        return queryset.filter(**flt)
 
 # Lexeme
+
+
+@api_view(['GET'])
+def get_most_popular(request):
+    if request.method == 'GET':
+        countlist = LikeLexeme.objects.filter(Q(date_updated__gte=datetime.now(
+        ) - timedelta(days=14)) & Q(like=True)).values('lexeme').annotate(total=Count('lexeme')).order_by('-total')
+        popularWord = Lexeme.objects.get(pk=countlist[0]['lexeme'])
+
+        return Response(CardSerializer(popularWord, context={'request': request}).data)
+
+
+@api_view(['GET'])
+def get_most_discussed(request):
+    if request.method == 'GET':
+        countlist = Post.objects.filter(Q(date_created__gte=datetime.now(
+        ) - timedelta(days=14))).values(
+            'lexeme').annotate(total=Count('lexeme')).order_by('-total')
+        print(countlist)
+        popularWord = Lexeme.objects.get(pk=countlist[0]['lexeme'])
+
+        return Response(CardSerializer(popularWord, context={'request': request}).data)
+
 
 @api_view(['GET'])
 def card_list(request):
@@ -36,13 +104,14 @@ def card_list(request):
 def get_random_lexemes(request):
     if request.method == 'GET':
         lexeme_id_list = Lexeme.objects.all().values_list('id', flat=True)
-        print(lexeme_id_list)
 
-        random_lexeme_list = random.sample(list(lexeme_id_list), min(len(lexeme_id_list), 5))
+        random_lexeme_list = random.sample(
+            list(lexeme_id_list), min(len(lexeme_id_list), 5))
 
         cards = list(Lexeme.objects.filter(id__in=random_lexeme_list))
         random.shuffle(cards)
-        serializers = CardSerializer(cards, many=True, context={'request': request})
+        serializers = CardSerializer(
+            cards, many=True, context={'request': request})
         return Response(serializers.data)
 
 
@@ -64,15 +133,33 @@ def card_own(request):
         return Response(serializers.data)
 
 
-@api_view(['GET'])
+@api_view(['GET','PUT'])
 def get_lexeme(request, lexemeId):
+    try:
+        lexeme = Lexeme.objects.get(id=lexemeId)
+    except Lexeme.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     if request.method == 'GET':
-        try:
-            lexeme = Lexeme.objects.get(id=lexemeId)
-        except Lexeme.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializers = LexemeDetailSerializer(lexeme)
+        serializers = CardSerializer(lexeme, context={'request': request})
         return Response(serializers.data)
+
+    if request.method == 'PUT':
+        account = request.user
+        data=request.data
+        data['lexeme']=lexeme.id
+        
+        serializer = LexemeContentCreateSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            s = LexemeCreateSerializer(lexeme,data={'content':serializer.data['id']})
+            if s.is_valid():
+                s.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+             
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 @api_view(['GET'])
@@ -84,46 +171,124 @@ def lexeme_first_by_word(request, word):
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-
-class LexemeListView(ListAPIView):
+class LexemeSimpleListView(ListAPIView):
     queryset = Lexeme.objects.all()
     serializer_class = LexemeSimpleSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['word']
-
+    search_fields = ['content__word']
 
 class LexemeView(ListAPIView):
-    queryset = Lexeme.objects.all()
     serializer_class = CardSerializer
     pagination_class = MyPagination
-    pagination_class.page_size = 14
-    filter_backends = [SearchFilter]
-    search_fields = ['word', 'dialectWord']
+    pagination_class.page_size = 16
+    filter_backends = [MyCustomOrdering, filters.SearchFilter]
+
+    search_fields = ['content__word', 'content__dialectWord', 'content__description']
 
     def get_serializer_context(self):
         collection = -1
-        if 'collection' in self.request.GET:
-            collection = self.request.GET['collection']
+        if 'in_collection' in self.request.GET:
+            collection = self.request.GET['in_collection']
         context = super(LexemeView, self).get_serializer_context()
         context.update({"request": self.request, "collectionId": collection}, )
         return context
+
+    def get_queryset(self):
+        queryset = Lexeme.objects.all()
+        if self.request.auth == None or not self.request.user.show_sensitive_words:
+            queryset = queryset.filter(content__sensitive=False)
+        print('hoi')
+
+        # get lexemes from collection
+        if 'collection' in self.request.GET:
+            collectionId = self.request.GET['collection']
+            try:
+                collection = Collection.objects.get(id=collectionId)
+            except Lexeme.DoesNotExist:
+                return Lexeme.objects.none()
+            # check if collection is public or user is owner of collection
+            if collection.author != self.request.user and not collection.public:
+                return Lexeme.objects.none()
+            queryset = queryset.filter(collections=collection)
+        return queryset
+
 
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, ])
 def create_lexeme(request):
     account = request.user
-    lexeme = Lexeme(author=account)
     if request.method == 'POST':
-        serializer = LexemeCreateSerializer(lexeme, data=request.data)
-        print(serializer)
+        
+        
+        lexeme = Lexeme(author=account)
+        lexeme.save()
+        data=request.data
+        data['lexeme']=lexeme.id
+        
+        serializer = LexemeContentCreateSerializer(data=data)
+
         if serializer.is_valid():
             serializer.save()
+            s = LexemeCreateSerializer(lexeme,data={'content':serializer.data['id']})
+            if s.is_valid():
+                s.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        lexeme.delete()
+       
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['POST', 'DELETE'])
+@permission_classes([IsAuthenticated, ])
+def like_lexeme(request, lexemeId):
+    account = request.user
+    try:
+        lexeme = Lexeme.objects.get(id=lexemeId)
+    except Lexeme.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'POST':
+        like = LikeLexeme.objects.filter(Q(lexeme=lexeme) & Q(user=account))
+
+        if len(like) == 0:
+            like = LikeLexeme(user=account, lexeme=lexeme, like=True)
+            like.save()
+            print('leer')
+        else:
+            like = like[0]
+            like.like = True
+            like.save()
+        return Response(status=status.HTTP_200_OK)
+
+    if request.method == 'DELETE':
+        like = LikeLexeme.objects.filter(Q(lexeme=lexeme) & Q(user=account))
+
+        if len(like) == 0:
+            like = LikeLexeme(user=account, lexeme=lexeme, like=False)
+            like.save()
+            print('leer')
+        else:
+            like = like[0]
+            like.like = False
+            like.save()
+        return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_similar_lexemes(request, lexemeId):
+    try:
+        lexeme = Lexeme.objects.get(pk=lexemeId)
+    except Lexeme.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    similars = Lexeme.objects.filter(Q(content__word__gt='') & Q(content__word__isnull=False) & Q(content__word=lexeme.content.word)
+                                     | Q(content__dialectWord=lexeme.content.dialectWord)
+                                     | Q(content__description__gt='') & Q(content__description__isnull=False) & Q(content__description=lexeme.content.description)).exclude(id=lexemeId)
+    return Response(LexemeSimpleSerializer(similars, many=True).data)
 # Dialect
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, ])
 def create_dialect(request):
@@ -140,12 +305,11 @@ def create_dialect(request):
         return Response(serializer.data)
 
 
-class DialectListView(ListAPIView):
-    queryset = Dialect.objects.all()
-    serializer_class = DialectSerializer
-    filter_backends = [SearchFilter]
-    search_fields = ['dialect']
-
+@api_view(['GET'])
+def get_variety_list(request,search):
+    if request.method == 'GET':
+        varieties = LexemeContent.objects.filter(variety__icontains=search).values_list('variety').distinct()
+        return Response(varieties, status=status.HTTP_200_OK)
 
 # Etymology
 
@@ -194,10 +358,8 @@ def create_example(request):
 @permission_classes([IsAuthenticated, ])
 def create_category(request, pk):
     lexeme = Lexeme.objects.get(pk=pk)
-    print(request.data)
     category, created = Category.objects.get_or_create(
         category=request.data['category'])
-    print(category)
     serializer = CategorySerializer(category)
     category.lexemes.add(lexeme)
     if created:
@@ -221,7 +383,6 @@ def origin_by_zip_or_place(request, zip_or_place):
     addresses = Address.objects.filter(
         Q(place__icontains=zip_or_place) | Q(zipcode__startswith=zip_or_place)
     )
-    print(addresses[0].place)
     serializers = ZipPlaceSerializer(addresses, many=True)
     return Response(serializers.data, status=status.HTTP_200_OK)
 
@@ -246,13 +407,14 @@ def create_address(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, ])
 def get_locations(request):
     if request.method == 'GET':
         if 'zip' in request.GET:
-            locations = Address.objects.filter(zipcode__startswith=request.GET['zip'])
+            locations = Address.objects.filter(
+                zipcode__startswith=request.GET['zip'])
         elif 'place' in request.GET:
-            locations = Address.objects.filter(place__icontains=request.GET['place'])
+            locations = Address.objects.filter(
+                place__icontains=request.GET['place'])
         else:
             return Response()
     serializers = ZipPlaceSerializer(locations, many=True)

@@ -1,49 +1,84 @@
 <template>
   <div>
     <v-hover v-slot="{ hover }">
-      <v-card :elevation="hover ? 2 : 0" outlined :to="'/lexeme/' + card.id">
-        <v-card-text>
-          <div>{{ card.word }}</div>
-          <p class="display-1 text--primary">
+      <v-card
+        :elevation="hover ? 5 : 2"
+        outlined
+        :to="'/lexeme/' + card.id"
+        :color="color + ' lighten-4'"
+        class="transition-swing"
+      >
+        <v-card-text class="text-body-2">
+          <span>{{ card.word }}</span>
+          <span v-if="!card.word">{{ card.description }}</span>
+
+          <p :class="color + '--text text--darken-4 text-h4'">
             {{ card.dialectWord }}
+            <v-icon v-if="card.sensitive" color="red"> mdi-alert</v-icon>
           </p>
-          <div v-if="card.description">
+
+
+          <p v-if="card.description && !!card.word">
             Beschreibung: {{ card.description }}
-          </div>
-          <div v-if="card.examples.length">
+          </p>
+          <p v-if="!!card.examples &&  card.examples.length">
             Beispiel:
-            <div v-for="example in card.examples" :key="example.id">
-              {{ example.example }}
-            </div>
-          </div>
-          <br />
-          <p>Dialekt: {{ card.dialect }}</p>
+            <span v-for="(example, index) in card.examples" :key="index">
+              {{ example.example }},
+            </span>
+          </p>
+          
+          <p v-if="card.variety">Varietät: {{ card.variety }}</p>
+
+          <p>Verwendet in {{card.origin}}</p>
+
+
+          <p v-if="!!card.categories && card.categories.length">
+            Aussprache:
+            <span v-for="(category, index) in card.categories" :key="index">
+              {{ category.category }},
+            </span>
+          </p>
+
+          <p v-if="!!card.pronunciations && card.pronunciations.length">
+            Aussprache:
+            <span v-for="(pronunciation, index) in card.pronunciations" :key="index">
+              {{ pronunciation.pronunciation }},
+            </span>
+          </p>
+
+          <p v-if="!!card.etymologies && card.etymologies.length">
+            Aussprache:
+            <span v-for="(etymology, index) in card.etymologies" :key="index">
+              {{ etymology.etymology }},
+            </span>
+          </p>
+        <p>Erstellt von <span class="font-weight-bold">{{card.author}}</span></p>
+
+
         </v-card-text>
         <v-card-actions>
           <v-btn icon>
-            <v-icon>mdi-thumb-up-outline</v-icon>
-          </v-btn>
-          <v-btn icon>
-            <v-icon>mdi-thumb-down-outline</v-icon>
+            <v-icon v-if="!card.liked" @click.prevent="like"
+              >mdi-thumb-up-outline</v-icon
+            >
+            <v-icon v-else @click.prevent="unlike" color="success"
+              >mdi-thumb-up</v-icon
+            >
           </v-btn>
           <v-spacer></v-spacer>
           <v-btn icon v-if="!card.in_favorites" @click.prevent="addToFavorites">
-            <v-icon >mdi-heart-outline</v-icon>
+            <v-icon>mdi-heart-outline</v-icon>
           </v-btn>
           <v-btn icon v-else @click.prevent="removeFromFavorites">
             <v-icon color="red">mdi-heart</v-icon>
           </v-btn>
-            <CollectionAddLexeme :cardId="card.id"></CollectionAddLexeme>
+          <CollectionAddLexeme :cardId="card.id"></CollectionAddLexeme>
 
-          <v-btn icon>
-            <v-icon>mdi-share-variant</v-icon>
-          </v-btn>
+          <slot name="button"></slot>
         </v-card-actions>
       </v-card>
     </v-hover>
-
-
-
   </div>
 </template>
 
@@ -51,8 +86,9 @@
 <script>
 import RequestHandler from "../utils/RequestHandler.js";
 import CollectionAddLexeme from "@/components/CollectionAddLexeme";
+import axios from "axios";
 export default {
-  components: {CollectionAddLexeme},
+  components: { CollectionAddLexeme },
   props: ["card"],
   name: "CardDialect",
   data: () => ({
@@ -66,12 +102,47 @@ export default {
         this.collections = response.data;
       });
     },
-    addToFavorites(){
-      RequestHandler.addLexemeToFavorite(this.card.id).then(()=>this.card.in_favorites = true)
+    addToFavorites() {
+      RequestHandler.addLexemeToFavorite(this.card.id).then(
+        () => (this.card.in_favorites = true)
+      );
     },
-    removeFromFavorites(){
-      RequestHandler.removeLexemeFromFavorite(this.card.id).then(()=>this.card.in_favorites = false)
+    removeFromFavorites() {
+      RequestHandler.removeLexemeFromFavorite(this.card.id).then(
+        () => (this.card.in_favorites = false)
+      );
+    },
+    getColor() {},
+    like() {
+      axios
+        .post("/lexeme/like/" + this.card.id + "/")
+        .then(() => (this.card.liked = true));
+    },
+    unlike() {
+      axios
+        .delete("/lexeme/like/" + this.card.id + "/")
+        .then(() => (this.card.liked = false));
+    },
+  },
+  mounted() {},
+  computed: {
+    color() {
+      const crypto = require("crypto");
+      const hash = crypto
+        .createHash("sha1")
+        .update(this.card.dialectWord + this.card.word + this.card.description)
+        .digest("hex");
 
+      const colors = [
+        "card1",
+        "card2",
+        "card3",
+        "card4",
+        "card5",
+        "card6",
+        "card7",
+      ];
+      return colors[Math.floor(parseInt(hash, 16) % colors.length)];
     },
   },
 };

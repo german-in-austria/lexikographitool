@@ -1,20 +1,16 @@
 <template>
   <v-list-item
-      class="d-flex justify-center"
-      color="black"
       link
       :to="link"
 
   >
-    <v-col class="justify-center">
-      <v-list-item-icon class="justify-center">
+      <v-list-item-icon >
         <v-icon large>{{ icon }}</v-icon>
       </v-list-item-icon>
 
-      <v-list-item-title class="">
+      <v-list-item-title >
         {{ name }}
       </v-list-item-title>
-    </v-col>
   </v-list-item>
 </template>
 

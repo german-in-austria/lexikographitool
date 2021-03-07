@@ -1,5 +1,5 @@
 <template><div>
-  <v-col><v-row>
+  <v-col cols='1'><v-row>
     <v-combobox
   v-model="value"
 

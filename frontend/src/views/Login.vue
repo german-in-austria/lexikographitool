@@ -1,6 +1,6 @@
 <template>
 
-  <div>
+  <v-container fluid>
     <v-tabs v-model="tab" icons-and-text grow>
 
       <v-tab v-for="i in tabs" :key="i.name">
@@ -22,7 +22,7 @@
                 <v-col cols="12">
                   <v-text-field v-model="loginPassword" :append-icon="show1?'eye':'eye-off'"
                                 :rules="[rules.required, rules.min]" :type="show1 ? 'text' : 'password'"
-                                name="input-10-1" label="Password" hint="Passwort braucht mindestens 8 Zeichen"
+                                name="input-10-1" label="Passwort" hint="Passwort braucht mindestens 8 Zeichen"
                                 counter @click:append="show1 = !show1"></v-text-field>
                 </v-col>
                 <v-col class="d-flex" cols="12" sm="6" xsm="12">
@@ -48,53 +48,8 @@
                   <v-text-field v-model="username" :rules="[rules.required]" label="Benutzername"
                                 required></v-text-field>
                 </v-col>
-                <v-col cols="4">
-                  <v-combobox
-                      v-model="locZip"
-                      :items="locations"
-                      item-text="zipcode"
-                      label="Postleitzahl"
-                      hide-no-data
-                      menu-props="closeOnClick"
-                      :return-object="true"
-                      append-icon=""
-                      required
-                      :rules="[rules.required]"
-                      :search-input.sync="searchzip"
-                      @change="change(locZip)"
-
-                  ></v-combobox>
-                </v-col>
-                <v-col cols="4">
-                  <v-combobox
-                      v-model="locPlace"
-                      :items="locations"
-                      item-text="place"
-                      label="Gemeinde"
-                      hide-no-data
-                      menu-props="closeOnClick"
-                      append-icon=""
-                      required
-                      :rules="[rules.required]"
-                      :search-input.sync="searchplace"
-                      @change="change(locPlace)"
-
-                  ></v-combobox>
-                </v-col>
-                <v-col cols="4">
-                  <v-combobox
-                      v-model="locState"
-                      :items="locations"
-                      item-text="state"
-                      label="Bundesland"
-                      hide-no-data
-                      menu-props="closeOnClick"
-                      append-icon=""
-                      required
-                      :rules="[rules.required]"
-                      @change="change(locState)"
-
-                  ></v-combobox>
+                <v-col cols="12">
+                  <input-location v-model="location"></input-location>
                 </v-col>
                 <v-col cols="12">
                   <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
@@ -119,25 +74,49 @@
         </v-card>
       </v-tab-item>
     </v-tabs-items>
+    <v-snackbar
+      v-model="snackbarSuccessful"
+      :timeout="2000"
+      color="success"
+      top
+    >
+    {{successMessage}}
 
-  </div>
+    </v-snackbar>
+    
+    <v-snackbar
+      v-model="snackbarFailure"
+      :timeout="2000"
+      color="error"
+      top
+    >
+         {{failureMessage}}
+
+    </v-snackbar>
+  </v-container>
 </template>
 
 <script>
 import Login from "@/objects/Login";
 import Register from "@/objects/Register";
 import {mapActions} from 'vuex'
-import axios from "axios";
 import RequestHandler from "@/utils/RequestHandler";
+import InputLocation from '../components/InputLocation.vue';
 
 export default {
+  components: { InputLocation },
   data: () => ({
+    successMessage:'Erfolgreich',
+
+    snackbarSuccessful: false,
+    snackbarFailure: false,
+    failureMessage:'Fehler!',
     dialog: false,
     tab: null,
     tabs: [
       {name: "Login", icon: "mdi-account"},
 
-      {name: "Register", icon: "mdi-account-outline"},
+      {name: "Registrieren", icon: "mdi-account-outline"},
 
     ],
     valid: true,
@@ -146,33 +125,26 @@ export default {
     password: "",
     username: "",
     verify: "",
-    locPlace: "",
-    locId: "",
-    locZip: {state: '', zipcode: '', place: ''},
-    locState: "",
-    locations: [],
-    searchzip: null,
-    searchplace: null,
-    newLocation: true,
+    location:{id:-1,place:null,zip:null},
     loginPassword: "",
     loginEmail: "",
     loginEmailRules: [
-      v => !!v || "Required",
+      v => !!v || "wird benötigt",
       v => /.+@.+\..+/.test(v) || "E-mail ist ungültig"
     ],
     emailRules: [
-      v => !!v || "Required",
+      v => !!v || "wird benötigt",
       v => /.+@.+\..+/.test(v) || "E-mail ist ungültig"
     ],
     show1: false,
     rules: {
-      required: value => !!value || "Required.",
+      required: value => !!value || "wird benötigt",
       min: v => (v && v.length >= 8) || "mindestens 8 Zeichen"
     }
   }),
   computed: {
     passwordMatch() {
-      return () => this.password === this.verify || "Password stimmen nicht überein";
+      return () => this.password === this.verify || "Passwörter stimmen nicht überein";
     }
   },
   methods: {
@@ -195,33 +167,42 @@ export default {
           else
                 this.$router.push('/')
             }
-        )
+        ).catch(()=>{
+          this.failureMessage = 'Benutzername oder Passwort stimmen nicht!'
+          this.snackbarFailure = true
+        })
 
     }
   },
   register() {
     if (this.$refs.registerForm.validate()) {
-      if(this.newLocation)
+      if(this.location.id == -1)
         //first create new location, then register
-        RequestHandler.createLocation(this.locZip,this.locPlace,this.locState).then((response)=>{
+        RequestHandler.createLocation(this.location.zip,this.location.place,this.location.state).then((response)=>{
           this.signUp(new Register(this.username, this.email, this.password, this.password, response.data.id, this.age)).then(() => {
                 if(this.$route.query.nextUrl)
                   this.$router.push(this.$route.query.nextUrl)
                 else
                   this.$router.push('/')
               }
-          )
+          ).catch(()=>{
+          this.failureMessage = 'Benutzername oder Passwort stimmen nicht!'
+          this.snackbarFailure = true
+        })
             }
 
         )
       else
-        this.signUp(new Register(this.username, this.email, this.password, this.password, this.locId, this.age)).then(() => {
+        this.signUp(new Register(this.username, this.email, this.password, this.password, this.location.id, this.age)).then(() => {
               if(this.$route.query.nextUrl)
                 this.$router.push(this.$route.query.nextUrl)
               else
                 this.$router.push('/')
             }
-        )
+        ).catch(()=>{
+          this.failureMessage = 'Benutzername oder Passwort stimmen nicht!'
+          this.snackbarFailure = true
+        })
 
     }
   },
@@ -230,57 +211,9 @@ export default {
     signUp: 'auth/register',
 
   }),
-  reload: function (search) {
-    //Lazily load input items
-    axios.get('http://127.0.0.1:8000/origin/' + search + '/')
-        .then(res => {
-          this.locations = res.data
-        })
-        .catch(err => {
-          console.log(err)
-        })
-        .finally(() => (this.isLoading = false))
-  },
   updateParent: function () {
     this.$emit('inputData', this.zip)
-  },
-  change(obj) {
-    if (typeof obj == 'object') {
-      this.locZip = obj.zipcode
-      this.locPlace = obj.place
-      this.locState = obj.state
-      this.locId = obj.id
-      this.newLocation = false
-    } else
-      this.newLocation= true
-  }
-}
-,
-watch: {
-  searchplace()
-  {
-    // Items have already been loaded
-    if (this.searchplace.length <= 1) {
-      this.items = []
-      return
-    }
-    if (this.searchplace.length > 2) return
-    this.isLoading = true
-    this.reload(this.searchplace)
-
-  }
-,
-  searchzip()
-  {
-    // Items have already been loaded
-    if (this.searchzip.length != 1) return
-
-    this.isLoading = true
-    this.reload(this.searchzip)
-
-  }
-}
-,
+  },},
 }
 </script>
 

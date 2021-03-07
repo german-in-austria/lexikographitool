@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container fluid>
       <v-text-field
           v-model="search"
           append-icon="mdi-magnify"
@@ -32,7 +32,7 @@
 
       </v-data-footer>
     </v-data-table>
-  </div>
+  </v-container>
 </template>
 
 <script>

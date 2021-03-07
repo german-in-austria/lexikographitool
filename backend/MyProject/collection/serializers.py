@@ -1,35 +1,48 @@
 from rest_framework import serializers
 
 from .models import Collection
-from lexeme.serializers import LexemeDetailSerializer
+from lexeme.serializers import CardSerializer
+from MyProject import rulemanager
 
-
-
-class CollectionSerializer(serializers.ModelSerializer):
-    username = serializers.SerializerMethodField('get_username_by_author')
-    lexemes = LexemeDetailSerializer(many=True, read_only=True)
-    can_add_lexeme_to_collection = serializers.SerializerMethodField()
+class CollectionUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Collection
-        fields = ['id','name', 'username', 'lexemes','group', 'description','organization', 'public','categories','can_add_lexeme_to_collection']
+        fields = ['id','name','group', 'description','organization', 'public',
+        'categories','can_add_lexemes_group','can_remove_lexemes_group','can_add_lexemes_public','can_remove_lexemes_public']
+
+class CollectionSerializer(serializers.ModelSerializer):
+    username = serializers.SerializerMethodField('get_username_by_author')
+    # lexemes = CardSerializer(many=True, read_only=True)
+    can_add_lexeme_to_collection = serializers.SerializerMethodField()
+    can_remove_lexeme_from_collection = serializers.SerializerMethodField()
+    is_owner=serializers.SerializerMethodField()
+
+    class Meta:
+        model = Collection
+        fields = ['id','name', 'username','group', 'description','organization', 'public',
+        'categories','can_add_lexeme_to_collection','can_remove_lexeme_from_collection','is_owner','can_add_lexemes_group', 'can_remove_lexemes_group' ,'can_add_lexemes_public', 'can_remove_lexemes_public']
 
     def get_username_by_author(self, collection):
         username = collection.author.username
         return username
 
     def get_can_add_lexeme_to_collection(self, collection):
-
+        user = None
         if 'account' in self.context:
             user = self.context['account']
-            if collection.group == None:
-                return user == collection.author
-            settings = collection.group.settings
+        return  rulemanager.can_add_lexeme_to_collection(collection,user)
 
-            return user==collection.author or user == collection.group.owner or \
-                   user in collection.group.members.all() and settings.members_add_remove_lexemes or \
-                   settings.public and settings.public_add_remove_lexemes
-        return False
+    def get_can_remove_lexeme_from_collection(self, collection):
+        user = None
+        if 'account' in self.context:
+            user = self.context['account']
+        return  rulemanager.can_remove_lexeme_from_collection(collection,user)
+
+    
+    def get_is_owner(self,collection):
+        if 'account' in self.context:
+            return collection.author == self.context['account']
 
 class CollectionSimpleSerializer(serializers.ModelSerializer):
     groupname = serializers.SerializerMethodField('get_group_name')
@@ -45,7 +58,7 @@ class CollectionSimpleSerializer(serializers.ModelSerializer):
         return None
 
     def get_count_lexemes(self, collection):
-        return collection.lexemes.count()
+        return collection.collectionlexeme_set.count()
 
 
 class CollectionSimpleSerializerWithContainment(serializers.ModelSerializer):

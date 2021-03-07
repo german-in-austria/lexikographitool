@@ -2,6 +2,9 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from MyProject.models import SoftDeletionModel
+import uuid
+
 CHOICE_KIND = (
     ('N', 'noun'),
     ('V', 'verb'),
@@ -24,47 +27,47 @@ class Address(models.Model):
     longitude = models.CharField(max_length=100, null=True,blank=True)
 
 
-class Dialect(models.Model):
-    dialect = models.CharField(max_length=100, primary_key=True)
-
-    def __str__(self):
-        return self.dialect
-
-
-# Create your models here.
 class Lexeme(models.Model):
-    word = models.CharField(max_length=100, null=True, blank=True)
-    description = models.CharField(max_length=100, null=True,blank=True)
-    kind = models.CharField(max_length=255, choices=CHOICE_KIND)
-    dialectWord = models.CharField(max_length=100)
-    origin = models.ForeignKey(Address, related_name='dialectWords', on_delete=models.CASCADE)
-    dialect = models.ForeignKey(Dialect, related_name='dialectWords', on_delete=models.CASCADE, null=True)
+    liked_from = models.ManyToManyField('account.Account', related_name='collections',through = 'LikeLexeme')
+    date_created = models.DateTimeField(
+         verbose_name='date joined', auto_now_add=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.OneToOneField('LexemeContent',related_name='activeLexeme',on_delete=models.CASCADE,null=True)
+    def save(self, *args, **kwargs):
+        super(Lexeme, self).save(*args, **kwargs)
 
-    #def __str__(self):
-    #    return self.word
+class LexemeContent(models.Model):
+    date_created = models.DateTimeField(
+         verbose_name='date joined', auto_now_add=True)
+    word = models.CharField(max_length=100, null=True, blank=True)
+    variety = models.CharField(max_length=100, null=True, blank=True)
+    description = models.CharField(max_length=100, null=True,blank=True)
+    kind = models.CharField(max_length=255, choices=CHOICE_KIND,null=True)
+    dialectWord = models.CharField(max_length=100)
+    origin = models.ForeignKey(Address, related_name='dialectWords', on_delete=models.CASCADE,null=True)
+    sensitive = models.BooleanField(default=False)
+    lexeme = models.ForeignKey(Lexeme, related_name='versions',on_delete=models.CASCADE,null=True)
 
+class LikeLexeme(SoftDeletionModel):
+    user = models.ForeignKey('account.Account',on_delete=models.CASCADE)
+    lexeme = models.ForeignKey(Lexeme,on_delete=models.CASCADE)
+    like = models.BooleanField(default=False)
+    date_updated = models.DateTimeField(auto_now=True)
+
+    
+
+    class Meta:
+        unique_together = (("user", "lexeme"),)
 
 
 class Category(models.Model):
     category = models.CharField(max_length=100, primary_key=True)
-    lexemes = models.ManyToManyField(Lexeme, related_name='categories')
-
-
-class DialectWord(models.Model):
-    word = models.CharField(max_length=100, primary_key=True)
-
-    # lexeme = models.ForeignKey(Lexeme, related_name='dialectWords', on_delete=models.CASCADE)
-    # origin = models.ForeignKey(Address, related_name='dialectWords', on_delete=models.CASCADE)
-    # dialect = models.ForeignKey(Dialect, related_name='dialectWords', on_delete=models.CASCADE, null=True)
-
-    def __str__(self):
-        return self.word
+    lexemes = models.ManyToManyField(LexemeContent, related_name='categories')
 
 
 class Example(models.Model):
     example = models.CharField(max_length=100)
-    dialectWord = models.ForeignKey(Lexeme, related_name='examples', on_delete=models.CASCADE)
+    dialectWord = models.ForeignKey(LexemeContent, related_name='examples', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.example
@@ -72,7 +75,7 @@ class Example(models.Model):
 
 class Pronunciation(models.Model):
     pronunciation = models.CharField(max_length=100)
-    dialectWord = models.ForeignKey(Lexeme, related_name='pronunciations', on_delete=models.CASCADE)
+    dialectWord = models.ForeignKey(LexemeContent, related_name='pronunciations', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.pronunciation
@@ -80,17 +83,8 @@ class Pronunciation(models.Model):
 
 class Etymology(models.Model):
     etymology = models.CharField(max_length=100)
-    dialectWord = models.ForeignKey(Lexeme, related_name='etymologies', on_delete=models.CASCADE)
+    dialectWord = models.ForeignKey(LexemeContent, related_name='etymologies', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.etymology
 
-
-class Article(models.Model):
-    title = models.CharField(max_length=100)
-    author = models.CharField(max_length=100)
-    email = models.EmailField(max_length=100)
-    date = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.title

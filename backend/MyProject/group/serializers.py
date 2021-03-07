@@ -2,7 +2,7 @@ from .models import Group, GroupSettings
 from account.serializers import UserNameSerializer
 from collection.serializers import CollectionSerializer, CollectionSimpleSerializerWithContainment
 from rest_framework import serializers
-
+from MyProject import rulemanager
 
 class GroupSettingsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,12 +16,11 @@ class GroupSerializer(serializers.ModelSerializer):
     owner = UserNameSerializer(read_only=True)
     is_owner = serializers.SerializerMethodField('check_if_owner')
     can_create_collection = serializers.SerializerMethodField()
-    can_add_lexeme_to_collection = serializers.SerializerMethodField()
     is_owner = serializers.SerializerMethodField('check_if_owner')
 
     class Meta:
         model = Group
-        fields = ['id', 'name', 'description', 'members', 'collections', 'owner', 'is_owner', 'settings', 'can_create_collection', 'can_add_lexeme_to_collection',
+        fields = ['id', 'name', 'description', 'members', 'collections', 'owner', 'is_owner', 'can_create_collection',
                   'organization']
 
     def check_if_owner(self, group):
@@ -30,24 +29,11 @@ class GroupSerializer(serializers.ModelSerializer):
         return False
 
     def get_can_create_collection(self,group):
-        settings = group.settings
-
+        user = None
         if 'account' in self.context:
             user = self.context['account']
-            return user == group.owner or \
-                   user in group.members.all() and settings.members_createCollection or\
-                   settings.public and settings.public_createCollection
-        return False
-
-    def get_can_add_lexeme_to_collection(self, group):
-        settings = group.settings
-
-        if 'account' in self.context:
-            user = self.context['account']
-            return user == group.owner or \
-                   user in group.members.all() and settings.members_add_remove_lexemes or \
-                   settings.public and settings.public_add_remove_lexemes
-        return False
+        
+        return rulemanager.can_add_collection_to_group(group,user)
 
 
 class GroupNameSerializer(serializers.ModelSerializer):

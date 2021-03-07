@@ -1,150 +1,138 @@
 <template>
-  <perfect-scrollbar>
+  <v-container v-if="lexeme">
+    <p class="text-h3">{{ lexeme.dialectWord }}</p>
+    <v-row no-gutters>
+      <v-col cols="12" sm="10">
+        <card-dialect
+          class="elevation-3"
+          style="max-width: 25rem; margin: auto"
+          :card="lexeme"
+        >
+          <template slot="button">
 
-    <v-container fluid v-if="lexeme">
-      <v-row no-gutters>
-        <v-col cols="9">
-          <p class="text-h3">{{ lexeme.dialectWord }}</p>
-          <p class="text-h4">{{ lexeme.word }}</p>
-          <v-col class="pa-0">
-            <v-row no-gutters v-if="!!lexeme.description">
-              <v-col cols="2"> Beschreibung:</v-col>
-              <v-col>
-                {{ lexeme.description }}
-              </v-col>
-            </v-row>
-            <v-row no-gutters v-if="!!lexeme.examples && lexeme.examples.length != 0">
-              <v-col cols="2"> Beispiele:</v-col>
-              <v-col>
-                <div v-for="example in lexeme.examples" :key="example.id">
-                  {{ example.example }}
-                </div>
-              </v-col>
-            </v-row>
-            <v-row
-                no-gutters
-                v-if="!!lexeme.categories && lexeme.categories.length != 0"
+          </template>
+        </card-dialect>
+                    <lexeme-edit-dialog :lexeme='lexeme'></lexeme-edit-dialog>
+
+
+      </v-col>
+      <v-divider vertical></v-divider>
+      <v-col cols="12" sm="1" class="ml-3">
+        Ähnliche Wörter
+        <v-row>
+          <v-col v-for="(item, index) in similarLexemes" :key="index" cols="12">
+            <v-card :color="color(item)" :to="'/lexeme/' + item.id">
+              <v-card-text>{{ item.dialectWord }}</v-card-text></v-card
             >
-              <v-col cols="2"> Kategorien:</v-col>
-              <v-col>
-        <span v-for="(category, index) in lexeme.categories" :key="category.id">
-          <span>{{ category.category }}</span>
-          <span v-if="index + 1 < lexeme.categories.length">, </span>
-        </span>
-              </v-col>
-            </v-row>
-
-            <v-row no-gutters v-if="!!lexeme.origin">
-              <v-col cols="2"> Bundesland:</v-col>
-              <v-col>
-                {{ lexeme.origin }}
-              </v-col>
-            </v-row>
-            <v-row no-gutters v-if="!!lexeme.dialect">
-              <v-col cols="2"> Dialekt:</v-col>
-              <v-col>
-                {{ lexeme.dialect }}
-              </v-col>
-            </v-row>
-
-            <v-row
-                no-gutters
-                v-if="!!lexeme.pronunciations && lexeme.pronunciations.length != 0"
-            >
-              <v-col cols="2"> Aussprache:</v-col>
-              <v-col>
-        <span v-for="(pronunciation, index) in lexeme.pronunciations" :key="pronunciation.id">
-          <span>{{ pronunciation.pronunciation }}</span>
-          <span v-if="index + 1 < lexeme.pronunciations.length">, </span>
-        </span>
-              </v-col>
-            </v-row>
-
-            <v-row
-                no-gutters
-                v-if="!!lexeme.etymologies && lexeme.etymologies.length != 0"
-            >
-              <v-col cols="2"> Etymology:</v-col>
-              <v-col>
-        <span v-for="(etymology, index) in lexeme.etymologies" :key="etymology.id">
-          <span>{{ etymology.etymology }}</span>
-          <span v-if="index + 1 < lexeme.etymologies.length">, </span>
-        </span>
-              </v-col>
-
-            </v-row>
           </v-col>
-        </v-col>
-      </v-row>
-      <v-divider class="mt-5 mb-5"></v-divider>
-      <v-row no-gutters>
-        <v-col cols="6">
-          <p class="text-h4">Kommentare</p>
+        </v-row>
+      </v-col>
+    </v-row>
+    <v-row> </v-row>
+    <p class="text-h4">Kommentare</p>
+    <v-list>
+      <template>
+        <div v-for="(post, index) in posts" :key="index">
+          <v-list-item dense>
+            <v-list-item-content>
+              <v-list-item-content>{{ post.text }}</v-list-item-content>
+              <v-list-item-subtitle>{{
+                post.author.username
+              }}</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-divider></v-divider>
+        </div>
+      </template>
 
-          <v-list>
-            <v-list-item>
-              <v-textarea
-                  label="Kommentar verfassen "
-                  v-model="postText"
-                  outlined
-                  rows="1"
-                  no-resize
-                  append-icon="mdi-send"
-                  @click:append="createPost"
-                  class="ma-0 pa-0"
-                  ref="postText"
-                  required
-                  :rules="[(v) => !!v || 'Bitte gib einen Text ein']"
-              ></v-textarea>
-            </v-list-item>
-
-            <template v-for="(post, index) in posts">
-              <v-list-item :key="index">
-
-                <v-list-item-content>
-                  <v-list-item-text>{{ post.text }}</v-list-item-text>
-                  <v-list-item-subtitle>{{ post.author.username }}</v-list-item-subtitle>
-                  <card-post :post="post" class="mt-1 mr-5"></card-post>
-                </v-list-item-content>
-
-              </v-list-item>
-              <v-divider :key="index"></v-divider>
-
-            </template>
-          </v-list>
-        </v-col>
-      </v-row>
-
-    </v-container>
-  </perfect-scrollbar>
-
+      <v-list-item>
+        <v-textarea
+          label="Kommentar verfassen "
+          v-model="postText"
+          flat
+          hide-details
+          dense
+          rows="1"
+          no-resize
+          solo
+          append-icon="mdi-send"
+          @click:append="createPost"
+          ref="postText"
+          required
+          :rules="[(v) => !!v || 'Bitte gib einen Text ein']"
+        ></v-textarea>
+      </v-list-item>
+    </v-list>
+  </v-container>
 </template>
 
 <script>
 import RequestHandler from "../utils/RequestHandler.js";
-
+import CardDialect from "@/components/CardDialect";
+import LexemeEditDialog from "@/components/LexemeEditDialog";
+import axios from "axios";
 export default {
+  components: { CardDialect,LexemeEditDialog },
   data: () => ({
     lexeme: null,
-    postText: '',
+    postText: "",
     posts: [],
+    similarLexemes: [],
   }),
   created() {
     RequestHandler.getLexeme(this.$route.params.id).then((response) => {
       this.lexeme = response.data;
     });
-    RequestHandler.getPostsByLexemeId(this.$route.params.id).then((response) => (this.posts = response.data));
+    RequestHandler.getPostsByLexemeId(this.$route.params.id).then(
+      (response) => (this.posts = response.data)
+    );
+    axios
+      .get("lexemes/similar/" + this.$route.params.id + "/")
+      .then((response) => (this.similarLexemes = response.data));
   },
   methods: {
     createPost() {
       if (this.$refs.postText.validate()) {
-        RequestHandler.createPost(this.postText, null, this.$route.params.id).then((response) => {
+        RequestHandler.createPost(
+          this.postText,
+          null,
+          this.lexeme.id
+        ).then((response) => {
           this.postText = "";
           this.posts.push(response.data);
         });
       }
-    }
+    },
+    addToFavorites() {
+      RequestHandler.addLexemeToFavorite(this.lexeme.id).then(
+        () => (this.lexeme.in_favorites = true)
+      );
+    },
+    removeFromFavorites() {
+      RequestHandler.removeLexemeFromFavorite(this.lexeme.id).then(
+        () => (this.lexeme.in_favorites = false)
+      );
+    },
+    color(lexeme) {
+      const crypto = require("crypto");
+      const hash = crypto
+        .createHash("sha1")
+        .update(lexeme.dialectWord + lexeme.word + lexeme.description)
+        .digest("hex");
+
+      const colors = [
+        "#f1d8c5",
+        "#f9f0c2",
+        "#b1d4ec",
+        "#b3b8df",
+        " #ece9dd",
+        "#ffb3ba",
+        "#ffffba",
+      ];
+      return colors[Math.floor(parseInt(hash, 16) % colors.length)];
+    },
   },
+  computed: {},
 };
 </script>
 

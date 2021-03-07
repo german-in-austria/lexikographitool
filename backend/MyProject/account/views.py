@@ -3,7 +3,7 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework import status
 
-
+from django.core.mail import send_mail
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -12,11 +12,24 @@ from rest_framework.response import Response
 from .serializers import RegistrationSerializer, UserSerializer, UserNameSerializer, UpdatePasswordSerializer
 from .models import Account
 
+@api_view(['GET',])
+def test(request):
+    
+    send_mail(
+    'Subject here',
+    'Here is the message.',
+    'lexiktool@outlook.de',
+    ['andreas@olschnoegger.at'],
+    fail_silently=False,
+    )
+    return Response()
 
 @api_view(['POST',])
 def registration_view(request):
     serializer = RegistrationSerializer(data=request.data)
     data = {}
+    
+    
     if serializer.is_valid():
         account = serializer.save()
         data['response'] = "successfully registered a new user."
@@ -24,6 +37,11 @@ def registration_view(request):
         data['username'] = account.username
         token = Token.objects.get(user=account).key
         data['token'] = token
+
+
+        
+
+
         return Response(data)
     else:
         data = serializer.errors

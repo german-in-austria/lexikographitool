@@ -9,10 +9,10 @@ ENV PYTHONUNBUFFERED 1
 # create root directory for our project in the container
 RUN mkdir /backend
 
-# Set the working directory to /music_service
+# Set the working directory to /backend
 WORKDIR /backend
 
-# Copy the current directory contents into the container at /music_service
+# Copy the current directory contents into the container at /backend
 ADD . /backend/
 
 # Install any needed packages specified in requirements.txt

@@ -41,17 +41,24 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     home = ZipPlaceSerializer()
+    locations = ZipPlaceSerializer(many=True)
 
     class Meta:
         model = Account
-        fields = ['email', 'username', 'home','age']
+        fields = ['email', 'username', 'home','age','locations','show_sensitive_words']
 
 
     def update(self, instance, validated_data):
-
+        
         home = Address.objects.get(id=validated_data['home']['id'])
+        
+        location_list = [item['id'] for item in validated_data['locations']]
+
+        locations = Address.objects.filter(pk__in=location_list)
+        instance.locations.set(locations)   
         instance.age=validated_data['age']
         instance.home = home
+        instance.show_sensitive_words = validated_data['show_sensitive_words']
         instance.save()
         return instance
 

@@ -7,14 +7,18 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.db.models import Q
 
-from .models import Collection
-from .serializers import CollectionSerializer, CollectionSimpleSerializer
+from .models import Collection, CollectionLexeme
+from .serializers import CollectionSerializer, CollectionSimpleSerializer, CollectionUpdateSerializer
 from lexeme.models import Lexeme
+from lexeme.serializers import CardSerializer
 from group.models import Group
+from rest_framework.generics import ListAPIView
+from lexeme.pagination import MyPagination
+from rest_framework import filters
 
 from group.serializers import GroupCollectionSerializer
 
-
+from MyProject import rulemanager
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, ])
 def create_collection(request):
@@ -22,8 +26,7 @@ def create_collection(request):
     print(account)
     collection = Collection(author=account)
     if request.method == 'POST':
-        serializer = CollectionSerializer(collection, data=request.data)
-        print(serializer)
+        serializer = CollectionSerializer(collection, data=request.data,context={request:request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -38,6 +41,13 @@ def get_collections_by_owner(request):
     serializer = CollectionSerializer(collections, many=True)
     return Response(serializer.data)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, ])
+def get_collections_deleted_by_owner(request):
+    account = request.user
+    collections = Collection.all_objects.filter(author=account).dead()
+    serializer = CollectionSerializer(collections, many=True)
+    return Response(serializer.data)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, ])
@@ -49,8 +59,63 @@ def get_collections(request):
     serializer = CollectionSimpleSerializer(collections, many=True)
     return Response(serializer.data)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, ])
+def restore_collection(request,collectionId):
+    account = request.user
+    try:
+        collection = Collection.all_objects .get(id=collectionId)
+    except Collection.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    if collection.author != account:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
+    collection.deleted_at = None
+    collection.save()
+    serializer = CollectionSimpleSerializer(collection)
+    return Response(serializer.data)
 
-@api_view(['GET', 'PUT'])
+
+class CollectionView(ListAPIView):
+    serializer_class = CollectionSimpleSerializer
+    pagination_class = MyPagination
+    pagination_class.page_size = 16
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name','description']
+
+    def get_queryset(self):
+        queryset = Collection.objects.all()
+        
+        if self.request.user:
+            user = self.request.user
+            if 'public' in self.request.GET:
+                public = self.request.GET['public']
+                if public == 'False':
+                    return queryset.filter(Q(author=user))
+            else:
+                return queryset.filter(Q(author=user) | Q(group__members=user) |  Q(group__owner=user) | Q(public=True))
+        return queryset.filter(public=True)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, ])
+def get_lexemes_in_collection(request,collectionId):
+    #Get ids of not deleted lexemes
+    lexemeIds = CollectionLexeme.objects.filter(collection=collectionId).values_list('lexeme',flat=True)
+    
+    lexemes = Lexeme.objects.filter(id__in=lexemeIds)
+    serializer = CardSerializer(lexemes, many=True,context={'request':request})
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, ])
+def get_deleted_lexemes_in_collection(request,collectionId):
+    #Get ids of not deleted lexemes
+    lexemeIds = CollectionLexeme.all_objects.filter(collection=collectionId).dead().values_list('lexeme',flat=True)
+    lexemes = Lexeme.objects.filter(id__in=lexemeIds)
+    serializer = CardSerializer(lexemes, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET', 'PUT','DELETE'])
 @permission_classes([IsAuthenticated, ])
 def get_update_collection(request, collectionId):
     account = request.user
@@ -58,26 +123,32 @@ def get_update_collection(request, collectionId):
         collection = Collection.objects.get(id=collectionId)
     except Collection.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
     if request.method == 'GET':
-        has_access = collection.author == account or \
+        has_access = collection.author == account or collection.public or\
                      collection.group != None and (account == collection.group.owner or \
-                                                   collection.group.settings.members_add_remove_lexemes and account in collection.group.members.all() or\
-                                                   collection.group.settings.public and collection.group.settings.all_add_remove_lexemes)
+                                                   account in collection.group.members.all())
 
 
         if not has_access:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-        serializer = CollectionSerializer(collection)
+        serializer = CollectionSerializer(collection,context={'request':request,'account':account})
         return Response(serializer.data)
+
     if request.method == 'PUT':
-        if account != collection.author:
+        if not collection.author == account :
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-        serializer = CollectionSerializer(collection, data=request.data)
+        serializer = CollectionUpdateSerializer(collection, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    if request.method == 'DELETE':
+        if not collection.author == account :
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        collection.delete()
+        return Response(status=status.HTTP_200_OK)
 
 @api_view(['PUT', 'DELETE', ])
 @permission_classes([IsAuthenticated, ])
@@ -90,22 +161,31 @@ def add_or_remove_lexeme_to_collection(request, collectionId, lexemeId):
         return Response(status=status.HTTP_404_NOT_FOUND)
     except Collection.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    print(collection.group)
-    if account != collection.author and (collection.group == None or account not in collection.group.members.all()):
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
-    has_access = collection.author == account or \
-                 collection.group != None and (account == collection.group.owner or \
-                                               collection.group.settings.members_add_remove_lexemes and account in collection.group.members.all() or \
-                                               collection.group.settings.public and collection.group.settings.all_add_remove_lexemes)
-    if not has_access:
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
-
+        
+    
     if request.method == 'PUT':
-        collection.lexemes.add(lexeme)
-        collection.save()
-        serializer = CollectionSerializer(collection)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        #check permissions
+        if not rulemanager.can_add_lexeme_to_collection(collection,account):
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        # check if already deleted
+        collectionlexeme = CollectionLexeme.all_objects.filter(Q(lexeme=lexeme) & Q(collection=collection))
+        if len(collectionlexeme) != 0:
+            collectionlexeme = collectionlexeme[0]
+            collectionlexeme.deleted_at = None
+            collectionlexeme.save(request=request)
+            serializer = CollectionSerializer(collectionlexeme.collection,context={'request':request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        
+        collectionLexeme = CollectionLexeme(collection=collection,lexeme=lexeme)
+        collectionLexeme.save(request=request)
+        return Response(status=status.HTTP_200_OK)
+
+
     if request.method == 'DELETE':
+        if not rulemanager.can_remove_lexeme_from_collection(collection,account):
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         collection.lexemes.remove(lexeme)
         return Response(status=status.HTTP_200_OK)
 
@@ -121,11 +201,9 @@ def add_group_to_collection(request, collectionId, groupId):
         return Response(status=status.HTTP_404_NOT_FOUND)
     except Collection.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    settings = group.settings
-    can_add_collection_to_group = account == group.owner or \
-                                  account in group.members.all() and settings.members_createCollection or \
-                                  settings.public and settings.public_createCollection
-    if not can_add_collection_to_group:
+    
+
+    if not rulemanager.can_add_collection_to_group(group,account):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     if request.method == 'PUT':
@@ -178,14 +256,5 @@ def add_or_remove_lexeme_to_favorites(request, lexemeId):
     except Lexeme.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    if account != collection.author and (collection.group == None or account not in collection.group.members.all()):
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    return add_or_remove_lexeme_to_collection(request._request,collection.id,lexemeId)
 
-    if request.method == 'PUT':
-        collection.lexemes.add(lexeme)
-        collection.save()
-        serializer = CollectionSerializer(collection)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    if request.method == 'DELETE':
-        collection.lexemes.remove(lexeme)
-        return Response(status=status.HTTP_200_OK)

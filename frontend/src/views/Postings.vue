@@ -16,7 +16,7 @@
         </v-row>
       </v-col>
 
-      <v-divider vertical style="height:83vh"></v-divider>
+      <v-divider vertical ></v-divider>
       <v-col cols="3">
         <v-subheader>Meine Aufrufe</v-subheader>
         <v-col cols="12" v-for="(post, index) in myposts" :key="index">

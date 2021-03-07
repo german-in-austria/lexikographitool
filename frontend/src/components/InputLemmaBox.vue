@@ -1,22 +1,29 @@
 <template>
-  <v-combobox :v-bind="value"
+<div>
+  <v-combobox :value="value"
               :label="label"
               :search-input.sync="text"
               :item-text="itemText"
               :items="items"
               append-icon=""
-  ></v-combobox>
+              :required="true"
+              :rules="[(v) => !!v || 'Lemma muss angegeben werde']"
+
+  ><template v-slot:prepend><slot name="prepend"></slot></template>
+  </v-combobox>
+  </div>
 </template>
 
 <script>
 import RequestHandler from "@/utils/RequestHandler";
+import Axios from 'axios';
 
 export default {
   name: "InputLemmaBox",
-  props: ['value','label','type'],
+  props: ['value','label','type','required'],
   data: () => ({
     text:null,
-    items:[],
+    items:['asd'],
   }),
   methods: {
   },
@@ -24,8 +31,8 @@ export default {
     text(){
       if(this.type==='lexeme')
         RequestHandler.searchLexemesByWord(this.text).then(response=> this.items= response.data)
-      else if (this.type === 'dialect' )
-        RequestHandler.searchDialects(this.text).then(response=> this.items= response.data)
+      else if (this.type === 'variety' )
+        Axios.get('varieties/' + this.text + '/').then(response=> this.items= response.data)
       this.$emit('input', this.text)
     }
   },

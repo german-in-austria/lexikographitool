@@ -1,8 +1,8 @@
 <template>
-  <div v-if="post">
+  <v-container fluid v-if="post">
     <card-post :post="post" :recursive="true"></card-post>
 
-  </div>
+  </v-container>
 
 </template>
 

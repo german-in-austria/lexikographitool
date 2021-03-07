@@ -1,47 +1,25 @@
 <template>
   <v-row justify="center">
-    <v-dialog
-        v-model="dialog"
-        persistent
-        max-width="50vh"
-    >
+    <v-dialog v-model="dialog" persistent max-width="30rem" scrollable>
       <template v-slot:activator="{ on, attrs }">
-        <v-icon
-            size="30px"
-            v-bind="attrs"
-            v-on="on"
-        >
-          mdi-cog
-        </v-icon>
+        <v-icon size="30px" v-bind="attrs" v-on="on"> mdi-cog </v-icon>
       </template>
       <v-card>
-        <v-card-title class="headline">
-          Einstellungen
+        <v-card-title class="headline"> Einstellungen 
+        <v-spacer></v-spacer>
+
+          <v-btn color="error" right x-small text @click="deleteCollection"> Sammlung löschen </v-btn>
+
         </v-card-title>
+        
+        <v-divider></v-divider>
         <v-card-text>
-          <v-text-field v-model="name" label="Sammlungsname"></v-text-field>
-          <v-text-field v-model="description"></v-text-field>
-          <v-text-field v-model="organization" label="Organisation"></v-text-field>
-          <v-switch v-model="pub">öffentlich</v-switch>
-          <v-combobox v-model="categories" item-text="category" :items="categoryList" multiple
-                      :return-object="false"></v-combobox>
+          <collection-properties-form :collection="col" :group="!!collection.group"></collection-properties-form>
         </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-              color="green darken-1"
-              text
-              @click="dialog = false"
-          >
-            Disagree
-          </v-btn>
-          <v-btn
-              color="green darken-1"
-              text
-              @click="update"
-          >
-            Agree
-          </v-btn>
+          <v-divider></v-divider>
+          <v-btn text @click="dialog = false"> Verwerfen </v-btn>
+          <v-btn text @click="update"> Änderungen speichern </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -49,64 +27,72 @@
 </template>
 
 <script>
-import RequestHandler from "@/utils/RequestHandler";
 import axios from "axios";
+import CollectionPropertiesForm from './CollectionPropertiesForm.vue';
 
 export default {
+  components: { CollectionPropertiesForm },
   name: "CollectionSettingsDialog",
-  props: ['collection'],
+  props: ["collection"],
   data: function () {
     return {
       dialog: false,
-      description: '',
-      categories: [],
-      categoryList: [],
-      organization:'',
-      pub:false,
-      name: '',
-
-
-    }
-
+      col:{}
+    };
   },
   watch: {
     dialog(visible) {
       if (visible) {
-        this.name = this.collection.name
-        this.description = this.collection.description
-        this.pub = this.collection.public
-        this.organization = this.collection.organization
-        this.categories = this.collection.categories
+        this.col.name = this.collection.name;
+        this.col.description = this.collection.description;
+        this.col.pub = this.collection.public;
+        this.col.organization = this.collection.organization;
+        this.col.categories = this.collection.categories;
+        this.col.canAddLexemePublic = this.collection.can_add_lexemes_public;
+        this.col.canRemoveLexemePublic = this.collection.can_remove_lexemes_public;
+        this.col.canAddLexemeGroup = this.collection.can_add_lexemes_group;
+        this.col.canRemoveLexemeGroup = this.collection.can_remove_lexemes_group;
+        this.col.group = this.collection.group;
       }
-    }
+    },
   },
   methods: {
     update() {
-      axios.put('collection/' + this.collection.id + '/', {
-        'id': this.collection.id,
-        'name': this.name,
-        'description': this.description,
-        'organization': this.organization,
-        'public': this.pub,
-        'categories':this.categories
-      }).then(() => {
-        this.collection.name = this.name
-        this.collection.description = this.description
-        this.collection.categories = this.categories
-        this.collection.public = this.pub
-        this.collection.organization = this.organization
-        this.dialog = false
-      })
-
-    }
-  },
-  mounted() {
-    RequestHandler.searchCategories('').then(response => this.categoryList = response.data)
+      axios
+        .put("collection/" + this.collection.id + "/", {
+          id: this.collection.id,
+          name: this.col.name,
+          description: this.col.description,
+          organization: this.col.organization,
+          public: this.col.pub,
+          categories: this.col.categories,
+          can_add_lexemes_group: this.col.canAddLexemeGroup,
+          can_remove_lexemes_group: this.col.canRemoveLexemeGroup,
+          can_add_lexemes_public: this.col.canAddLexemePublic,
+          can_remove_lexemes_public: this.col.canRemoveLexemePublic,
+        })
+        .then(() => {
+          this.collection.name = this.col.name;
+          this.collection.description = this.col.description;
+          this.collection.categories = this.col.categories;
+          this.collection.public = this.col.pub;
+          this.collection.organization = this.col.organization;
+          this.collection.can_add_lexemes_group = this.col.canAddLexemeGroup;
+          this.collection.can_remove_lexemes_group = this.col.canRemoveLexemeGroup;
+          this.collection.can_add_lexemes_public = this.col.canAddLexemePublic;
+          this.collection.can_remove_lexemes_public = this.col.canRemoveLexemePublic;
+          this.dialog = false;
+        });
+    },
+    deleteCollection() {
+      axios.delete("collection/" + this.collection.id + "/").then(() => {
+        this.dialog = false;
+        this.$router.push("/collections");
+      });
+    },
   }
-
-}
+};
 </script>
 
 <style scoped>
-
 </style>

@@ -8,7 +8,13 @@ from .serializers import GroupNameSerializer
 from .models import Group, GroupSettings
 from account.models import Account
 import hashlib
+import jwt
 from django.contrib.sites.shortcuts import get_current_site
+
+from rest_framework.generics import ListAPIView
+from lexeme.pagination import MyPagination
+from rest_framework import filters
+import datetime
 
 
 @api_view(['POST', ])
@@ -45,6 +51,7 @@ def add_or_remove_user(request, groupId, username):
         group.members.add(member)
         serializer = GroupSerializer(group)
         return Response(serializer.data)
+
     if request.method == 'DELETE':
         group.members.remove(member)
         return Response(status=status.HTTP_200_OK)
@@ -62,7 +69,37 @@ def get_own_groups(request):
     return Response(serializers.data, status=status.HTTP_200_OK)
 
 
-@api_view(['GET', 'PUT'])
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, ])
+def get_own_groups_deleted(request):
+    account = request.user
+
+    groups = Group.all_objects.filter(
+        Q(owner=account)
+    ).distinct().dead()
+    serializers = GroupSerializer(groups, many=True)
+    return Response(serializers.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, ])
+def restore_group(request, groupId):
+    account = request.user
+    try:
+        group = Group.all_objects .get(id=groupId)
+    except Group.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if group.owner != account:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    group.deleted_at = None
+    group.save()
+    serializer = GroupSerializer(group)
+    return Response(serializer.data)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated, ])
 def get_update_group(request, groupId):
     account = request.user
@@ -70,19 +107,40 @@ def get_update_group(request, groupId):
         group = Group.objects.get(id=groupId)
     except Group.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if group.owner != account and account not in group.members.all():
+    has_access = group.owner == account or account in group.members.all() or group.settings.public
+    if not has_access:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
     if request.method == 'GET':
         serializer = GroupSerializer(group, context={'account': account})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'PUT':
+        if group.owner != account:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         serializer = GroupSerializer(group, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == 'DELETE':
+        if group.owner != account:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        group.delete()
+        return Response()
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, ])
+def leave_group(request, groupId):
+    account = request.user
+    try:
+        group = Group.objects.get(id=groupId)
+    except Group.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    group.members.remove(account)
+    return Response()
 
 
 @api_view(['GET'])
@@ -95,9 +153,11 @@ def get_invite_link(request, groupId):
         return Response(status=status.HTTP_404_NOT_FOUND)
     if group.owner != account:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
-    hash = hashlib.md5(group.__str__().encode())
-    print(hash)
-    return Response(hash.hexdigest())
+
+    key = "secret"
+    encoded = jwt.encode({"exp": datetime.datetime.utcnow(
+    ) + datetime.timedelta(days=2), "groupId": groupId}, key, algorithm="HS256")
+    return Response(encoded)
 
 
 @api_view(['GET'])
@@ -109,59 +169,67 @@ def join_group(request, groupId, hash):
     except Group.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    print(hash)
-    # print(hashlib.md5(group.__str__().encode()).hexdigest())
-    if hash == hashlib.md5(group.__str__().encode()).hexdigest():
-        group.members.add(account)
-        group.save()
-        return Response()
-    return Response(status=status.HTTP_401_UNAUTHORIZED)
+    try:
+        decoded = jwt.decode(hash, "secret", algorithms=["HS256"])
+    except jwt.ExpiredSignatureError:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    print(decoded)
+    print(decoded.keys)
+    if 'groupId' in decoded:
+        if groupId == decoded['groupId']:
+            group.members.add(account)
+    return Response()
+
+
+class GroupView(ListAPIView):
+    serializer_class = GroupSerializer
+    pagination_class = MyPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', 'description']
+
+    def get_queryset(self):
+        queryset = Group.objects.all()
+
+        if self.request.user:
+            user = self.request.user
+            if 'public' in self.request.GET:
+                public = self.request.GET['public']
+                if public == 'False':
+                    return queryset.filter(Q(owner=user) | Q(members=user))
+            else:
+                return queryset.filter(Q(owner=user) | Q(members=user) | Q(settings__public=True))
+        return queryset.filter(settings__public=True)
 
 
 @api_view(['GET'])
-def get_group_name_by_invite(request, groupId, hash):
+def get_group_name_by_id(request, groupId):
     try:
         group = Group.objects.get(id=groupId)
     except Group.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    if hash == hashlib.md5(group.__str__().encode()).hexdigest():
-        return Response(GroupNameSerializer(group).data)
-    return Response(status=status.HTTP_401_UNAUTHORIZED)
+    return Response(GroupNameSerializer(group).data)
 
 
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated, ])
-def get_update_group_settings(request, settingsId):
+def get_update_group_settings(request, groupId):
     account = request.user
-    print(settingsId)
     try:
-        settings = GroupSettings.objects.get(id=settingsId)
+        group = Group.objects.get(id=groupId)
     except GroupSettings.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    if settings.group.owner != account:
+    if group.owner != account:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+    settings = group.settings
     if request.method == 'GET':
         return Response(GroupSettingsSerializer(settings).data)
-    if request.method == 'PUT':
-        if settings.group.owner != account:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+    if request.method == 'PUT':
         serializer = GroupSettingsSerializer(settings, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated, ])
-def create_group_settings(request):
-    if request.method == 'POST':
-        serializer = GroupSettingsSerializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -1,4 +1,5 @@
 <template>
+<vcontainer fluid>
   <v-card>
     Möchtest du der Gruppe '{{ group.name }}' beitreten?
     <v-card-actions>
@@ -8,12 +9,13 @@
       >Beitreten
       </v-btn>
     </v-card-actions>
-  </v-card>
+  </v-card></vcontainer>
 </template>
 
 <script>
 import Group from "@/objects/Group";
 import RequestHandler from "@/utils/RequestHandler";
+import axios from 'axios'
 
 export default {
   name: "GroupJoin",
@@ -21,7 +23,7 @@ export default {
     group: new Group(),
   }),
   mounted() {
-    RequestHandler.getGroupNameByInvite(this.$route.params.id,this.$route.params.hash).then((response) => {
+    axios.get('/groupname/'+this.$route.params.id +'/').then((response) => {
       this.group = response.data;
     });
   },

@@ -47,8 +47,11 @@ class Account(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+
     age = models.IntegerField(null=True, blank=True)
-    home = models.ForeignKey(Address, on_delete=models.CASCADE, null=True)
+    home = models.ForeignKey(Address, on_delete=models.CASCADE,related_name='account_home', null=True)
+    locations = models.ManyToManyField(Address)
+    show_sensitive_words = models.BooleanField(default=False)
     favorite = models.OneToOneField(
         'collection.Collection',
         on_delete=models.CASCADE,
@@ -58,6 +61,7 @@ class Account(AbstractBaseUser):
     REQUIRED_FIELDS = ['username']
 
     objects = MyAccountManager()
+
 
     def __str__(self):
         return self.email
