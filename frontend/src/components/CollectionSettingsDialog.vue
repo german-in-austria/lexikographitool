@@ -16,8 +16,9 @@
         <v-card-text>
           <collection-properties-form :collection="col" :group="!!collection.group"></collection-properties-form>
         </v-card-text>
+        <v-divider></v-divider>
+
         <v-card-actions>
-          <v-divider></v-divider>
           <v-btn text @click="dialog = false"> Verwerfen </v-btn>
           <v-btn text @click="update"> Änderungen speichern </v-btn>
         </v-card-actions>

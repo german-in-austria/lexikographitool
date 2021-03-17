@@ -27,7 +27,6 @@
           :group="group"
             :collection="collection"
           ></collection-properties-form>
-          {{ collection }}
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>

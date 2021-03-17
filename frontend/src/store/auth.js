@@ -12,6 +12,9 @@ export default {
         authenticated(state) {
             return state.token && state.user
         },
+        isSuperUser(state) {
+            return state.token && state.user?.is_superuser
+        },
         user(state) {
             return state.user
         }

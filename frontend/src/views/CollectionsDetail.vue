@@ -11,40 +11,40 @@
         <p>
           <span class="text-h8">Kategorien:</span>
           <span
-            class="text-h8"
-            :key="index"
-            v-for="(category, index) in collection.categories"
-            >{{ category }}
+              class="text-h8"
+              :key="index"
+              v-for="(category, index) in collection.categories"
+          >{{ category }}
           </span>
         </p>
       </v-col>
       <v-col>
         <collection-settings-dialog
-          v-if="collection.is_owner"
-          :collection="collection"
+            v-if="collection.is_owner"
+            :collection="collection"
         ></collection-settings-dialog>
       </v-col>
       <v-col cols="12">
         <v-row no-gutters>
           <v-text-field
-            v-model="search"
-            label="Suche"
-            clearable
-            flat
-            solo-inverted
-            hide-details
-            prepend-inner-icon="mdi-magnify"
+              v-model="search"
+              label="Suche"
+              clearable
+              flat
+              solo-inverted
+              hide-details
+              prepend-inner-icon="mdi-magnify"
           ></v-text-field>
           <v-spacer></v-spacer>
           <collection-add-lexeme-dialog
-            :collection="collection"
-            :lexemes="lexemes"
-            v-if="collection.can_add_lexeme_to_collection"
+              :collection="collection"
+              :lexemes="lexemes"
+              v-if="collection.can_add_lexeme_to_collection"
           ></collection-add-lexeme-dialog>
           <collection-detail-trash-can-dialog
-            v-if="collection.is_owner"
-            :collectionId="collection.id"
-            :lexemes="lexemes"
+              v-if="collection.is_owner"
+              :collectionId="collection.id"
+              :lexemes="lexemes"
           ></collection-detail-trash-can-dialog>
         </v-row>
         <v-row no-gutters>
@@ -52,30 +52,31 @@
             Diese Sammlung ist leer. Fülle sie mit deinen Lieblingswörtern!
           </p>
           <v-scale-transition group class="row">
-          <v-col
-            cols="auto"
-            class="px-2 py-4"
-            v-for="(card,index) in lexemes"
-            :key="card"
-          >
-            
-            <card-dialect :card="card" class="mt-1 mr-5">
-              <template slot="button">
-                <v-btn
-                  v-if="collection.can_remove_lexeme_from_collection"
-                  small
-                  absolute
-                  top
-                  right
-                  fab
-                  color="error"
-                  @click.prevent="removeLexeme(card,index)"
-                  ><v-icon small>mdi-delete</v-icon>
-                </v-btn>
-              </template>
-            </card-dialect>
-          </v-col>
-            </v-scale-transition>
+            <v-col
+                cols="auto"
+                class="px-2 py-4"
+                v-for="(card,index) in lexemes"
+                :key="card"
+            >
+
+              <card-dialect :card="card" class="mt-1 mr-5">
+                <template slot="button">
+                  <v-btn
+                      v-if="collection.can_remove_lexeme_from_collection"
+                      small
+                      absolute
+                      top
+                      right
+                      fab
+                      color="error"
+                      @click.prevent="removeLexeme(card,index)"
+                  >
+                    <v-icon small>mdi-delete</v-icon>
+                  </v-btn>
+                </template>
+              </card-dialect>
+            </v-col>
+          </v-scale-transition>
 
         </v-row>
       </v-col>
@@ -111,25 +112,25 @@ export default {
       this.collection = response.data;
     });
     axios
-      .get("lexemes/?page=1&collection=" + this.$route.params.id)
-      .then((response) => {
-        this.lexemes = response.data.results;
-        this.next = response.data.links.next;
-      });
-  },
-  watch: {
-    search() {
-      axios
-        .get(
-          "lexemes/?page=1&search=" +
-            this.search +
-            "&collection=" +
-            this.$route.params.id
-        )
+        .get("lexemes/?page=1&collection=" + this.$route.params.id)
         .then((response) => {
           this.lexemes = response.data.results;
           this.next = response.data.links.next;
         });
+  },
+  watch: {
+    search() {
+      axios
+          .get(
+              "lexemes/?page=1&search=" +
+              this.search +
+              "&collection=" +
+              this.$route.params.id
+          )
+          .then((response) => {
+            this.lexemes = response.data.results;
+            this.next = response.data.links.next;
+          });
     },
   },
   methods: {
@@ -142,9 +143,9 @@ export default {
 
     onScroll(e) {
       if (
-        e.target.scrollingElement.scrollTop ===
+          e.target.scrollingElement.scrollTop ===
           e.target.scrollingElement.scrollTopMax &&
-        !!this.next
+          !!this.next
       ) {
         axios.get(this.next).then((response) => {
           this.lexemes = this.lexemes.concat(response.data.results);
@@ -173,7 +174,8 @@ export default {
   margin: 0 0 16px 16px;
 }
 
-.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
+.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */
+{
   opacity: 0;
   transform: translateY(30px);
 }

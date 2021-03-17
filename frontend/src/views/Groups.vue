@@ -70,6 +70,8 @@ export default {
     tab: null,
     groupTitle: "",
     groupDescription: "",
+
+    timeout:null,
   }),
   methods: {
     
@@ -110,7 +112,14 @@ export default {
       this.loadGroups();
     },
     search() {
-      this.loadGroups();
+      clearTimeout(this.timeout);
+
+      let self = this;
+      this.timeout = setTimeout(function () {
+        
+        self.loadGroups();
+      }, 500);
+
     },
   },
 };

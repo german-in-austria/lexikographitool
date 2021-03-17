@@ -1,7 +1,7 @@
 <template>
 
-  <v-sheet min-height="85vh" color="transparent" width="12rem">
-    <v-list color="transparent">
+  <v-sheet height="100%" color="primary lighten-4" width="12rem" >
+    <v-list color="transparent" class="mt-15">
       <NavigationListItem link="/" icon="mdi-home-outline" name="Start"></NavigationListItem>
       <v-divider></v-divider>
       <NavigationListItem v-if="false" link="/" icon="mdi-home-outline" name="Home"></NavigationListItem>
@@ -18,6 +18,9 @@
       <v-divider></v-divider>
 
       <NavigationListItem v-if="authenticated" link="/postings" icon="mdi-chat-processing-outline" name="Fragen"></NavigationListItem>
+      <v-divider></v-divider>
+
+      <NavigationListItem v-if="isSuperUser" link="/reports" icon="mdi-alert-decagram" name="Meldungen"></NavigationListItem>
 
     </v-list>
   </v-sheet>
@@ -37,6 +40,7 @@ export default {
     ...mapGetters(
         {
           authenticated: 'auth/authenticated',
+          isSuperUser: 'auth/isSuperUser',
         })
   }
 }

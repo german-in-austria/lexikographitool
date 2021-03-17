@@ -10,6 +10,7 @@ CHOICE_KIND = (
     ('V', 'verb'),
     ('Aj', 'adjective'),
     ('Av', 'adverb'),
+    ('I', 'interjection'),
     ('P', 'phrase'))
 
 
@@ -40,6 +41,7 @@ class LexemeContent(models.Model):
     date_created = models.DateTimeField(
          verbose_name='date joined', auto_now_add=True)
     word = models.CharField(max_length=100, null=True, blank=True)
+    source = models.CharField(max_length=100, null=True, blank=True)
     variety = models.CharField(max_length=100, null=True, blank=True)
     description = models.CharField(max_length=100, null=True,blank=True)
     kind = models.CharField(max_length=255, choices=CHOICE_KIND,null=True)
@@ -87,4 +89,14 @@ class Etymology(models.Model):
 
     def __str__(self):
         return self.etymology
+
+class Report(models.Model):
+    message = models.CharField(max_length=100)
+    lexeme = models.ForeignKey(Lexeme, related_name='reports', on_delete=models.CASCADE)
+    content = models.ForeignKey(LexemeContent, related_name='reports', on_delete=models.CASCADE)
+    date_created = models.DateTimeField(
+         verbose_name='date joined', auto_now_add=True)
+    report_from = models.ForeignKey('account.Account',on_delete=models.CASCADE)
+    active = models.BooleanField(default=True)
+
 

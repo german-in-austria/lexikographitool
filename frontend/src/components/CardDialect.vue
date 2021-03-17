@@ -2,11 +2,12 @@
   <div>
     <v-hover v-slot="{ hover }">
       <v-card
-        :elevation="hover ? 5 : 2"
+        :elevation="hover ? 5 : 0"
         outlined
         :to="'/lexeme/' + card.id"
         :color="color + ' lighten-4'"
         class="transition-swing"
+
       >
         <v-card-text class="text-body-2">
           <span>{{ card.word }}</span>
@@ -34,7 +35,7 @@
 
 
           <p v-if="!!card.categories && card.categories.length">
-            Aussprache:
+            Kategorie:
             <span v-for="(category, index) in card.categories" :key="index">
               {{ category.category }},
             </span>
@@ -48,7 +49,7 @@
           </p>
 
           <p v-if="!!card.etymologies && card.etymologies.length">
-            Aussprache:
+            Etymologie:
             <span v-for="(etymology, index) in card.etymologies" :key="index">
               {{ etymology.etymology }},
             </span>

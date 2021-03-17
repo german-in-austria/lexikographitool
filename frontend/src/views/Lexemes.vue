@@ -87,14 +87,24 @@ export default {
       { text: "", value: "addToCollection" },
     ],
     scroller: {},
+    timeout:null,
   }),
   mounted() {
     this.loadFromApi();
   },
   watch: {
     search() {
-      this.page = 1;
-      this.loadFromApi();
+
+      clearTimeout(this.timeout);
+
+      let self = this;
+      this.timeout = setTimeout(function () {
+        // enter this block of code after 1 second
+        // handle stuff, call search API etc.
+        self.page = 1;
+        self.loadFromApi();
+      }, 500);
+
     },
   },
   methods: {

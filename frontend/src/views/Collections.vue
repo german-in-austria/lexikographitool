@@ -67,6 +67,7 @@ export default {
     pub: false,
     tab: null,
     next: null,
+    timeout:null,
   }),
   mounted() {
     Axios.get("/collections/?public=False").then((response) => {
@@ -79,7 +80,14 @@ export default {
       this.loadCollections();
     },
     search() {
-      this.loadCollections();
+
+      clearTimeout(this.timeout);
+
+      let self = this;
+      this.timeout = setTimeout(function () {
+
+        self.loadCollections();
+      }, 500);
     },
   },
   methods: {

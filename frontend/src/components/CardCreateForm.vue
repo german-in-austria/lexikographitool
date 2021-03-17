@@ -3,121 +3,152 @@
     <v-row no-gutters>
       <v-col cols="12">
         <v-text-field
-          v-model="lexeme.dialectWord"
-          label="Lemma"
-          :rules="[(v) => !!v || 'Lemma muss angegeben werde']"
-          required
+            v-model="lexeme.dialectWord"
+            label="Lemma*"
+            :rules="[(v) => !!v || 'Lemma muss angegeben werde']"
+            required
         >
           <template v-slot:prepend
-            ><input-tool-tip
-              tip="Das Stichwort / spannende Wort, das du angeben möchtest."
+          >
+            <input-tool-tip
+                tip="Das Stichwort / spannende Wort, das du angeben möchtest."
             ></input-tool-tip
-          ></template>
+            >
+          </template>
         </v-text-field>
       </v-col>
       <v-col cols="12">
         <input-lemma-box
-          label="standarddeutsche Entsprechung (wenn vorhanden)"
-          v-model="lexeme.word"
-          type="lexeme"
+            label="standarddeutsche Entsprechung (wenn vorhanden)"
+            v-model="lexeme.word"
+            type="lexeme"
         >
           <template v-slot:prepend
-            ><input-tool-tip
-              tip='Wenn möglich, schreibe hier ein standarddeutsches (="hochdeutsches") Wort ein, dass deinem Wort entspricht, du kannst auch mehrere Wörter einfügen.'
+          >
+            <input-tool-tip
+                tip='Wenn möglich, schreibe hier ein standarddeutsches (="hochdeutsches") Wort ein, dass deinem Wort entspricht, du kannst auch mehrere Wörter einfügen.'
             ></input-tool-tip
-          ></template>
+            >
+          </template>
         </input-lemma-box>
       </v-col>
       <v-col cols="12">
         <v-text-field
-          v-model="lexeme.description"
-          label="Bedeutungserklärung"
-          required
+            v-model="lexeme.description"
+            label="Bedeutungserklärung"
+            required
         >
           <template v-slot:prepend
-            ><input-tool-tip
-              tip="Hier kannst du eine ider mehrere Bedeutungen des Wortes angeben, versuche dabei so genau wie möglich zu sein. Die erste Beudeutung sollte die Hauptbedeutung sein."
+          >
+            <input-tool-tip
+                tip="Hier kannst du eine ider mehrere Bedeutungen des Wortes angeben, versuche dabei so genau wie möglich zu sein. Die erste Beudeutung sollte die Hauptbedeutung sein."
             ></input-tool-tip
-          ></template>
+            >
+          </template>
         </v-text-field>
       </v-col>
 
       <v-col cols="12">
         <input-multiple label="Beispiele" v-model="lexeme.examples">
           <template v-slot:prepend
-            ><input-tool-tip
-              tip="Hier kannst du Beispiele angeben, wie das Wort verwendet wird, am besten in einem Satz."
+          >
+            <input-tool-tip
+                tip="Hier kannst du Beispiele angeben, wie das Wort verwendet wird, am besten in einem Satz."
             ></input-tool-tip
-          ></template>
+            >
+          </template>
         </input-multiple>
       </v-col>
 
-      <v-col cols="12">
+      <v-col cols="12" v-if="!easy">
         <input-multiple
-          label="Aussprache (IPA)"
-          v-model="lexeme.pronunciations"
+            label="Aussprache (IPA)"
+            v-model="lexeme.pronunciations"
         >
           <template v-slot:prepend
-            ><input-tool-tip
-              tip="Aussprache verschriftlicht nach Internationalem Phonetischem Alphabet (IPA)"
+          >
+            <input-tool-tip
+                tip="Aussprache verschriftlicht nach Internationalem Phonetischem Alphabet (IPA)"
             ></input-tool-tip
-          ></template>
+            >
+          </template>
         </input-multiple>
       </v-col>
 
-      <v-col cols="12">
+      <v-col cols="12" v-if="!easy & !medium">
         <input-multiple label="Etymologie" v-model="lexeme.etymologies">
           <template v-slot:prepend
-            ><input-tool-tip
-              tip="Hier kannst du die Herkunft des Wortes beschreiben, wenn du sie weißt."
+          >
+            <input-tool-tip
+                tip="Hier kannst du die Herkunft des Wortes beschreiben, wenn du sie weißt."
             ></input-tool-tip
-          ></template>
+            >
+          </template>
         </input-multiple>
       </v-col>
       <v-col cols="12">
         <input-button-group
-          v-model="lexeme.kind"
-          :items="kindItems"
+            v-model="lexeme.kind"
+            :items="kindItems"
         ></input-button-group>
       </v-col>
 
       <v-col cols="12">
         <v-combobox
-          label="Kategorie"
-          v-model="lexeme.categories"
-          :return-object="false"
-          append-icon=""
-          item-text="category"
-          :items="category_list"
-          multiple
+            label="Kategorie"
+            v-model="lexeme.categories"
+            :return-object="false"
+            append-icon=""
+            item-text="category"
+            :items="category_list"
+            multiple
         ></v-combobox>
       </v-col>
       <v-col cols="12">
         <input-lemma-box
-          label="Sprechweise / Varietät"
-          v-model="lexeme.dialect"
-          type="dialect"
+            label="Sprechweise / Varietät"
+            v-model="lexeme.dialect"
+            type="variety"
         >
           <template v-slot:prepend
-            ><input-tool-tip
-              tip='Unter "Varietät" verstehen wir verschiedene Formen ein und derselben Sprache, z.B. kann das ein bestimmert Dialekt (z.B.: Vorarlbergerisch) oder eine Jugensprache ( Wiener Jugendsprache) oder eine Fachsprache (Handwerk, Landwirtschaft, Biologie) sein. Ihr wisst selbst am besten, welcher Sprechweise ihr welches WOrt zuprdnen würdet! '
+          >
+            <input-tool-tip
+                tip='Unter "Varietät" verstehen wir verschiedene Formen ein und derselben Sprache, z.B. kann das ein bestimmert Dialekt (z.B.: Vorarlbergerisch) oder eine Jugensprache ( Wiener Jugendsprache) oder eine Fachsprache (Handwerk, Landwirtschaft, Biologie) sein. Ihr wisst selbst am besten, welcher Sprechweise ihr welches WOrt zuprdnen würdet! '
             ></input-tool-tip
-          ></template>
+            >
+          </template>
         </input-lemma-box>
       </v-col>
       <v-col cols="12">
         <input-location :loadHome="true" v-model="lexeme.location">
           <template v-slot:prepend
-            ><input-tool-tip
-              tip="Ort an dem das Wort verwendet wird, du kannst einzelne Orte angeben oder ganze Regionen."
+          >
+            <input-tool-tip
+                tip="Ort an dem das Wort verwendet wird, du kannst einzelne Orte angeben oder ganze Regionen."
             ></input-tool-tip
-          ></template>
+            >
+          </template>
         </input-location>
+      </v-col>
+      <v-col cols="12">
+        <v-textarea
+            v-model="lexeme.source"
+            label="Quelle"
+            single-line
+        >
+          <template  v-slot:prepend
+          >
+            <input-tool-tip
+                tip="Füge hier die Quellen an, aus denen du deine Informationen bezogen hast"
+            ></input-tool-tip
+            >
+          </template>
+        </v-textarea>
       </v-col>
       <v-col>
         <v-checkbox
-          v-model="lexeme.sensitive"
-          label="ACHTUNG: Dieses Wort hat einen vulgären Inhalt oder kann als beleidigend empfunden werden!"
+            v-model="lexeme.sensitive"
+            label="ACHTUNG: Dieses Wort hat einen vulgären Inhalt oder kann als beleidigend empfunden werden!"
         ></v-checkbox>
       </v-col>
     </v-row>
@@ -133,7 +164,7 @@ import InputToolTip from "./InputToolTip.vue";
 import Axios from "axios";
 
 export default {
-  props: ["lexeme"],
+  props: ["lexeme", 'medium', 'easy'],
   components: {
     InputButtonGroup,
     InputMultiple,
@@ -146,36 +177,51 @@ export default {
     kindItems: [
       {
         id: 1,
-        name: "Substantiv/Nomen",
+        name: "Nomen",
         value: "N",
+        tooltip:'auch Hauptwort oder Substantiv genannt',
       },
       {
         id: 2,
         name: "Verb",
         value: "V",
+        tooltip:'auch Zeitwort oder Tunwort genannt',
+
       },
       {
         id: 3,
         name: "Adjectiv",
         value: "Aj",
+        tooltip:'auch Eigenschafschaftswort genannt',
+
       },
       {
         id: 4,
         name: "Adverb",
         value: "Av",
+        tooltip:'auch Umstandswort genannt',
+
       },
       {
         id: 5,
+        name: "Interjektion",
+        value: 'I',
+        tooltip:'auch Empfindungs- oder Ausfrufewort genannt',
+
+      },
+      {
+        id: 6,
         name: "Phrase",
         value: "P",
+        tooltip:' auch Redewendung oder Idiom genannt (fest Verbindung mehrerer Wörter, die eine eigene Bedeutung haben)',
       },
     ],
   }),
   mounted() {
     Axios.get("categories/").then(
-      (response) => (this.category_list = response.data)
+        (response) => (this.category_list = response.data)
     );
   },
- 
+
 };
 </script>

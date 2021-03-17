@@ -5,13 +5,24 @@
       color="deep-purple accent-3"
       mandatory
   >
+    <v-tooltip bottom max-width="30vh"  v-for="item in items"
+               :key="item.id">
+
+      <template v-slot:activator="{ on, attrs }">
     <v-btn
-        v-for="item in items"
-        :key="item.id"
+
         :value="item.value"
+
+        v-bind="attrs"
+
+        v-on="on"
     >
       {{item.name}}
+
     </v-btn>
+      </template>
+        {{item.tooltip}}
+  </v-tooltip>
   </v-btn-toggle>
 </template>
 

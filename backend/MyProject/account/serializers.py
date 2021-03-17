@@ -45,7 +45,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
-        fields = ['email', 'username', 'home','age','locations','show_sensitive_words']
+        fields = ['email', 'username', 'home','age','locations','show_sensitive_words', 'is_superuser']
 
 
     def update(self, instance, validated_data):

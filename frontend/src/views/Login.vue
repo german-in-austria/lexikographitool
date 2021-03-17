@@ -13,7 +13,7 @@
       <v-tab-item key="Login">
         <v-card class="px-4">
           <v-card-text>
-            <v-form ref="loginForm" v-model="valid" lazy-validation>
+            <v-form ref="loginForm" @submit="login" v-model="valid" lazy-validation onsubmit="return false">
               <v-row>
                 <v-col cols="12">
                   <v-text-field v-model="loginEmail" :rules="loginEmailRules" label="E-mail"
@@ -29,7 +29,7 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col class="d-flex" cols="12" sm="3" xsm="12" align-end>
-                  <v-btn x-large block :disabled="!valid" color="success" @click="login"> Login</v-btn>
+                  <v-btn x-large block :disabled="!valid" color="success" type="submit"> Login</v-btn>
                 </v-col>
               </v-row>
             </v-form>

@@ -1,5 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics
+from rest_framework import generics, permissions
 from rest_framework import mixins
 from rest_framework import status
 from rest_framework import viewsets
@@ -22,7 +22,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view
 import random
 from django.db.models import Count
-
+from .permissions import IsSuperUser
 from datetime import datetime, timedelta
 
 
@@ -147,7 +147,7 @@ def get_lexeme(request, lexemeId):
         account = request.user
         data=request.data
         data['lexeme']=lexeme.id
-        
+
         serializer = LexemeContentCreateSerializer(data=data)
 
         if serializer.is_valid():
@@ -308,7 +308,7 @@ def create_dialect(request):
 @api_view(['GET'])
 def get_variety_list(request,search):
     if request.method == 'GET':
-        varieties = LexemeContent.objects.filter(variety__icontains=search).values_list('variety').distinct()
+        varieties = LexemeContent.objects.filter(variety__icontains=search).distinct().values_list('variety',flat=True)
         return Response(varieties, status=status.HTTP_200_OK)
 
 # Etymology
@@ -357,7 +357,7 @@ def create_example(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, ])
 def create_category(request, pk):
-    lexeme = Lexeme.objects.get(pk=pk)
+    lexeme = LexemeContent.objects.get(pk=pk)
     category, created = Category.objects.get_or_create(
         category=request.data['category'])
     serializer = CategorySerializer(category)
@@ -419,3 +419,46 @@ def get_locations(request):
             return Response()
     serializers = ZipPlaceSerializer(locations, many=True)
     return Response(serializers.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, ])
+def report_lexeme(request,lexemeId):
+    if request.method == 'POST':
+        try:
+            lexeme = Lexeme.objects.get(id=lexemeId)
+        except Lexeme.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        data = request.data
+        data['lexeme'] = lexeme.id
+        data['content'] = lexeme.content.id
+        data['report_from'] = request.user.id
+        print(data)
+
+        serializer = ReportCreateSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ReportView(ListAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsSuperUser]
+    serializer_class = ReportSerializer
+    pagination_class = MyPagination
+    pagination_class.page_size = 16
+    filter_backends = [filters.OrderingFilter]
+    queryset = Report.objects.all()
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated, ])
+def deactive_report(request,reportId):
+    if request.method == 'PUT':
+        try:
+            report = Report.objects.get(id=reportId)
+        except Report.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        report.active= False
+        report.save()
+        return Response()
