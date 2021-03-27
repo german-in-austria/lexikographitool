@@ -1,67 +1,93 @@
 <template>
   <v-container fluid>
-    <v-row no-gutters>
-      <v-col cols="12" lg='8'>
-        <p class="text-h3">Willkommen</p>
-        <v-row no-gutters class="pa-5">
-          <p class="text-body-1">
-            Hilf anderen ihre sprachliche Speisekammer aufzufüllen! Befülle die Dialektkarte oder gehe zu 
-            <router-link to="card-create">Wort hinzufügen</router-link> um über noch mehr Einstellmöglichkeiten zu verfügen.
+        <v-row>
+          <p class="text-h3">{{ $t("start.title") }}</p>
+
+          <p>
+            {{ $t("start.introductionText") }}
           </p>
-          <v-col cols="12" sm="6">
-            <card-dialect-prototype ></card-dialect-prototype>
+        </v-row>
+        <v-row>
+          <v-col cols="6">
+            <p class="subtitle-1">{{$t("start.popular")}}</p>
+            <v-carousel light v-model="carousel"
+                        cycle
+                        height="400"
+                        hide-delimiter-background
+                        show-arrows-on-hover>
+              <v-carousel-item
+                  v-for="(lexeme) in popular"
+                  :key="lexeme.id"
+
+              >
+                <v-sheet class="pa-15 pt-0">
+                  <card-dialect :card="lexeme"></card-dialect>
+                </v-sheet>
+              </v-carousel-item>
+            </v-carousel>
           </v-col>
-          <v-col cols="12" sm="6" class="pa-5">
-            Klicke direkt auf den Text in der Karte um ihn zu ändern und
-            schreibe dein spannendes Stichwort, das du angeben möchtest, in das
-            große Textfeld. Gib dazu eine Beschreibung dieses Stichwortes an.
-            Und wenn du magst auch noch die Varietät (zum Beispiel
-            'tirolerisch', 'wiener Jugendsprache' oder auch 'Fachsprache' ).
+          <v-col cols="6">
+            <p class="subtitle-1">{{$t("start.discussed")}}</p>
+            <v-carousel light v-model="carousel2"
+                        cycle
+                        height="400"
+                        hide-delimiter-background
+                        show-arrows-on-hover
+                        :interval="7000">
+              <v-carousel-item
+                  v-for="(lexeme) in discussed"
+                  :key="lexeme.id"
+
+              >
+                <v-sheet class="pa-15 pt-0">
+                  <card-dialect :card="lexeme"></card-dialect>
+                </v-sheet>
+              </v-carousel-item>
+            </v-carousel>
           </v-col>
         </v-row>
+        <v-row>
+          <p class="text-h4">{{$t("start.title2")}}</p>
+          <p class="">{{$t("start.chapter2text")}}</p>
+        </v-row>
+        <v-row no-gutters class="pa-5">
+
+          <v-col cols="12" md="6" class="ma-auto">
+            <card-dialect-prototype></card-dialect-prototype>
+          </v-col>
+
+        </v-row>
+
 
         <v-row no no-gutters class="mt-10">
           <v-col cols="12">
-            <p class="text-h5">Fragen?</p>
-            <p class="text-body-1">
-              Hat dich etwas schon immer brennend interressiert? Dann stell der
-              Community deine Frage!
-            </p>
+            <p class="text-h4">{{$t("start.title3")}}</p>
+
+            <i18n path="start.chapter3text" tag="p">
+              <template v-slot:postings>
+                <router-link to="postings">{{ $t('start.postings') }}</router-link>
+              </template>
+            </i18n>
           </v-col>
-          <v-col>
+          <v-col class="ma-auto" cols="12" lg="6">
             <v-textarea
-              label="neue Frage"
-              placeholder="Stelle deine Frage hier!"
-              v-model="postText"
-              outlined
-              rows="3"
-              row-height="25"
-              no-resize
-              append-icon="mdi-send"
-              @click:append="createPost"
-              class="mt-1 mr-5"
-              ref="postText"
-              required
-              :rules="[(v) => !!v || 'Bitte gib einen Text ein']"
+                label="neue Frage"
+                placeholder="Stelle deine Frage hier!"
+                v-model="postText"
+                outlined
+                rows="3"
+                row-height="25"
+                no-resize
+                append-icon="mdi-send"
+                @click:append="createPost"
+                class="mt-1 mr-5"
+                ref="postText"
+                required
+                :rules="[(v) => !!v || 'Bitte gib einen Text ein']"
+
             ></v-textarea>
           </v-col>
         </v-row>
-      </v-col>
-      <v-divider vertical></v-divider>
-      <v-col cols="12" lg="3" >
-        <p class="text-h5">Entdecke neue Wörter</p>
-
-        <v-col cols="12">
-          <p class="text-body-1">Lieblingswort</p>
-          <card-dialect class="mx-5" :card="popular"></card-dialect>
-        </v-col>
-        <v-col cols="12">
-          <p class="text-body-1">Heiß Diskutiert</p>
-          <card-dialect class="mx-5" :card="discussed"></card-dialect>
-        </v-col>
-        <v-col> </v-col>
-      </v-col>
-    </v-row>
   </v-container>
 </template>
 <script>
@@ -69,22 +95,25 @@ import RequestHandler from "@/utils/RequestHandler";
 import CardDialect from "../components/CardDialect.vue";
 import CardDialectPrototype from "../components/CardDialectPrototype.vue";
 import axios from 'axios'
+
 export default {
-  components: { CardDialect, CardDialectPrototype },
+  components: {CardDialect, CardDialectPrototype},
   data: () => ({
     cards: [],
-    cardActive:false,
-    popular: { examples: [] },
-    discussed: { examples: [] },
-    random: { examples: [] },
+    cardActive: false,
+    popular: [],
+    discussed: [],
+    random: {examples: []},
     postText: "",
+    carousel: null,
+    carousel2: null,
   }),
   mounted() {
     RequestHandler.getLexemesRandom().then((response) => {
       this.cards = response.data;
     });
-    axios.get('lexemes/popular/').then(response=>this.popular=response.data)
-    axios.get('lexemes/discussed/').then(response=>this.discussed=response.data)
+    axios.get('lexemes/popular/').then(response => this.popular = response.data)
+    axios.get('lexemes/discussed/').then(response => this.discussed = response.data)
   },
   methods: {
     createPost() {

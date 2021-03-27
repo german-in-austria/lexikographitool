@@ -8,10 +8,9 @@
           Wort bearbeiten
         </v-btn>
       </template>
-      <v-card :color="color + ' lighten-4'">
-        <v-card-title class="headline">
+      <v-card >
+        <v-card-title :class="color + ' lighten-4 headline' ">
           Wort bearbeiten
-          <v-spacer></v-spacer>
         </v-card-title>
 
         <v-divider></v-divider>
@@ -59,9 +58,10 @@ export default {
       examples: [{value: ""}],
       pronunciations: [{value: ""}],
       etymologies: [{value: ""}],
-      kind: "N",
+      kind: null,
+      genus: null,
       location: {id: -1, zipcode: null, place: null},
-      categories: [],
+      categories: {value:[]},
       sensitive: false,
       source: '',
     },
@@ -73,7 +73,9 @@ export default {
       this.lex.description = this.lexeme.description;
       this.lex.variety = this.lexeme.veriety;
       this.lex.kind = this.lexeme.kind;
+      this.lex.genus = this.lexeme.genus;
       this.lex.source = this.lexeme.source;
+      this.lex.categories = {value: this.lexeme.categories}
       this.lex.examples = this.lexeme.examples.map((item) => {
         return {value: item.example};
       });
@@ -83,9 +85,7 @@ export default {
       this.lex.etymologies = this.lexeme.etymologies.map((item) => {
         return {value: item.etymology};
       });
-      this.lex.categories = this.lexeme.categories.map((item) => {
-        return item.category;
-      });
+
       this.lex.sensitive = this.lexeme.sensitive;
     },
   },
@@ -125,6 +125,7 @@ export default {
           this.lex.sensitive,
           this.lex.variety,
           this.lex.source,
+          this.lex.genus,
       );
       Axios.put('lexeme/' + this.lexeme.id + '/', lexeme)
           .then((response) => {
@@ -132,7 +133,7 @@ export default {
             requestHandler.postEtymologies(this.lex.etymologies, lexemeId);
             requestHandler.postExamples(this.lex.examples, lexemeId);
             requestHandler.postPronunciations(this.lex.pronunciations, lexemeId);
-            requestHandler.addCategoriesWithLexeme(this.lex.categories, lexemeId);
+            requestHandler.addCategoriesWithLexeme(this.lex.categories.value, lexemeId);
 
             this.snackbarSuccessful = true;
             this.updateParent()
@@ -145,6 +146,7 @@ export default {
       this.lex.description = this.lexeme.description;
       this.lexeme.veriety = this.lex.variety;
       this.lexeme.kind = this.lex.kind;
+      this.lexeme.genus = this.lex.genus;
       this.lexeme.source = this.lex.source;
       this.lexeme.examples = this.lex.examples.map((item) => {
         return {example: item.value};
@@ -155,9 +157,7 @@ export default {
       this.lexeme.etymologies = this.lex.etymologies.map((item) => {
         return {etymology: item.value};
       });
-      this.lexeme.categories = this.lex.categories.map((item) => {
-        return {category: item};
-      });
+      this.lexeme.categories = this.lex.categories.value;
       this.lexeme.sensitive = this.lex.sensitive;
     }
   },

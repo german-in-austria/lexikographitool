@@ -2,17 +2,22 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" max-width="40rem" scrollable>
       <template v-slot:activator="{ on, attrs }">
-        <v-btn v-bind="attrs" v-on.native.stop="on" text
-        >Wort melden
-        </v-btn>
+        <slot name="activator">
+          <v-btn v-if="button" v-bind="attrs" v-on.native.stop="on" text
+          >{{ $t("reportDialog.report") }}
+          </v-btn>
+          <span v-else v-bind="attrs" v-on.native.stop="on" text
+          >{{ $t("reportDialog.report") }}
+          </span>
+        </slot>
       </template>
       <v-card>
-        <v-card-title>Wort melden</v-card-title>
+        <v-card-title>{{ $t("reportDialog.title") }}</v-card-title>
         <v-card-text>
-          <v-textarea  v-model="reportMessage" required label="Bitte gib hier eine Begründung an, warum du das wort melden möchtest" ></v-textarea>
+          <v-textarea v-model="reportMessage" required :label='$t("reportDialog.subtitle")'></v-textarea>
         </v-card-text>
         <v-card-actions>
-        <v-btn @click="report">Wort melden</v-btn>
+          <v-btn @click="report">{{ $t("reportDialog.report") }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -23,20 +28,29 @@
 import Axios from "axios";
 
 export default {
-name: "ReportDialog",
-  props:['lexeme'],
-  data: ()=>({
-    dialog:false,
-    reportMessage:'',
+  name: "ReportDialog",
+  props: {
+    item: Object,
+    button: Boolean,
+    kind: {
+      type: String,
+      validator: (val) => ['lexeme', 'post'].includes(val)
+    }
+  },
+  data: () => ({
+    dialog: false,
+    reportMessage: '',
   }),
-  methods:{
-  report(){
-    Axios.post('report/' + this.lexeme.id + '/',{message:this.reportMessage}).then(()=>{
-      this.dialog = false;
-      this.reportMessage = '';
-    })
-  }
-  }
+  methods:
+      {
+        report() {
+          console.log(this.kind)
+          Axios.post('report/' + this.kind + '/' + this.item.id + '/', {message: this.reportMessage}).then(() => {
+            this.dialog = false;
+            this.reportMessage = '';
+          })
+        }
+      }
 }
 </script>
 

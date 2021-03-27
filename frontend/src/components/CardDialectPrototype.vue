@@ -47,13 +47,11 @@
 
       </v-card-text>
       <v-card-actions>
-        <v-btn icon>
           <v-icon>mdi-thumb-up-outline</v-icon>
-        </v-btn>
+
         <v-spacer></v-spacer>
-        <v-btn icon>
           <v-icon>mdi-heart-outline</v-icon>
-        </v-btn>
+
         <v-fab-transition>
         <v-btn v-if="isActive && !!this.dialectWord && !!this.description"  color="primary" dark absolute bottom right fab @click="save">
           <v-icon>mdi-content-save</v-icon>

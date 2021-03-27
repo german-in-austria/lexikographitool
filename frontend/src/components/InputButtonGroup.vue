@@ -1,15 +1,16 @@
 <template>
   <v-btn-toggle
+      borderless
       v-bind:value="value"
       @change="$emit('input',$event)"
-      color="deep-purple accent-3"
-      mandatory
+      dense
   >
     <v-tooltip bottom max-width="30vh"  v-for="item in items"
                :key="item.id">
 
       <template v-slot:activator="{ on, attrs }">
     <v-btn
+
 
         :value="item.value"
 

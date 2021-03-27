@@ -1,15 +1,16 @@
 <template>
   <v-container fluid>
-    <p class="text-h3">Wort hinzufügen</p>
+    <p class="text-h3">{{ $t("card_create.title") }}</p>
     <v-tabs
         v-model="tab"
         align-with-title
     >
+
       <v-tabs-slider color="yellow"></v-tabs-slider>
 
-      <v-tab>Anfänger*in</v-tab>
-      <v-tab>Sammler*in</v-tab>
-      <v-tab>Lexikograph*in</v-tab>
+      <v-tab>{{ $t("card_create.tab_title1") }}</v-tab>
+      <v-tab>{{ $t("card_create.tab_title2") }}</v-tab>
+      <v-tab>{{ $t("card_create.tab_title3") }}</v-tab>
     </v-tabs>
     <v-tabs-items v-model="tab">
       <v-tab-item>
@@ -25,23 +26,39 @@
 
       </v-tab-item>
     </v-tabs-items>
-    <v-btn @click="createNewLexeme">erstellen</v-btn>
+    <v-row no-gutters class="ma-3 create-section">
+      <v-col cols="12">
+        <CardCreateAddCollection :model="collections"></CardCreateAddCollection>
+      </v-col>
+
+    </v-row>
+    <v-col>
+      <v-btn color="primary" @click="createNewLexeme('leave')">{{ $t("card_create.createButton1") }}</v-btn>
+
+    </v-col>
+<!--    <v-btn @click="createNewLexeme('reset')">{{ $t("card_create.createButton2") }}</v-btn>-->
+<!--    <v-btn @click="createNewLexeme('addMeaning')">{{ $t("card_create.createButton3") }}</v-btn>-->
+    <v-expand-transition>
     <v-snackbar
+        multi-line
+        min-height="500"
+        min-width="500"
         v-model="snackbarSuccessful"
         :timeout="2000"
         color="success"
-        centered
-        height="500"
+        style="margin-top: 100px;"
+        top
     >
-      Wort hinzugefügt!
+      {{ $t("card_create.successMessage") }}
     </v-snackbar>
+    </v-expand-transition>
     <v-snackbar
         v-model="snackbarFailure"
         :timeout="2000"
         color="error"
         top
     >
-      Hoppla! Ein fehler ist aufgetreten.
+      {{ $t("card_create.failureMessage") }}
     </v-snackbar>
   </v-container>
 </template>
@@ -53,10 +70,13 @@ import requestHandler from "@/utils/RequestHandler";
 import Lexeme from "@/objects/Lexeme";
 import RequestHandler from "@/utils/RequestHandler";
 import CardCreateForm from "@/components/CardCreateForm";
+import CardCreateAddCollection from "@/components/CardCreateAddCollection";
+import axios from "axios";
 
 export default {
   name: "CardCreate",
   components: {
+    CardCreateAddCollection,
     CardCreateForm
   },
   data: () => ({
@@ -68,22 +88,21 @@ export default {
       examples: [{value: ""}],
       pronunciations: [{value: ""}],
       etymologies: [{value: ""}],
-      kind: "N",
+      kind: null,
       location: {id: -1, zipcode: null, place: null},
-      categories: [],
+      categories: {value: []},
       sensitive: false,
-      source:'',
+      genus: null,
+      source: '',
     },
     snackbarSuccessful: false,
     snackbarFailure: false,
     valid: false,
     tab: null,
-
+    collections: {value: []}
   }),
   methods: {
-    async createNewLexeme() {
-      // var categories = [];
-      // this.categories.forEach((item) => categories.push(new Category(item)));
+    async createNewLexeme(finishedOption) {
       let lexeme = new Lexeme(
           this.lex.word,
           this.lex.description,
@@ -93,21 +112,11 @@ export default {
           this.lex.sensitive,
           this.lex.variety,
           this.lex.source,
+          this.lex.genus,
       );
 
       lexeme = await requestHandler.postLexeme(lexeme);
-      console.log('1')
-      console.log(this.lex.etymologies)
-      console.log('1')
 
-      console.log(this.lex.examples)
-      console.log('1')
-
-      console.log(this.lex.pronunciations)
-      console.log('1')
-
-      console.log(this.lex.categories)
-      console.log('1')
 
       requestHandler.postEtymologies(this.lex.etymologies.filter(value => {
         return !!value.value
@@ -118,19 +127,37 @@ export default {
       requestHandler.postPronunciations(this.lex.pronunciations.filter(value => {
         return !!value.value
       }), lexeme.data.id)
-      requestHandler.addCategoriesWithLexeme(this.lex.categories, lexeme.data.id)
+      requestHandler.addCategoriesWithLexeme(this.lex.categories.value, lexeme.data.id)
       this.snackbarSuccessful = true;
-      this.resetForm();
+
+
+      //add to collections
+
+
+      this.addToCollection(lexeme.data.lexeme)
+      if (finishedOption == 'leave')
+        this.$router.push('/lexeme/' + lexeme.data.lexeme)
+      else if (finishedOption == 'reset')
+        this.resetForm();
+      else if (finishedOption == 'addMeaning')
+        this.resetPartForm();
     },
     submit() {
       if (this.$refs.form_normal.validate()) {
         this.createNewLexeme();
       }
     },
-    submit_simple() {
-      if (this.$refs.form_simple.validate()) {
-        this.createNewLexeme();
-      }
+    addToCollection(lexemeId) {
+      this.collections.value.forEach((item) => {
+        //check if collection needs to be created
+        if (!item.id) {
+          axios.post('collection/', {name: item.name}).then(response => {
+            axios.put('collection/' + response.data.id + '/' + lexemeId + '/')
+          })
+        } else {
+          axios.put('collection/' + item.id + '/' + lexemeId + '/')
+        }
+      })
     },
     resetForm() {
       this.lex.dialectWord = ''
@@ -143,6 +170,19 @@ export default {
       this.lex.kind = 'N'
       this.lex.categories = []
       this.lex.sensitive = false
+      this.lex.source = false
+
+    },
+    resetPartForm() {
+      this.lex.variety = ''
+      this.lex.lexeme = ''
+      this.lex.description = ''
+      this.lex.examples = []
+      this.lex.pronunciations = []
+      this.lex.etymologies = []
+      this.lex.categories = []
+      this.lex.source = false
+
     },
   },
   mounted() {
@@ -155,5 +195,13 @@ export default {
 <style scoped>
 .v-text-field.v-text-field--solo .v-input__control {
   min-height: 56px;
+}
+
+.create-section {
+  padding: 20px;
+  border-radius: 20px;
+  border-color: lightgray;
+  margin-top: 10px;
+  background-color: rgb(0, 0, 0, 0.05);
 }
 </style>

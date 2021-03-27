@@ -1,0 +1,137 @@
+{
+  "start": {
+    "title": "Willkommen",
+    "introductionText":  "Willkommen bei Worgut! Auf dieser Seite des Citizen Science Projekt IamDiÖ kannst du Wörter und Informationen zu ihnen, wie Bedeutung, wie sie verwendet werden und weiteres eintragen aber auch suchen. Du kannst die Wörter in Sammlungen zusammenstellen und somit dein eigenes digitales \"Wörterbuch\" erstellen - alleine oder mit anderen. Alle können hier zum/r Lexikographen/in werden.",
+    "popular": "beliebt",
+    "discussed": "heiß diskutiert",
+    "title2": "Leg gleich los!",
+    "chapter2text":  "Der erste Schritt ist es immer ein Wort zu sammeln - du kannst hier alle möglichen Wörter sammeln, die dir einfallen. Zum Beispiel aus einem bestimmten Dialekt, aus einer Jugendsprache, einer Fachsprache, Wörter die üblicherweise in deiner Gegend verwendet werden - jedes Wort ist ein gutes Wort und kann zu einem Teil unserer Wortgutsammlung werden. Starte mit deinem ersten Wort:",
+    "title3": "Was wolltest du schon immer wissen?",
+    "chapter3text":  "Hast du vielleicht ein Wort gehört und kennst dessen Bedeutung nicht? Dann frag einfach unsere Community. Oder schau bei {postings} vorbei, welche offenen Fragen es gibt - vielleicht kannst du ja anderen dabei helfen, der Bedeutung, Verwendung oder Herkunft eines Worts auf die schliche zu kommen. Wortgut versammelt Interessenten/innen von überall Citizen Scientists sowie ausgebildete Lexikograph:innen",
+    "postings" : "Fragen"
+  },
+  "collections": {
+    "title": "Sammlungen",
+    "desciption":  "Hier kannst du Sammlungen erstellen um verschiedenste Wörter zu sammeln und zu orden. Schau auch nach welche interessanten Sammlungen andere Mietglieder bereits erstellt und öffentlich gemacht haben",
+    "myCollections": "meine Sammlungen",
+    "publicCollections": "alle Sammlungen"
+  },
+  "groups": {
+    "title": "Gruppen",
+    "desciption":  "Hier kannst du deine Gruppen managen.",
+    "myCollections": "meine Gruppen",
+    "publicCollections": "alle Gruppen"
+  },
+  "collectionDetail": {
+    "collectionEmpty": "Diese Sammlung ist leer. Fülle sie mit deinen Lieblingswörtern!"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "myWords": "Meine Wörter",
+    "myCollections": "Meine Sammlungen",
+    "discover": "Entdecke neue Wörter",
+    "posts": "Fragen"
+  },
+  "card_create": {
+    "title": "Wort hinzufügen",
+    "tab_title1": "Anfänger*in",
+    "tab_title2": "Sammler*in",
+    "tab_title3": "Lexikograph*in",
+    "createButton1": "Wort erstellen",
+    "createButton2": "Wort erstellen und nächstes Wort hinzufügen",
+    "createButton3": "Wort erstellen und weitere Bedeutung hinzufügen",
+    "successMessage": "Wort wurde hinzugefügt!",
+    "failureMessage": "Hoppla! Ein Fehler ist aufgetreten.",
+    "chooseCollection": "Suche die Sammlungen aus zu denen du das Wort hinzufügen möchtest oder erstelle eine neue.",
+    "createCollection": "Erstelle Sammlung: ",
+    "chooseCategory": "Suche oder erstelle eine oder mehrere Kategorien für dein Wort",
+    "createCategory": "Erstelle eine Kategorie: "
+  },
+  "postings": {
+    "title": "Fragen",
+    "delete": "löschen",
+    "edit": "bearbeiten",
+    "report": "melden",
+    "commentTitle": "Kommentieren",
+    "noCommentMessage": "Noch niemand hat hier etwas kommentiert.<br> Kannst du <span class=\"font-weight-bold\"> {user} </span> weiterhelfen?"
+  },
+  "reportDialog": {
+    "title": "Melden",
+    "subtitle": "Weshalb möchtest du den Beitrag melden?",
+    "report": "melden"
+  },
+  "reports": {
+    "title": "Meldungen",
+    "tabTitle1": "Wörter",
+    "tabTitle2": "Fragen",
+    "word": "Wort",
+    "reportedFrom": "gemeldet von",
+    "reportetAt": "gemeldet am",
+    "message": "Nachricht",
+    "edit": "bearbeiten",
+    "post": "Frage",
+    "author": "Benutzer"
+  },
+  "footer": {
+    "imprint": "Impressum",
+    "dataProtection": "Datenschutz",
+    "followUs": "Folgt uns"
+  },
+  "imprint": {
+    "title": "Impressum",
+    "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+  },
+  "dataProtection": {
+    "title": "Datenschutz",
+    "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+  },
+  "createWord": {
+    "lemma": "Lemma",
+    "lemmaToolTip": "Das Stichwort / spannende Wort, das du angeben möchtest.",
+    "pronunciation": "Aussprache (IPA)",
+    "pronunciationToolTip": "Aussprache verschriftlicht nach Internationalem Phonetischem Alphabet (IPA)",
+    "lexeme": "standarddeutsche Entsprechung (wenn vorhanden)",
+    "lexemeToolTip": "Wenn möglich, schreibe hier ein standarddeutsches (=\"hochdeutsches\") Wort ein, das deinem Wort entspricht.",
+    "description": "Bedeutungserklärung",
+    "descriptionToolTip": "Hier kannst du eine oder mehrere Bedeutungen des Wortes angeben, versuche dabei so genau wie möglich zu sein. Die erste Beudeutung sollte die Hauptbedeutung sein.",
+    "example": "Beispiele",
+    "exampleToolTip": "Hier kannst du Beispiele angeben, wie das Wort verwendet wird, am besten in einem Satz.",
+    "etymology": "Etymologie",
+    "etymologyToolTip": "Hier kannst du die Herkunft des Wortes beschreiben, wenn du sie weißt.",
+    "category": "Kategorie",
+    "categoryToolTip": "",
+    "variety": "Sprechweise / Varietät",
+    "varietyToolTip": "Unter \"Varietät\" verstehen wir verschiedene Formen ein und derselben Sprache, z.B. kann das ein bestimmert Dialekt (z.B.: Vorarlbergerisch) oder eine Jugensprache ( Wiener Jugendsprache) oder eine Fachsprache (Handwerk, Landwirtschaft, Biologie) sein. Ihr wisst selbst am besten, welcher Sprechweise ihr welches Wort zuprdnen würdet! ",
+    "locationToolTip": "Ort an dem das Wort verwendet wird, du kannst einzelne Orte angeben oder ganze Regionen.",
+    "source": "Quelle",
+    "sourceToolTip": "Füge hier die Quellen an, aus denen du deine Informationen bezogen hast.",
+    "sensitive": "ACHTUNG: Dieses Wort hat einen vulgären Inhalt oder kann als beleidigend empfunden werden!",
+    "noun": "Nomen",
+    "nounTooltip": "auch Hauptwort oder Substantiv genannt",
+    "verb": "Verb",
+    "verbTooltip": "auch Zeitwort oder Tunwort genannt",
+    "adjective": "Adjektiv",
+    "adjectiveTooltip": "auch Eigenschafschaftswort genannt",
+    "adverb": "Adverb",
+    "adverbTooltip": "auch Umstandswort genannt",
+    "interjection": "Interjektion",
+    "interjectionTooltip": "auch Empfindungs- oder Ausfrufewort genannt",
+    "phrase": "Phrase",
+    "phraseTooltip": "auch Redewendung oder Idiom genannt (fest Verbindung mehrerer Wörter, die eine eigene Bedeutung haben)",
+    "female": "Weiblich",
+    "femaleToolTip": "",
+    "male": "Männlich",
+    "maleToolTip": "",
+    "neuter": "Sächlich",
+    "neuterToolTip": ""
+  },
+  "general": {
+    "search": "Suche",
+    "public": "öffentlich",
+    "password": "Passwort"
+  },
+  "joinGroup":{
+    "text": "Möchtest du der Gruppe '{group}' beitreten?",
+    "passwdRequired": "Um dieser Gruppe beizutreten wird ein passwort benötigt"
+  }
+}

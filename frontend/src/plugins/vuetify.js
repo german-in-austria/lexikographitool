@@ -1,12 +1,13 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify'
-import 'vuetify/dist/vuetify.min.css'
+
+// import 'vuetify/dist/vuetify.min.css'
 import '@mdi/font/css/materialdesignicons.css'
+import "@/sass/variables.scss"
 
 import colors from 'vuetify/lib/util/colors'
 
 Vue.use(Vuetify)
-
 
 
 const vuetify = new Vuetify({
@@ -17,13 +18,13 @@ const vuetify = new Vuetify({
                 secondary: colors.lime,
                 accent: colors.shades.black,
                 error: colors.red.accent3,
-                card1:colors.red,
-                card2:colors.yellow,
-                card3:colors.orange,
-                card4:colors.green,
-                card5:colors.pink,
-                card6:colors.cyan,
-                card7:colors.blue,
+                card1: colors.red,
+                card2: colors.yellow,
+                card3: colors.orange,
+                card4: colors.green,
+                card5: colors.pink,
+                card6: colors.cyan,
+                card7: colors.blue,
             },
             dark: {
                 primary: colors.blue.lighten3,

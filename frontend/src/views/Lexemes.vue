@@ -18,7 +18,7 @@
           cols="12"
           sd="6"
           md="6"
-          lg="3"
+          lg="4"
           v-for="(item, index) in items"
           :key="index"
         >
@@ -123,10 +123,12 @@ export default {
     onScroll(e) {
       console.log(e.target.scrollingElement.clientHeight);
       if (
-        e.target.scrollingElement.scrollTop ===
+        e.target.scrollingElement.scrollTop + 400 >
           e.target.scrollingElement.scrollTopMax &&
         !!this.next
       ) {
+
+        this.next = null
         this.page += 1;
         axios
           .get("/lexemes/?page=" + this.page + "&" + this.search)

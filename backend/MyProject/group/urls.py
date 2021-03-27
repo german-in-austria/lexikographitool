@@ -16,6 +16,6 @@ urlpatterns = [
     path('group/leave/<int:groupId>/', leave_group, name='leaveGroup'),
 
     path('invite/<int:groupId>/', get_invite_link, name='getInviteLink'),
-    path('join/<int:groupId>/<str:hash>/', join_group, name='joinGroup'),
+    path('join/<int:groupId>/', join_group, name='joinGroup'),
     path('groupname/<int:groupId>/', get_group_name_by_id, name='getNameByInvite'), 
 ]

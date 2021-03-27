@@ -6,16 +6,25 @@
         class="text-fields-row"
     >
       <v-text-field
+          solo
+
+          flat
           :label="label"
           v-model="item.value"
           @input="$emit('input',items)"
-          :append-icon="i ===items.length-1 ? 'mdi-plus':undefined"
-          :append-outer-icon="'mdi-delete-outline'"
-          @click:append-outer="remove(i)"
-          @click:append="addLine"
+
       >
-       <template v-slot:prepend v-if="i==0"><slot name='prepend'></slot></template>
+        <template v-slot:append>
+          <v-fab-transition group>
+          <v-icon key="1" v-if="i == items.length-1 && !!item.value" @click="addLine">mdi-plus</v-icon>
+          <v-icon key=2 v-if="!!item.value || i != 0" @click="remove(i)">mdi-delete</v-icon>
+          </v-fab-transition>
+          <slot name='append'></slot>
+        </template>
+       <template v-slot:append-outer v-if="i==0"></template>
+
       </v-text-field>
+
     </div>
   </div>
 </template>

@@ -1,11 +1,11 @@
 <template>
   <v-row>
-    <v-col cols="auto" class="mt-4">
-      <slot name="prepend" ></slot>
-    </v-col>
+
     <v-col>
-      
+      <v-subheader>Ort</v-subheader>
       <v-autocomplete
+          solo
+          flat
           v-model="value.place"
           :items="items"
           :loading="isLoading"
@@ -24,7 +24,10 @@
       ></v-autocomplete>
     </v-col>
     <v-col>
+      <v-subheader>Plz</v-subheader>
       <v-autocomplete
+          solo
+          flat
           v-model="value.zipcode"
           :items="items"
           :loading="isLoading"
@@ -41,6 +44,9 @@
           :rules="[v => !!v || 'Ort muss angegeben werde']"
           required
       ></v-autocomplete>
+    </v-col>
+    <v-col cols="auto" class="mt-4">
+      <slot name="append" ></slot>
     </v-col>
   </v-row>
 </template>

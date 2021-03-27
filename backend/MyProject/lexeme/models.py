@@ -11,7 +11,14 @@ CHOICE_KIND = (
     ('Aj', 'adjective'),
     ('Av', 'adverb'),
     ('I', 'interjection'),
-    ('P', 'phrase'))
+    ('P', 'phrase')
+)
+
+CHOICE_GENUS = (
+    ('F', 'feminin'),
+    ('M', 'verb'),
+    ('N', 'neuter'),
+)
 
 
 class Address(models.Model):
@@ -45,6 +52,7 @@ class LexemeContent(models.Model):
     variety = models.CharField(max_length=100, null=True, blank=True)
     description = models.CharField(max_length=100, null=True,blank=True)
     kind = models.CharField(max_length=255, choices=CHOICE_KIND,null=True)
+    genus = models.CharField(max_length=255, choices=CHOICE_GENUS,null=True)
     dialectWord = models.CharField(max_length=100)
     origin = models.ForeignKey(Address, related_name='dialectWords', on_delete=models.CASCADE,null=True)
     sensitive = models.BooleanField(default=False)

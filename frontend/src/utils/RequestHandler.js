@@ -60,7 +60,7 @@ let methods = {
     addCategoriesWithLexeme(categories, lexemeId) {
         console.log(categories)
         categories.forEach((item) => {
-            const obj = new Category(item);
+            const obj = new Category(item.category);
             axios.post('category/' + lexemeId + '/', obj).catch(err => {
                 console.log(err)
             })
@@ -138,7 +138,7 @@ let methods = {
     }
     ,
     getPosts() {
-        return axios.get('posts/')
+        return axios.get('posts/?page_size=50')
     }
     ,
     getOwnPosts() {

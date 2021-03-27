@@ -94,7 +94,7 @@ class LexemeDetailSerializer(serializers.ModelSerializer):
 class LexemeContentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = LexemeContent
-        fields = ['id', 'source', 'description', 'kind', 'origin', 'word', 'dialectWord', 'sensitive','lexeme','variety']
+        fields = ['id', 'source', 'description', 'kind', 'origin', 'word', 'dialectWord', 'sensitive','lexeme','variety','genus']
        
 
 class LexemeCreateSerializer(serializers.ModelSerializer):
@@ -123,6 +123,7 @@ class CardSerializer(serializers.ModelSerializer):
     variety = serializers.SerializerMethodField(read_only=True)
     description = serializers.SerializerMethodField(read_only=True)
     kind = serializers.SerializerMethodField(read_only=True)
+    genus = serializers.SerializerMethodField(read_only=True)
     dialectWord = serializers.SerializerMethodField(read_only=True)
     origin = serializers.SerializerMethodField(read_only=True)
     sensitive = serializers.SerializerMethodField(read_only=True)
@@ -159,6 +160,8 @@ class CardSerializer(serializers.ModelSerializer):
         return obj.content.description
     def get_kind(self, obj):
         return obj.content.kind
+    def get_genus(self, obj):
+        return obj.content.genus
     def get_dialectWord(self, obj):
         return obj.content.dialectWord
     def get_sensitive(self, obj):

@@ -156,26 +156,28 @@ def get_invite_link(request, groupId):
 
     key = "secret"
     encoded = jwt.encode({"exp": datetime.datetime.utcnow(
-    ) + datetime.timedelta(days=2), "groupId": groupId}, key, algorithm="HS256")
+    ) + datetime.timedelta(days=2000), "groupId": groupId}, key, algorithm="HS256")
     return Response(encoded)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated, ])
-def join_group(request, groupId, hash):
+def join_group(request, groupId):
     account = request.user
+    print(request.data)
     try:
         group = Group.objects.get(id=groupId)
     except Group.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     try:
-        decoded = jwt.decode(hash, "secret", algorithms=["HS256"])
+        decoded = jwt.decode(request.data['hash'], "secret", algorithms=["HS256"])
     except jwt.ExpiredSignatureError:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-    print(decoded)
-    print(decoded.keys)
+    if group.settings.need_password and group.settings.join_password != request.data['password']:
+        return Response("Wrong password",status=status.HTTP_401_UNAUTHORIZED,)
+
     if 'groupId' in decoded:
         if groupId == decoded['groupId']:
             group.members.add(account)

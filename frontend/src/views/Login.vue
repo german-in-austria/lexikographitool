@@ -46,7 +46,7 @@
                 </v-col>
                 <v-col cols="12">
                   <v-text-field v-model="username" :rules="[rules.required]" label="Benutzername"
-                                required></v-text-field>
+                                required hint="ist öffentlich sichtbar" persistent-hint></v-text-field>
                 </v-col>
                 <v-col cols="12">
                   <input-location v-model="location"></input-location>
@@ -150,6 +150,8 @@ export default {
   methods: {
     validate() {
       if (this.$refs.loginForm.validate()) {
+        //
+        //
         // submit form to server/API here...
       }
     },

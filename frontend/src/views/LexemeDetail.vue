@@ -4,7 +4,7 @@
     <v-row no-gutters>
       <v-col cols="12" lg="">
         <span class="text-h3">{{ lexeme.dialectWord }}</span>
-        <report-dialog :lexeme="lexeme"></report-dialog>
+        <report-dialog :button="true" kind="lexeme" :item="lexeme"></report-dialog>
         <lexeme-edit-dialog
             v-if="lexeme.can_edit"
             style="display: inline-block; float: right" :lexeme='lexeme'></lexeme-edit-dialog>

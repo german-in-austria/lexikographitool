@@ -1,45 +1,46 @@
 <template>
   <v-container fluid v-scroll='onScroll'>
-    <v-row no-gutters>
-      <span class="text-h3">Gruppen</span>
-    </v-row>
+      <p class="text-h4">{{ $t("groups.title") }}</p>
+      <p class="text-body-1">
+        {{ $t("groups.desciption") }}
+      </p>
     <v-row no-gutters class="pt-5">
       <v-text-field
-        v-model="search"
-        label="Suche"
-        single-line
-        clearable
-        flat
-        solo-inverted
-        hide-details
-        prepend-inner-icon="mdi-magnify"
-        class='pr-5'
+          v-model="search"
+          label="Suche"
+          single-line
+          clearable
+          flat
+          solo-inverted
+          hide-details
+          prepend-inner-icon="mdi-magnify"
+          class='pr-5'
       ></v-text-field>
       <v-btn-toggle v-model="pub" mandatory :style="$vuetify.breakpoint.xs ? 'flex-direction: column;' : ''">
-        <v-btn large :value="false"> Meine Gruppen </v-btn>
-        <v-btn large :value="true"> öffentliche Gruppen </v-btn>
+        <v-btn large :value="false"> Meine Gruppen</v-btn>
+        <v-btn large :value="true"> öffentliche Gruppen</v-btn>
       </v-btn-toggle>
 
       <trash-can-dialog :itemList="groups" :group="true"></trash-can-dialog>
     </v-row>
     <v-row no-gutters>
       <v-col cols="12" sd="4" md="3" v-if="!pub" class="pa-3">
-          <group-create-button></group-create-button>
+        <group-create-button></group-create-button>
       </v-col>
       <v-col
-        cols="12"
-        sd="4"
-        md="3"
-        v-for="group in groups"
-        :key="group.id"
-        class="pa-3"
+          cols="12"
+          sd="4"
+          md="3"
+          v-for="group in groups"
+          :key="group.id"
+          class="pa-3"
       >
         <v-hover v-slot="{ hover }">
           <v-card
-            :to="'/groups/' + group.id"
-            :elevation="hover ? 4 : 0"
-            class="mx-auto"
-            outlined
+              :to="'/groups/' + group.id"
+              :elevation="hover ? 4 : 0"
+              class="mx-auto"
+              outlined
           >
             <v-card-title>{{ group.name }}</v-card-title>
             <v-card-text>{{ group.description }}</v-card-text>
@@ -50,7 +51,7 @@
         Keine Treffer
       </p>
     </v-row>
-    
+
   </v-container>
 </template>
 
@@ -60,7 +61,7 @@ import Axios from "axios";
 import GroupCreateButton from '../components/GroupCreateButton.vue';
 
 export default {
-  components: { TrashCanDialog,  GroupCreateButton },
+  components: {TrashCanDialog, GroupCreateButton},
   name: "Group",
   data: () => ({
     groups: [],
@@ -71,14 +72,14 @@ export default {
     groupTitle: "",
     groupDescription: "",
 
-    timeout:null,
+    timeout: null,
   }),
   methods: {
-    
+
     loadGroups() {
       const public_python_param = this.pub ? "True" : "False";
       Axios.get(
-        "groups/public/?page=1&page_size=25&public=" +
+          "groups/public/?page=1&page_size=25&public=" +
           public_python_param +
           "&search=" +
           this.search
@@ -90,11 +91,14 @@ export default {
     onScroll(e) {
       console.log(this.next);
       if (
-        e.target.scrollingElement.scrollTop ===
+          e.target.scrollingElement.scrollTop + 400 >
           e.target.scrollingElement.scrollTopMax &&
-        !!this.next
+          !!this.next
       ) {
-        Axios.get(this.next).then((response) => {
+        const next = this.next
+        this.next = null;
+
+        Axios.get(next).then((response) => {
           this.groups = this.groups.concat(response.data.results);
           this.next = response.data.links.next;
         });
@@ -116,7 +120,7 @@ export default {
 
       let self = this;
       this.timeout = setTimeout(function () {
-        
+
         self.loadGroups();
       }, 500);
 

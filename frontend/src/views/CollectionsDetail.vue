@@ -4,11 +4,11 @@
       <v-col cols="8">
         <p>
           <span class="text-h4">{{ collection.name }}</span>
-          <span v-if="collection.public" style="color: red"> (öffentlich)</span>
+          <span v-if="collection.public" style="color: red"> ({{$t("general.public")}})</span>
         </p>
         <p class="text-h5">{{ collection.description }}</p>
         <p class="text-h8">{{ collection.organization }}</p>
-        <p>
+        <p v-if="collection.categories.length != 0" >
           <span class="text-h8">Kategorien:</span>
           <span
               class="text-h8"
@@ -28,7 +28,7 @@
         <v-row no-gutters>
           <v-text-field
               v-model="search"
-              label="Suche"
+              :label="$t('general.search')"
               clearable
               flat
               solo-inverted
@@ -49,14 +49,14 @@
         </v-row>
         <v-row no-gutters>
           <p v-if="lexemes.length == 0" class="pa-10 text-body-1">
-            Diese Sammlung ist leer. Fülle sie mit deinen Lieblingswörtern!
+            {{$t('collectionDetail.collectionEmpty')}}
           </p>
           <v-scale-transition group class="row">
             <v-col
                 cols="auto"
                 class="px-2 py-4"
                 v-for="(card,index) in lexemes"
-                :key="card"
+                :key="card.id"
             >
 
               <card-dialect :card="card" class="mt-1 mr-5">
@@ -143,11 +143,13 @@ export default {
 
     onScroll(e) {
       if (
-          e.target.scrollingElement.scrollTop ===
+          e.target.scrollingElement.scrollTop +400 >
           e.target.scrollingElement.scrollTopMax &&
           !!this.next
       ) {
-        axios.get(this.next).then((response) => {
+        const next = this.next
+        this.next=null
+        axios.get(next).then((response) => {
           this.lexemes = this.lexemes.concat(response.data.results);
           this.next = response.data.links.next;
         });

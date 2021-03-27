@@ -27,8 +27,8 @@ urlpatterns = [
     path('lexemes/popular/',get_most_popular),
     path('lexemes/discussed/',get_most_discussed),
     path('lexemes/similar/<lexemeId>/',get_similar_lexemes),
-    path('report/<lexemeId>/', report_lexeme),
-    path('reports/', ReportView.as_view()),
-    path('report/deactivate/<reportId>/', deactive_report),
+    path('report/lexeme/<lexemeId>/', report_lexeme),
+    path('reports/lexeme/', ReportView.as_view()),
+    path('report/lexeme/deactivate/<reportId>/', deactive_report),
 
 ]

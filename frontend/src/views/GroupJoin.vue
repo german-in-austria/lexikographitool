@@ -1,7 +1,8 @@
 <template>
-<vcontainer fluid>
-  <v-card>
-    Möchtest du der Gruppe '{{ group.name }}' beitreten?
+  <v-container fluid>
+    {{ $t("joinGroup.text", {group: group.name}) }}
+    <p v-if="group.requires_password">{{ $t("joinGroup.passwdRequired") }}</p>
+    <v-text-field v-model="password" type="password" flat solo-inverted :label='$t("general.password")'></v-text-field>
     <v-card-actions>
       <v-btn
           elevation="2"
@@ -9,27 +10,30 @@
       >Beitreten
       </v-btn>
     </v-card-actions>
-  </v-card></vcontainer>
+  </v-container>
 </template>
 
 <script>
 import Group from "@/objects/Group";
-import RequestHandler from "@/utils/RequestHandler";
 import axios from 'axios'
 
 export default {
   name: "GroupJoin",
   data: () => ({
     group: new Group(),
+    password: '',
   }),
   mounted() {
-    axios.get('/groupname/'+this.$route.params.id +'/').then((response) => {
+    axios.get('/groupname/' + this.$route.params.id + '/').then((response) => {
       this.group = response.data;
     });
   },
   methods: {
     join() {
-      RequestHandler.joinGroup(this.$route.params.id,this.$route.params.hash).then(()=>this.$router.push('/groups/' + this.$route.params.id))
+      axios.post('join/' + this.$route.params.id + '/', {
+        hash: this.$route.params.hash,
+        password: this.password
+      }).then(() => this.$router.push('/groups/' + this.$route.params.id))
 
     },
   }

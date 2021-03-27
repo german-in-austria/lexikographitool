@@ -1,18 +1,26 @@
 <template>
   <v-app-bar
-      elevation="5"
       fixed
-      color="primary lighten-1"
       flat
       height="90rem"
+      outlined
+
   >
-    <v-container class="py-0 fill-height">
-      <p class="text-h4 hidden-sm-and-down">
-        LexicTool
-      </p>
-      <v-spacer class="hidden-sm-and-down"></v-spacer>
 
+    <template v-slot:img="{ props }">
+      <v-img
+          style="float: right"
+          v-bind="props"
+          :src="require('@/assets/colorPeople.png')"
+          max-width="800px"
 
+      ></v-img>
+    </template>
+
+    <v-img class="hidden-sm-and-down" :src="require('@/assets/IamDioeLogo.png')" alt="LOGO" contain height="100%" max-width="200px"
+    style="background-color: rgb(255,255,255,0.4)"></v-img>
+
+      <v-spacer></v-spacer>
 
       <v-text-field
           label="Suche"
@@ -25,12 +33,9 @@
           style="width: 50%; max-width: 20rem"
           @click:append="$router.push('/search/' + search)"
           @keyup.enter="$router.push('/search/' + search)"
+          background-color="rgb(255, 255, 255, 0.7)"
       ></v-text-field>
-      <v-spacer class="hidden-md-and-down"></v-spacer>
-      <v-btn class="ml-2 mb-4 hidden-sm-and-down" to="/card-create" v-if="authenticated">
-        <span>Wort erstellen</span>
-      </v-btn>
-      <v-spacer class="hidden-md-and-down"></v-spacer>
+      <v-spacer></v-spacer>
 
       <div v-if="!$vuetify.breakpoint.xs || !searchActive">
         <v-btn-toggle dense v-if="authenticated " class="ml-2 mb-4">
@@ -46,7 +51,6 @@
 
         <v-btn v-else to="/login" class="mb-4">Login</v-btn>
       </div>
-    </v-container>
   </v-app-bar>
 </template>
 

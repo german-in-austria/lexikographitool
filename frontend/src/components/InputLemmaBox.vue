@@ -1,6 +1,10 @@
 <template>
 <div>
-  <v-combobox :value="value"
+  <v-combobox
+      solo
+
+      flat
+      :value="value"
               :label="label"
               :search-input.sync="text"
               :item-text="itemText"
@@ -9,7 +13,7 @@
               :required="true"
               :rules="[(v) => !!v || 'Lemma muss angegeben werde']"
 
-  ><template v-slot:prepend><slot name="prepend"></slot></template>
+  ><template v-slot:append><slot name="append"></slot></template>
   </v-combobox>
   </div>
 </template>

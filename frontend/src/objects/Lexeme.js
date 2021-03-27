@@ -1,5 +1,5 @@
 export default class Lexeme {
-    constructor(word, description, dialectWord, kind, originId, sensitive, variety, source) {
+    constructor(word, description, dialectWord, kind, originId, sensitive, variety, source,genus) {
         this.word = word;
         this.description = description;
         this.dialectWord = dialectWord;
@@ -7,5 +7,6 @@ export default class Lexeme {
         this.origin = originId;
         this.variety = variety;
         this.source = source;
+        this.genus = genus;
     }
 }

@@ -22,7 +22,7 @@
           <p v-if="card.description && !!card.word">
             Beschreibung: {{ card.description }}
           </p>
-          <p v-if="!!card.examples &&  card.examples.length">
+          <p v-if="!!card.examples &&  card.examples.length && !small">
             Beispiel:
             <span v-for="(example, index) in card.examples" :key="index">
               {{ example.example }},
@@ -34,21 +34,21 @@
           <p>Verwendet in {{card.origin}}</p>
 
 
-          <p v-if="!!card.categories && card.categories.length">
+          <p v-if="!!card.categories && card.categories.length && !small">
             Kategorie:
             <span v-for="(category, index) in card.categories" :key="index">
               {{ category.category }},
             </span>
           </p>
 
-          <p v-if="!!card.pronunciations && card.pronunciations.length">
+          <p v-if="!!card.pronunciations && card.pronunciations.length && !small">
             Aussprache:
             <span v-for="(pronunciation, index) in card.pronunciations" :key="index">
               {{ pronunciation.pronunciation }},
             </span>
           </p>
 
-          <p v-if="!!card.etymologies && card.etymologies.length">
+          <p v-if="!!card.etymologies && card.etymologies.length && !small">
             Etymologie:
             <span v-for="(etymology, index) in card.etymologies" :key="index">
               {{ etymology.etymology }},
@@ -90,7 +90,7 @@ import CollectionAddLexeme from "@/components/CollectionAddLexeme";
 import axios from "axios";
 export default {
   components: { CollectionAddLexeme },
-  props: ["card"],
+  props: ["card", "small"],
   name: "CardDialect",
   data: () => ({
     collectionsDialog: false,

@@ -1,59 +1,40 @@
 <template>
-  <v-container>
-    <v-row no-gutters>
+  <div>
+      <v-row no-gutters class="ma-3 create-section">
       <v-col cols="12">
+        <v-subheader>{{$t('createWord.lemma')}}<input-tool-tip
+            :tip="$t('createWord.lemmaToolTip')"
+        ></input-tool-tip></v-subheader>
         <v-text-field
+            solo
+            flat
+
             v-model="lexeme.dialectWord"
-            label="Lemma*"
+            :label="$t('createWord.lemma')"
             :rules="[(v) => !!v || 'Lemma muss angegeben werde']"
             required
         >
-          <template v-slot:prepend
+          <template v-slot:append
           >
             <input-tool-tip
-                tip="Das Stichwort / spannende Wort, das du angeben möchtest."
+                :tip="$t('createWord.lemmaToolTip')"
             ></input-tool-tip
             >
           </template>
         </v-text-field>
       </v-col>
-      <v-col cols="12">
-        <input-lemma-box
-            label="standarddeutsche Entsprechung (wenn vorhanden)"
-            v-model="lexeme.word"
-            type="lexeme"
+      <v-col cols="12" v-if="!easy">
+        <v-subheader>{{$t('createWord.pronunciation')}}<input-tool-tip
+            :tip="$t('createWord.pronunciationToolTip')"
+        ></input-tool-tip></v-subheader>
+        <input-multiple
+            :label="$t('createWord.pronunciation')"
+            v-model="lexeme.pronunciations"
         >
           <template v-slot:prepend
           >
             <input-tool-tip
-                tip='Wenn möglich, schreibe hier ein standarddeutsches (="hochdeutsches") Wort ein, dass deinem Wort entspricht, du kannst auch mehrere Wörter einfügen.'
-            ></input-tool-tip
-            >
-          </template>
-        </input-lemma-box>
-      </v-col>
-      <v-col cols="12">
-        <v-text-field
-            v-model="lexeme.description"
-            label="Bedeutungserklärung"
-            required
-        >
-          <template v-slot:prepend
-          >
-            <input-tool-tip
-                tip="Hier kannst du eine ider mehrere Bedeutungen des Wortes angeben, versuche dabei so genau wie möglich zu sein. Die erste Beudeutung sollte die Hauptbedeutung sein."
-            ></input-tool-tip
-            >
-          </template>
-        </v-text-field>
-      </v-col>
-
-      <v-col cols="12">
-        <input-multiple label="Beispiele" v-model="lexeme.examples">
-          <template v-slot:prepend
-          >
-            <input-tool-tip
-                tip="Hier kannst du Beispiele angeben, wie das Wort verwendet wird, am besten in einem Satz."
+                :tip="$t('createWord.pronunciationToolTip')"
             ></input-tool-tip
             >
           </template>
@@ -61,85 +42,156 @@
       </v-col>
 
       <v-col cols="12" v-if="!easy">
-        <input-multiple
-            label="Aussprache (IPA)"
-            v-model="lexeme.pronunciations"
-        >
-          <template v-slot:prepend
-          >
-            <input-tool-tip
-                tip="Aussprache verschriftlicht nach Internationalem Phonetischem Alphabet (IPA)"
-            ></input-tool-tip
-            >
-          </template>
-        </input-multiple>
-      </v-col>
 
-      <v-col cols="12" v-if="!easy & !medium">
-        <input-multiple label="Etymologie" v-model="lexeme.etymologies">
-          <template v-slot:prepend
-          >
-            <input-tool-tip
-                tip="Hier kannst du die Herkunft des Wortes beschreiben, wenn du sie weißt."
-            ></input-tool-tip
-            >
-          </template>
-        </input-multiple>
-      </v-col>
-      <v-col cols="12">
         <input-button-group
             v-model="lexeme.kind"
             :items="kindItems"
         ></input-button-group>
       </v-col>
+      <v-expand-transition>
+      <v-col cols="12" v-if="lexeme.kind=='N'">
 
-      <v-col cols="12">
-        <v-combobox
-            label="Kategorie"
-            v-model="lexeme.categories"
-            :return-object="false"
-            append-icon=""
-            item-text="category"
-            :items="category_list"
-            multiple
-        ></v-combobox>
+        <input-button-group
+            v-model="lexeme.genus"
+            :items="genusItems"
+        ></input-button-group>
       </v-col>
+      </v-expand-transition>
+      </v-row>
+
+      <v-row no-gutters class="ma-3 create-section">
       <v-col cols="12">
+
+        <v-subheader>
+          {{$t('createWord.lexeme')}}<input-tool-tip
+            :tip="$t('createWord.lexemeToolTip')"
+        ></input-tool-tip></v-subheader>
         <input-lemma-box
-            label="Sprechweise / Varietät"
-            v-model="lexeme.dialect"
-            type="variety"
+            :label="$t('createWord.lexeme')"
+            v-model="lexeme.word"
+            type="lexeme"
         >
-          <template v-slot:prepend
+          <template v-slot:append
           >
             <input-tool-tip
-                tip='Unter "Varietät" verstehen wir verschiedene Formen ein und derselben Sprache, z.B. kann das ein bestimmert Dialekt (z.B.: Vorarlbergerisch) oder eine Jugensprache ( Wiener Jugendsprache) oder eine Fachsprache (Handwerk, Landwirtschaft, Biologie) sein. Ihr wisst selbst am besten, welcher Sprechweise ihr welches WOrt zuprdnen würdet! '
+                :tip="$t('createWord.lexemeToolTip')"
             ></input-tool-tip
             >
           </template>
         </input-lemma-box>
       </v-col>
       <v-col cols="12">
-        <input-location :loadHome="true" v-model="lexeme.location">
-          <template v-slot:prepend
+        <v-subheader>
+          {{$t('createWord.description')}}<input-tool-tip
+            :tip="$t('createWord.descriptionToolTip')"
+        ></input-tool-tip></v-subheader>
+        <v-text-field
+            solo
+
+            flat
+            v-model="lexeme.description"
+            :label="$t('createWord.description')"
+            required
+        >
+          <template v-slot:append
           >
             <input-tool-tip
-                tip="Ort an dem das Wort verwendet wird, du kannst einzelne Orte angeben oder ganze Regionen."
+                :tip="$t('createWord.descriptionToolTip')"
+            ></input-tool-tip
+            >
+          </template>
+        </v-text-field>
+      </v-col>
+
+      <v-col cols="12" v-if="!easy">
+        <v-subheader>
+          {{$t('createWord.example')}}<input-tool-tip
+            :tip="$t('createWord.exampleToolTip')"
+        ></input-tool-tip></v-subheader>
+        <input-multiple :label="$t('createWord.example')" v-model="lexeme.examples">
+          <template v-slot:append
+          >
+            <input-tool-tip
+                :tip="$t('createWord.exampleToolTip')"
+            ></input-tool-tip
+            >
+          </template>
+        </input-multiple>
+      </v-col>
+
+
+      <v-col cols="12" v-if="!easy & !medium">
+        <v-subheader>
+          {{$t('createWord.etymology')}}<input-tool-tip
+            :tip="$t('createWord.etymologyToolTip')"
+        ></input-tool-tip></v-subheader>
+        <input-multiple :label="$t('createWord.etymology')" v-model="lexeme.etymologies">
+          <template v-slot:append
+          >
+            <input-tool-tip
+                :tip="$t('createWord.etymologyToolTip')"
+            ></input-tool-tip
+            >
+          </template>
+        </input-multiple>
+      </v-col>
+
+      </v-row>
+    <v-row no-gutters class="ma-3 create-section">
+      <v-col cols="12" v-if="!easy">
+        <v-subheader>
+          {{$t('createWord.category')}}<input-tool-tip
+            :tip="$t('createWord.categoryToolTip')"
+        ></input-tool-tip></v-subheader>
+        <card-create-add-category :model="lexeme.categories"></card-create-add-category>
+
+      </v-col>
+
+      <v-col cols="12">
+        <v-subheader>
+          {{$t('createWord.variety')}}<input-tool-tip
+            :tip="$t('createWord.varietyToolTip')"
+        ></input-tool-tip></v-subheader>
+        <input-lemma-box
+            :label="$t('createWord.variety')"
+            v-model="lexeme.dialect"
+            type="variety"
+        >
+          <template v-slot:append
+          >
+            <input-tool-tip
+                :tip="$t('createWord.varietyToolTip')"
+            ></input-tool-tip
+            >
+          </template>
+        </input-lemma-box>
+      </v-col>
+    </v-row>
+    <v-row no-gutters class="ma-3 create-section">
+      <v-col cols="12">
+        <input-location :loadHome="true" v-model="lexeme.location">
+          <template v-slot:append
+          >
+            <input-tool-tip
+                :tip="$t('createWord.locationToolTip')"
             ></input-tool-tip
             >
           </template>
         </input-location>
       </v-col>
-      <v-col cols="12">
+      <v-col cols="12" v-if="!easy">
         <v-textarea
+            solo
+
+            flat
             v-model="lexeme.source"
-            label="Quelle"
+            :label="$t('createWord.source')"
             single-line
         >
-          <template  v-slot:prepend
+          <template v-slot:append
           >
             <input-tool-tip
-                tip="Füge hier die Quellen an, aus denen du deine Informationen bezogen hast"
+                :tip="$t('createWord.sourceToolTip')"
             ></input-tool-tip
             >
           </template>
@@ -148,11 +200,12 @@
       <v-col>
         <v-checkbox
             v-model="lexeme.sensitive"
-            label="ACHTUNG: Dieses Wort hat einen vulgären Inhalt oder kann als beleidigend empfunden werden!"
+            :label="$t('createWord.sensitive')"
+
         ></v-checkbox>
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -162,61 +215,85 @@ import InputButtonGroup from "@/components/InputButtonGroup";
 import InputLocation from "@/components/InputLocation";
 import InputToolTip from "./InputToolTip.vue";
 import Axios from "axios";
+import CardCreateAddCategory from "@/components/CardCreateAddCategory";
 
 export default {
   props: ["lexeme", 'medium', 'easy'],
   components: {
+    CardCreateAddCategory,
     InputButtonGroup,
     InputMultiple,
     InputLemmaBox,
     InputLocation,
     InputToolTip,
   },
-  data: () => ({
-    category_list: [],
-    kindItems: [
-      {
-        id: 1,
-        name: "Nomen",
-        value: "N",
-        tooltip:'auch Hauptwort oder Substantiv genannt',
-      },
-      {
-        id: 2,
-        name: "Verb",
-        value: "V",
-        tooltip:'auch Zeitwort oder Tunwort genannt',
+  data: function () {
+    return {
+      kindItems: [
+        {
+          id: 1,
+          name: this.$t("createWord.noun"),
+          value: "N",
+          tooltip:  this.$t("createWord.noun"),
+        },
+        {
+          id: 2,
+          name:  this.$t("createWord.verb"),
+          value: "V",
+          tooltip:  this.$t("createWord.verbTooltip"),
 
-      },
-      {
-        id: 3,
-        name: "Adjectiv",
-        value: "Aj",
-        tooltip:'auch Eigenschafschaftswort genannt',
+        },
+        {
+          id: 3,
+          name: this.$t("createWord.adjective"),
+          value: "Aj",
+          tooltip:  this.$t("createWord.adjectiveTooltip"),
 
-      },
-      {
-        id: 4,
-        name: "Adverb",
-        value: "Av",
-        tooltip:'auch Umstandswort genannt',
+        },
+        {
+          id: 4,
+          name:  this.$t("createWord.adverb"),
+          value: "Av",
+          tooltip:  this.$t("createWord.adverbTooltip"),
 
-      },
-      {
-        id: 5,
-        name: "Interjektion",
-        value: 'I',
-        tooltip:'auch Empfindungs- oder Ausfrufewort genannt',
+        },
+        {
+          id: 5,
+          name: this.$t("createWord.interjection"),
+          value: 'I',
+          tooltip:  this.$t("createWord.interjectionTooltip"),
 
-      },
-      {
-        id: 6,
-        name: "Phrase",
-        value: "P",
-        tooltip:' auch Redewendung oder Idiom genannt (fest Verbindung mehrerer Wörter, die eine eigene Bedeutung haben)',
-      },
-    ],
-  }),
+        },
+        {
+          id: 6,
+          name:  this.$t("createWord.phrase"),
+          value: "P",
+          tooltip:  this.$t("createWord.phraseTooltip"),
+        },
+      ],
+      genusItems: [
+        {
+          id: 1,
+          name: this.$t("createWord.female"),
+          value: "F",
+          tooltip: this.$t("createWord.femaleToolTip"),
+        },
+        {
+          id: 2,
+          name:this.$t("createWord.male"),
+          value: "M",
+          tooltip: this.$t("createWord.maleToolTip"),
+
+        },
+        {
+          id: 3,
+          name: this.$t("createWord.neuter"),
+          value: "N",
+          tooltip: this.$t("createWord.neuterToolTip"),
+
+        }]
+    }
+  },
   mounted() {
     Axios.get("categories/").then(
         (response) => (this.category_list = response.data)
@@ -225,3 +302,13 @@ export default {
 
 };
 </script>
+<style>
+.create-section{
+  padding:20px;
+  border-radius: 20px;
+  border-color: lightgray;
+  margin-top: 10px;
+  background-color: rgb(0,0,0,0.05);
+}
+
+</style>

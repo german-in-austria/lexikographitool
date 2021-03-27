@@ -37,10 +37,14 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class GroupNameSerializer(serializers.ModelSerializer):
+    requires_password = serializers.SerializerMethodField()
+
     class Meta:
         model = Group
-        fields = ['id', 'name']
+        fields = ['id', 'name','requires_password']
 
+    def get_requires_password(self, group):
+        return group.settings.need_password
 
 class GroupCollectionSerializer(serializers.ModelSerializer):
     collections = CollectionSimpleSerializerWithContainment(many=True, read_only=True)

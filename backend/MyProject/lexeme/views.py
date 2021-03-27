@@ -75,9 +75,10 @@ def get_most_popular(request):
     if request.method == 'GET':
         countlist = LikeLexeme.objects.filter(Q(date_updated__gte=datetime.now(
         ) - timedelta(days=14)) & Q(like=True)).values('lexeme').annotate(total=Count('lexeme')).order_by('-total')
-        popularWord = Lexeme.objects.get(pk=countlist[0]['lexeme'])
-
-        return Response(CardSerializer(popularWord, context={'request': request}).data)
+        id_list = countlist.values_list('lexeme',flat=True)
+        id_list = id_list[0:5]
+        lexemes = Lexeme.objects.filter(pk__in=id_list)
+        return Response(CardSerializer(lexemes,many=True, context={'request': request}).data)
 
 
 @api_view(['GET'])
@@ -86,10 +87,11 @@ def get_most_discussed(request):
         countlist = Post.objects.filter(Q(date_created__gte=datetime.now(
         ) - timedelta(days=14))).values(
             'lexeme').annotate(total=Count('lexeme')).order_by('-total')
-        print(countlist)
-        popularWord = Lexeme.objects.get(pk=countlist[0]['lexeme'])
 
-        return Response(CardSerializer(popularWord, context={'request': request}).data)
+        id_list = countlist.values_list('lexeme', flat=True)
+        id_list = id_list[0:5]
+        lexemes = Lexeme.objects.filter(pk__in=id_list)
+        return Response(CardSerializer(lexemes, many=True, context={'request': request}).data)
 
 
 @api_view(['GET'])
@@ -210,6 +212,9 @@ class LexemeView(ListAPIView):
             if collection.author != self.request.user and not collection.public:
                 return Lexeme.objects.none()
             queryset = queryset.filter(collections=collection)
+        if 'mine' in self.request.GET and self.request.user:
+            queryset = queryset.filter(author=self.request.user)
+
         return queryset
 
 
@@ -369,6 +374,7 @@ def create_category(request, pk):
 
 
 class CategoryListView(ListAPIView):
+    pagination_class = MyPagination
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = [SearchFilter]
@@ -434,7 +440,6 @@ def report_lexeme(request,lexemeId):
         data['lexeme'] = lexeme.id
         data['content'] = lexeme.content.id
         data['report_from'] = request.user.id
-        print(data)
 
         serializer = ReportCreateSerializer(data=data)
         if serializer.is_valid():

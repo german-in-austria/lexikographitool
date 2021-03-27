@@ -59,7 +59,7 @@ export default {
     lexemes: [],
     lexemesNext: null,
     collections: [],
-    collectionsNext: null,
+    collectionNext: null,
     groups: [],
     groupsNext: null,
   }),

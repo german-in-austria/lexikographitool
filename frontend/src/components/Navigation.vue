@@ -1,15 +1,17 @@
 <template>
 
-  <v-sheet height="100%" color="primary lighten-4" width="12rem" >
+  <v-sheet height="100vh" style="border-right: solid; border-right-width: 1px;
+   border-color: lightgray" width=auto >
     <v-list color="transparent" class="mt-15">
-      <NavigationListItem link="/" icon="mdi-home-outline" name="Start"></NavigationListItem>
+      <NavigationListItem link="/neuerStart" icon="mdi-home-outline" name="Start"></NavigationListItem>
       <v-divider></v-divider>
       <NavigationListItem v-if="false" link="/" icon="mdi-home-outline" name="Home"></NavigationListItem>
       <v-divider></v-divider>
 
       <NavigationListItem link="/Lexemes" icon="mdi-sofa-outline" name="Wörter"></NavigationListItem>
       <v-divider></v-divider>
-
+      <NavigationListItem v-if="authenticated" link="/dashboard" icon="mdi-view-dashboard-variant-outline" name="Pinnwand"></NavigationListItem>
+      <v-divider></v-divider>
       <NavigationListItem v-if="authenticated" link="/collections" icon="mdi-file-multiple-outline" name="Sammlungen"></NavigationListItem>
       <v-divider></v-divider>
 
@@ -18,6 +20,9 @@
       <v-divider></v-divider>
 
       <NavigationListItem v-if="authenticated" link="/postings" icon="mdi-chat-processing-outline" name="Fragen"></NavigationListItem>
+      <v-divider></v-divider>
+
+      <NavigationListItem v-if="authenticated" link="/card-create" icon="mdi-plus" name="Wort erstellen"></NavigationListItem>
       <v-divider></v-divider>
 
       <NavigationListItem v-if="isSuperUser" link="/reports" icon="mdi-alert-decagram" name="Meldungen"></NavigationListItem>

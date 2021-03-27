@@ -2,13 +2,9 @@
   <v-list-item
       link
       :to="link"
-
   >
-      <v-list-item-icon >
-        <v-icon large>{{ icon }}</v-icon>
-      </v-list-item-icon>
-
-      <v-list-item-title >
+        <v-icon >{{ icon }}</v-icon>
+      <v-list-item-title class="ml-5 hidden-md-and-down">
         {{ name }}
       </v-list-item-title>
   </v-list-item>

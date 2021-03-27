@@ -6,16 +6,37 @@ Vue.use(Router);
 
 const router = new Router({
     mode: 'history',
+    scrollBehavior (to, from, savedPosition) {
+        if (savedPosition) {
+            return savedPosition
+        } else {
+            return { x: 0, y: 0 }
+        }
+    },
+
     routes: [{
         path: '/start',
         name: 'home',
 
-        component: () => import(/*webpackChunkName: "Home"*/ "./views/Home.vue")
+        // component: () => import(/*webpackChunkName: "Home"*/ "./views/Home.vue")
+        component: () => import(/*webpackChunkName: "Home"*/ "./views/ConstructionSite")
     },
         {
             path: '/collections',
             name: 'collections',
             component: () => import(/*webpackChunkName: "Collections"*/ "./views/Collections.vue"),
+            meta: {requiresAuth: true}
+        },
+        {
+            path: '/dashboard',
+            name: 'dashboard',
+            component: () => import(/*webpackChunkName: "Collections"*/ "./views/Dashboard"),
+            meta: {requiresAuth: true}
+        },
+        {
+            path: '/neuerstart',
+            name: 'start',
+            component: () => import(/*webpackChunkName: "Collections"*/ "./views/Start.vue"),
             meta: {requiresAuth: true}
         },
         {
@@ -27,8 +48,9 @@ const router = new Router({
         {
             path: '/',
             name: 'start',
-            component: () => import(/*webpackChunkName: "Collections"*/ "./views/Start.vue"),
-            meta: {requiresAuth: true}
+            // component: () => import(/*webpackChunkName: "Collections"*/ "./views/Start.vue"),
+            component: () => import(/*webpackChunkName: "Collections"*/ "./views/ConstructionSite.vue"),
+            meta: {requiresAuth: false}
         }, {
             path: '/collections/:id',
             name: 'collection',
@@ -63,11 +85,7 @@ const router = new Router({
             name: 'postings',
             component: () => import(/*webpackChunkName: "Postings"*/ "./views/Postings.vue")
         }
-        , {
-            path: '/dataset',
-            name: 'database',
-            component: () => import(/*webpackChunkName: "Database"*/ "./views/Database.vue")
-        },
+        ,
         {
             path: '/card-create',
             name: 'card-create',
@@ -97,11 +115,21 @@ const router = new Router({
             component: () => import(/*webpackChunkName: "Reports"*/ "./views/Reports.vue"),
             meta: {requiresSuperUser: true}
 
+        }, {
+            path: '/imprint',
+            name: 'imprint',
+            component: () => import(/*webpackChunkName: "Imprint"*/ "./views/Imprint"),
+
+        }, {
+            path: '/dataprotection',
+            name: 'dataprotection',
+            component: () => import(/*webpackChunkName: "DataProtection"*/ "./views/DataProtection.vue"),
+            meta: {requiresSuperUser: true}
+
         },
     ]
 })
 router.beforeEach((to, from, next) => {
-
 
 
         if (to.matched.some(record => record.meta.requiresAuth)) {
