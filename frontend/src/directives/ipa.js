@@ -65,10 +65,14 @@ function applyElIpa (el) {
   if (!el[elIpa]) {
     el[elIpa] = new ExtIpa().$mount()
     el[elIpa].aElement = el
-     console.log(ipaKeys)
+    console.log('el[elIpa]', el[elIpa], el.parentNode);
   } else {
-    el.parentNode.style.position = 'relative'
-    insertAfter(el.parentNode, el[elIpa].$el, el)
+    console.log(ipaKeys);
+    const parent = (el.parentNode || el.$el.parentNode)
+    parent.style.position = 'relative'
+    insertAfter(parent, el[elIpa].$el, el)
+    // el.parentNode.style.position = 'relative'
+    // insertAfter(el.parentNode, el[elIpa].$el, el)
   }
 }
 function removeElIpa (el) {
@@ -88,7 +92,7 @@ function removeElIpa (el) {
 }
 
 var ExtIpa = Vue.extend({
-  template: '<div ref="ipa" :style="\'position: absolute; bottom: 100%; left: \' + left + \'px; max-width: \' + maxWidth + \'px; max-height: 150px; overflow-y: auto; background: #fff; padding: 10px; padding-bottom: 0; border: 1px solid #eee; border-radius: 5px; min-width: 250px;\'" v-if="ready && aKeys.length > 0">'
+  template: '<div class="ipa-overlay" ref="ipa" :style="\'position: absolute; bottom: 100%; left: \' + left + \'px; max-width: \' + maxWidth + \'px; max-height: 150px; overflow-y: auto; background: #fff; padding: 10px; padding-bottom: 0; border: 1px solid #eee; border-radius: 5px; min-width: 250px;\'" v-if="ready && aKeys.length > 0">'
           + '	<div style="margin-bottom: 5px; white-space: nowrap;" v-for="aKey in aKeys">'
           + '		<span style="display: inline-block; width: 31px; text-align: center; margin-right: 5px; padding: 4px 8px;">{{ aKey.k }}</span>'
           + '		<button @click="setKey(aKey.k, pKey)" @keyup.esc="unsetKeys()" @blur="blur" ref="aBtns" class="btn btn-grey btn-sm" style="display: inline-block; margin-right: 5px; margin-bottom: 5px; min-width: 35px;" v-for="pKey in aKey.a">{{ pKey }}</button>'
@@ -104,8 +108,12 @@ var ExtIpa = Vue.extend({
       'maxWidth': 1500
     }
   },
+  mounted() {
+    console.log('mounted ipa', this.$el)
+  },
   watch: {
     'aElement' (nVal, oVal) {
+      console.log('ael changed.')
       if (oVal) {
         oVal.removeEventListener('keyup', this.keyUp)
         oVal.removeEventListener('blur', this.blur)
