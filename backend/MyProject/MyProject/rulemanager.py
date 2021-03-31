@@ -55,3 +55,7 @@ def can_add_collection_to_group(group,user):
     #if public and allowed
     is_authorized = is_authorized or group.settings.public and group.settings.members_create_collection
     return is_authorized
+
+
+def can_see_lexemes_of_collection(collection,user):
+    return collection.author == user or collection.public or (collection.group and (user in collection.group.members.all() or user == collection.group.owner))

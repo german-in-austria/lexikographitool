@@ -18,26 +18,35 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 # Address
-class ZipPlaceSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField()
+# class ZipPlaceSerializer(serializers.ModelSerializer):
+#     id = serializers.IntegerField()
 
+#     class Meta:
+#         model = Address
+#         fields = ['id', 'zipcode', 'place', 'state']
+
+
+# class StateSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Address
+#         fields = ['id', 'state']
+
+
+# class AddressSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Address
+#         fields = '__all__'
+class LocationCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
-        fields = ['id', 'zipcode', 'place', 'state']
-
-
-class StateSerializer(serializers.ModelSerializer):
+        fields = ['id','name','state','country','osm_id','osm_value','latitude','longitude']
+        
+class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
-        fields = ['id', 'state']
+        fields = ['id','name','state','country']
 
-
-class AddressSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Address
-        fields = '__all__'
-
-
+    
 # Example
 class ExampleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -180,10 +189,8 @@ class CardSerializer(serializers.ModelSerializer):
 
 
     def get_origin(self, obj):
-        content =  obj.versions.all().order_by('-date_created')[0]
-        if content.origin == None:
-            return None
-        return content.origin.state
+        print(obj.content.origin)
+        return LocationSerializer(obj.content.origin).data
 
     
     def get_liked(self,card):

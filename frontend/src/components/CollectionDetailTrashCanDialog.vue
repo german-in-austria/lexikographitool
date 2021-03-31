@@ -1,10 +1,10 @@
 <template>
   <v-dialog v-model="dialog" scrollable max-width="60vh">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn class="pl-5" v-bind="attrs" v-on="on" large outlined>  Papierkorb </v-btn>
+      <v-list-item  v-bind="attrs" v-on="on">{{$t("general.trash")}}</v-list-item>
     </template>
     <v-card height="80vh">
-      <v-card-title>Papierkorb</v-card-title>
+      <v-card-title>{{$t("general.trash")}}</v-card-title>
 
 
       <v-card-text>

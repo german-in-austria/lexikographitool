@@ -27,7 +27,7 @@ export default {
   props: ['value','label','type','required'],
   data: () => ({
     text:null,
-    items:['asd'],
+    items:[],
   }),
   methods: {
   },

@@ -1,6 +1,5 @@
 <template>
   <v-btn-toggle
-      borderless
       v-bind:value="value"
       @change="$emit('input',$event)"
       dense

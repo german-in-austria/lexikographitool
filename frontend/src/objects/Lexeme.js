@@ -5,6 +5,7 @@ export default class Lexeme {
         this.dialectWord = dialectWord;
         this.kind = kind;
         this.origin = originId;
+        this.sensitive = sensitive;
         this.variety = variety;
         this.source = source;
         this.genus = genus;

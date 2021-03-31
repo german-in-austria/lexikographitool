@@ -3,84 +3,87 @@
     <v-row no-gutters>
       <v-col cols="8">
         <p>
+          <printer-tool v-if="false" :cards="lexemes"></printer-tool>
+
           <span class="text-h4">{{ collection.name }}</span>
-          <span v-if="collection.public" style="color: red"> ({{$t("general.public")}})</span>
+          <span v-if="collection.public" style="color: red">
+            ({{ $t("general.public") }})</span
+          >
         </p>
         <p class="text-h5">{{ collection.description }}</p>
         <p class="text-h8">{{ collection.organization }}</p>
-        <p v-if="collection.categories.length != 0" >
+        <p v-if="collection.categories.length != 0">
           <span class="text-h8">Kategorien:</span>
           <span
-              class="text-h8"
-              :key="index"
-              v-for="(category, index) in collection.categories"
-          >{{ category }}
+            class="text-h8"
+            :key="index"
+            v-for="(category, index) in collection.categories"
+            >{{ category }}
           </span>
         </p>
       </v-col>
-      <v-col>
-        <collection-settings-dialog
-            v-if="collection.is_owner"
-            :collection="collection"
-        ></collection-settings-dialog>
+      <v-col align="right">
+        <v-menu left>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical </v-icon>
+          </template>
+          <v-list>
+              <collection-settings-dialog
+                v-if="collection.is_owner"
+                :collection="collection"
+              ></collection-settings-dialog>
+            <collection-detail-trash-can-dialog
+              v-if="collection.is_owner"
+              :collectionId="collection.id"
+              :lexemes="lexemes"
+            ></collection-detail-trash-can-dialog>
+            <v-list-item @click="deleteCollection"><span class="error--text">{{$t("collectionDetail.deleteCollection")}}</span></v-list-item>
+          </v-list>
+        </v-menu>
       </v-col>
       <v-col cols="12">
         <v-row no-gutters>
           <v-text-field
-              v-model="search"
-              :label="$t('general.search')"
-              clearable
-              flat
-              solo-inverted
-              hide-details
-              prepend-inner-icon="mdi-magnify"
+            v-model="search"
+            :label="$t('general.search')"
+            clearable
+            flat
+            solo-inverted
+            hide-details
+            prepend-inner-icon="mdi-magnify"
           ></v-text-field>
           <v-spacer></v-spacer>
           <collection-add-lexeme-dialog
-              :collection="collection"
-              :lexemes="lexemes"
-              v-if="collection.can_add_lexeme_to_collection"
+            :collection="collection"
+            :lexemes="lexemes"
+            v-if="collection.can_add_lexeme_to_collection"
           ></collection-add-lexeme-dialog>
-          <collection-detail-trash-can-dialog
-              v-if="collection.is_owner"
-              :collectionId="collection.id"
-              :lexemes="lexemes"
-          ></collection-detail-trash-can-dialog>
         </v-row>
         <v-row no-gutters>
           <p v-if="lexemes.length == 0" class="pa-10 text-body-1">
-            {{$t('collectionDetail.collectionEmpty')}}
+            {{ $t("collectionDetail.collectionEmpty") }}
           </p>
           <v-scale-transition group class="row">
             <v-col
-                cols="auto"
-                class="px-2 py-4"
-                v-for="(card,index) in lexemes"
-                :key="card.id"
+              cols="auto"
+              class="px-2 py-4"
+              v-for="(card, index) in lexemes"
+              :key="card.id"
             >
-
               <card-dialect :card="card" class="mt-1 mr-5">
-                <template slot="button">
-                  <v-btn
-                      v-if="collection.can_remove_lexeme_from_collection"
-                      small
-                      absolute
-                      top
-                      right
-                      fab
-                      color="error"
-                      @click.prevent="removeLexeme(card,index)"
-                  >
-                    <v-icon small>mdi-delete</v-icon>
-                  </v-btn>
+                <template
+                  slot="menuItem"
+                  v-if="collection.can_remove_lexeme_from_collection"
+                >
+                  <v-list-item @click="removeLexeme(card, index)">
+                    {{ $t("card.removeFromCollection") }}
+                  </v-list-item>
                 </template>
               </card-dialect>
             </v-col>
           </v-scale-transition>
-
         </v-row>
       </v-col>
-
     </v-row>
   </v-container>
 </template>
@@ -89,6 +92,7 @@
 import RequestHandler from "../utils/RequestHandler.js";
 import Collection from "../objects/Collection.js";
 import CardDialect from "@/components/CardDialect";
+import PrinterTool from "@/components/PrinterTool";
 import CollectionSettingsDialog from "@/components/CollectionSettingsDialog";
 import CollectionAddLexemeDialog from "@/components/CollectionAddLexemeDialog";
 import CollectionDetailTrashCanDialog from "@/components/CollectionDetailTrashCanDialog";
@@ -100,6 +104,7 @@ export default {
     CollectionSettingsDialog,
     CollectionDetailTrashCanDialog,
     CardDialect,
+    PrinterTool,
   },
   data: () => ({
     collection: new Collection(),
@@ -112,25 +117,25 @@ export default {
       this.collection = response.data;
     });
     axios
-        .get("lexemes/?page=1&collection=" + this.$route.params.id)
-        .then((response) => {
-          this.lexemes = response.data.results;
-          this.next = response.data.links.next;
-        });
+      .get("lexemes/?page=1&collection=" + this.$route.params.id)
+      .then((response) => {
+        this.lexemes = response.data.results;
+        this.next = response.data.links.next;
+      });
   },
   watch: {
     search() {
       axios
-          .get(
-              "lexemes/?page=1&search=" +
-              this.search +
-              "&collection=" +
-              this.$route.params.id
-          )
-          .then((response) => {
-            this.lexemes = response.data.results;
-            this.next = response.data.links.next;
-          });
+        .get(
+          "lexemes/?page=1&search=" +
+            this.search +
+            "&collection=" +
+            this.$route.params.id
+        )
+        .then((response) => {
+          this.lexemes = response.data.results;
+          this.next = response.data.links.next;
+        });
     },
   },
   methods: {
@@ -143,17 +148,23 @@ export default {
 
     onScroll(e) {
       if (
-          e.target.scrollingElement.scrollTop +400 >
+        e.target.scrollingElement.scrollTop + 400 >
           e.target.scrollingElement.scrollTopMax &&
-          !!this.next
+        !!this.next
       ) {
-        const next = this.next
-        this.next=null
+        const next = this.next;
+        this.next = null;
         axios.get(next).then((response) => {
           this.lexemes = this.lexemes.concat(response.data.results);
           this.next = response.data.links.next;
         });
       }
+    },
+    deleteCollection() {
+      axios.delete("collection/" + this.collection.id + "/").then(() => {
+        this.dialog = false;
+        this.$router.push("/collections");
+      });
     },
   },
 };
@@ -176,8 +187,7 @@ export default {
   margin: 0 0 16px 16px;
 }
 
-.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */
-{
+.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
   opacity: 0;
   transform: translateY(30px);
 }

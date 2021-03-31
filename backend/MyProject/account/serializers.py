@@ -3,10 +3,14 @@ from rest_framework import serializers
 
 from collection.models import Collection
 
-from lexeme.serializers import ZipPlaceSerializer
 from lexeme.models import Address
 
-
+class LocationCreateSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=False)
+    class Meta:
+        model = Address
+        fields = ['id','name','state','country','osm_id','osm_value','latitude','longitude']
+        
 class RegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
 
@@ -40,8 +44,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return account
 
 class UserSerializer(serializers.ModelSerializer):
-    home = ZipPlaceSerializer()
-    locations = ZipPlaceSerializer(many=True)
+    home = LocationCreateSerializer()
+    locations = LocationCreateSerializer(many=True)
 
     class Meta:
         model = Account
@@ -49,9 +53,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 
     def update(self, instance, validated_data):
-        
-        home = Address.objects.get(id=validated_data['home']['id'])
-        
+        print(validated_data['home']['id'])
+
+        home = Address.objects.get(pk =validated_data['home']['id'])
+
         location_list = [item['id'] for item in validated_data['locations']]
 
         locations = Address.objects.filter(pk__in=location_list)

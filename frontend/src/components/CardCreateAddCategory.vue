@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-combobox
-        solo
+        :solo="solo"
 
         flat
 
@@ -56,7 +56,7 @@ import axios from "axios";
 
 export default {
   name: "CardCreateAddCategory",
-  props: ['model'],
+  props: ['model','solo'],
   data: () => ({
     items: [],
     search: null,
@@ -81,7 +81,6 @@ export default {
         console.log(val, prev)
 
         if (val.length === prev.length) return
-
         this.model.value = val.map(v => {
           if (!!v & typeof v === 'string') {
             v = {

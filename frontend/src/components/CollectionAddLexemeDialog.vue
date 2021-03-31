@@ -1,13 +1,13 @@
 <template>
   <v-dialog v-model="dialog" scrollable max-width="60vh">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn v-bind="attrs" v-on="on" large outlined> weitere Wörter suchen </v-btn>
+      <v-btn v-bind="attrs" v-on="on" elevation="0" large> {{$t("collectionDetail.addWords")}} </v-btn>
     </template>
     <v-card height="80vh">
-      <v-card-title>Wörter hinzufügen</v-card-title>
+      <v-card-title>{{$t("collectionDetail.addWords")}}</v-card-title>
 
       <v-card-text>
-        <v-text-field label="Suche" v-model="search"> Suchen</v-text-field>
+        <v-text-field label="Suche" v-model="search">{{$t("general.search")}}</v-text-field>
       </v-card-text>
       <v-card-text v-scroll.self="onScroll">
         <v-list>

@@ -1,18 +1,18 @@
 {
   "start": {
     "title": "Willkommen",
-    "introductionText":  "Willkommen bei Worgut! Auf dieser Seite des Citizen Science Projekt IamDiÖ kannst du Wörter und Informationen zu ihnen, wie Bedeutung, wie sie verwendet werden und weiteres eintragen aber auch suchen. Du kannst die Wörter in Sammlungen zusammenstellen und somit dein eigenes digitales \"Wörterbuch\" erstellen - alleine oder mit anderen. Alle können hier zum/r Lexikographen/in werden.",
+    "introductionText":  "Willkommen bei Wortgut! Auf dieser Seite des Citizen Science Projekt IamDiÖ kannst du Wörter und Informationen zu ihnen, wie Bedeutung, wie sie verwendet werden und weiteres eintragen aber auch suchen. Du kannst die Wörter in Sammlungen zusammenstellen und somit dein eigenes digitales \"Wörterbuch\" erstellen - alleine oder mit anderen. Alle können hier zum/r Lexikographen/in werden.",
     "popular": "beliebt",
     "discussed": "heiß diskutiert",
     "title2": "Leg gleich los!",
-    "chapter2text":  "Der erste Schritt ist es immer ein Wort zu sammeln - du kannst hier alle möglichen Wörter sammeln, die dir einfallen. Zum Beispiel aus einem bestimmten Dialekt, aus einer Jugendsprache, einer Fachsprache, Wörter die üblicherweise in deiner Gegend verwendet werden - jedes Wort ist ein gutes Wort und kann zu einem Teil unserer Wortgutsammlung werden. Starte mit deinem ersten Wort:",
+    "chapter2text":  "Der erste Schritt ist,  ein Wort zu sammeln - du kannst hier alle möglichen Wörter sammeln, die dir einfallen. Zum Beispiel aus einem bestimmten Dialekt, aus einer Jugendsprache, einer Fachsprache, Wörter die üblicherweise in deiner Gegend verwendet werden - jedes Wort ist ein gutes Wort und kann Bestandteil unserer Wortgutsammlung werden. Starte mit deinem ersten Wort:",
     "title3": "Was wolltest du schon immer wissen?",
-    "chapter3text":  "Hast du vielleicht ein Wort gehört und kennst dessen Bedeutung nicht? Dann frag einfach unsere Community. Oder schau bei {postings} vorbei, welche offenen Fragen es gibt - vielleicht kannst du ja anderen dabei helfen, der Bedeutung, Verwendung oder Herkunft eines Worts auf die schliche zu kommen. Wortgut versammelt Interessenten/innen von überall Citizen Scientists sowie ausgebildete Lexikograph:innen",
+    "chapter3text":  "Hast du vielleicht ein Wort gehört und kennst dessen Bedeutung nicht? Dann frag' einfach unsere Community. Oder schau' bei {postings} vorbei, welche offenen Fragen es gibt - vielleicht kannst du ja anderen dabei helfen, der Bedeutung, Verwendung oder Herkunft eines Worts auf die Schliche zu kommen. Wortgut versammelt Interessent*innen von überall: Citizen Scientists genauso wie ausgebildete Lexikograph*innen.",
     "postings" : "Fragen"
   },
   "collections": {
     "title": "Sammlungen",
-    "desciption":  "Hier kannst du Sammlungen erstellen um verschiedenste Wörter zu sammeln und zu orden. Schau auch nach welche interessanten Sammlungen andere Mietglieder bereits erstellt und öffentlich gemacht haben",
+    "desciption":  "Hier kannst du eigene Sammlungen erstellen, um verschiedenste Wörter zu sammeln und zu ordnen. Küchenausdrücke, mathematische Begriffe oder doch lieber die Wörter, die in deinem Dorf verwendet werden - du entscheidest was in deine Sammlung kommt! Schau auch nach, welche interessanten Sammlungen andere Mitglieder bereits erstellt und öffentlich gemacht haben.",
     "myCollections": "meine Sammlungen",
     "publicCollections": "alle Sammlungen"
   },
@@ -23,10 +23,16 @@
     "publicCollections": "alle Gruppen"
   },
   "collectionDetail": {
-    "collectionEmpty": "Diese Sammlung ist leer. Fülle sie mit deinen Lieblingswörtern!"
+    "collectionEmpty": "Diese Sammlung ist leer. Fülle sie mit deinen Lieblingswörtern!",
+    "addWords":"Wörter Hinzufügen",
+    "deleteCollection": "Sammlung löschen"
+  },
+  "groupDetails":{
+    "leaveGroup":"Gruppe verlassen",
+    "deleteGroup": "Gruppe löschen"
   },
   "dashboard": {
-    "title": "Dashboard",
+    "title": "Meine Pinnwand",
     "myWords": "Meine Wörter",
     "myCollections": "Meine Sammlungen",
     "discover": "Entdecke neue Wörter",
@@ -44,11 +50,12 @@
     "failureMessage": "Hoppla! Ein Fehler ist aufgetreten.",
     "chooseCollection": "Suche die Sammlungen aus zu denen du das Wort hinzufügen möchtest oder erstelle eine neue.",
     "createCollection": "Erstelle Sammlung: ",
-    "chooseCategory": "Suche oder erstelle eine oder mehrere Kategorien für dein Wort",
+    "chooseCategory": "Suche oder erstelle eine oder mehrere Kategorien",
     "createCategory": "Erstelle eine Kategorie: "
   },
   "postings": {
     "title": "Fragen",
+    "description":"Hier kannst du Fragen zu Wörtern an die Wortgut-Community stellen und anderen helfen, Antworten auf ihre Fragen zu finden.",
     "delete": "löschen",
     "edit": "bearbeiten",
     "report": "melden",
@@ -91,7 +98,7 @@
     "pronunciation": "Aussprache (IPA)",
     "pronunciationToolTip": "Aussprache verschriftlicht nach Internationalem Phonetischem Alphabet (IPA)",
     "lexeme": "standarddeutsche Entsprechung (wenn vorhanden)",
-    "lexemeToolTip": "Wenn möglich, schreibe hier ein standarddeutsches (=\"hochdeutsches\") Wort ein, das deinem Wort entspricht.",
+    "lexemeToolTip": "Wenn möglich, schreibe hier ein standarddeutsches (=\"hochdeutsches\") Wort rein, das deinem Wort entspricht.",
     "description": "Bedeutungserklärung",
     "descriptionToolTip": "Hier kannst du eine oder mehrere Bedeutungen des Wortes angeben, versuche dabei so genau wie möglich zu sein. Die erste Beudeutung sollte die Hauptbedeutung sein.",
     "example": "Beispiele",
@@ -99,9 +106,9 @@
     "etymology": "Etymologie",
     "etymologyToolTip": "Hier kannst du die Herkunft des Wortes beschreiben, wenn du sie weißt.",
     "category": "Kategorie",
-    "categoryToolTip": "",
+    "categoryToolTip": "Hier kannst du den Lebensbereich/das Thema auswählen, zu dem das Wort gehört.",
     "variety": "Sprechweise / Varietät",
-    "varietyToolTip": "Unter \"Varietät\" verstehen wir verschiedene Formen ein und derselben Sprache, z.B. kann das ein bestimmert Dialekt (z.B.: Vorarlbergerisch) oder eine Jugensprache ( Wiener Jugendsprache) oder eine Fachsprache (Handwerk, Landwirtschaft, Biologie) sein. Ihr wisst selbst am besten, welcher Sprechweise ihr welches Wort zuprdnen würdet! ",
+    "varietyToolTip": "Unter \"Varietät\" verstehen wir verschiedene Formen ein und derselben Sprache, z.B. kann das ein bestimmert Dialekt (z.B.: Vorarlbergerisch) oder eine Jugensprache ( Wiener Jugendsprache) oder eine Fachsprache (Handwerk, Landwirtschaft, Biologie) sein. Ihr wisst selbst am besten, welcher Sprechweise ihr welches Wort zuordnen würdet! ",
     "locationToolTip": "Ort an dem das Wort verwendet wird, du kannst einzelne Orte angeben oder ganze Regionen.",
     "source": "Quelle",
     "sourceToolTip": "Füge hier die Quellen an, aus denen du deine Informationen bezogen hast.",
@@ -117,21 +124,52 @@
     "interjection": "Interjektion",
     "interjectionTooltip": "auch Empfindungs- oder Ausfrufewort genannt",
     "phrase": "Phrase",
-    "phraseTooltip": "auch Redewendung oder Idiom genannt (fest Verbindung mehrerer Wörter, die eine eigene Bedeutung haben)",
+    "phraseTooltip": "auch Redewendung oder Idiom genannt (feste Verbindung mehrerer Wörter, die eine eigene Bedeutung haben)",
     "female": "Weiblich",
     "femaleToolTip": "",
     "male": "Männlich",
     "maleToolTip": "",
     "neuter": "Sächlich",
-    "neuterToolTip": ""
+    "neuterToolTip": "",
+    "collection":"zu Sammlungen hinzufügen",
+    "collectionToolTip": "Suche nach deinen Sammlungen oder erstelle eine neue Sammlung, indem du einfach den gewünschten Namen für die Sammlung eingibst."
   },
   "general": {
+    "delete": "löschen",
     "search": "Suche",
     "public": "öffentlich",
-    "password": "Passwort"
+    "password": "Passwort",
+    "trash": "Papierkorb",
+    "settings": "Einstellungen"
   },
   "joinGroup":{
     "text": "Möchtest du der Gruppe '{group}' beitreten?",
     "passwdRequired": "Um dieser Gruppe beizutreten wird ein passwort benötigt"
+  },
+  "card":{
+    "myCollections": "Meine Sammlungen",
+    "addToCollectionToolTip": "zu Sammlung hinzufügen",
+    "edit":"bearbeiten",
+    "editTitle": "Wort bearbeiten",
+    "lemma":"Lemma",
+    "meaning":"Bedeutung",
+    "lexeme": "hochdeutscher Begriff",
+    "variety" : "Varietät",
+    "kind":"Wortart",
+    "category":"Kategorie",
+    "removeFromCollection": "Wort aus Sammlung entfernen"
+
+
+  },
+  "searchbar":{
+    "search": "Suchen",
+    "orderby": "Sortieren",
+    "created_at" : "erstellt am",
+    "descending":"absteigend",
+    "ascending":"aufsteigend"
+  },
+  "search":{
+    "noResults":"Leider konnten keine passenden Ergebnisse gefunden werden."
   }
+  
 }

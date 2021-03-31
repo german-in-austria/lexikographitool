@@ -3,12 +3,13 @@
     <v-row>
       <v-col>
         <p class="text-h3">Fragen</p>
+        <p class="text-body-1"> {{$t("postings.description")}}</p>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
         <v-row>
-          <v-col cols="12" sd="6" md="4">
+          <v-col cols="12" >
             <v-textarea outlined class="post-textarea" placeholder="Stell der Community eine Frage!" v-model="newPost"
                         auto-grow
 
@@ -34,6 +35,7 @@
 import RequestHandler from "@/utils/RequestHandler";
 import CardPost from "@/components/CardPost";
 import Axios from "axios";
+import axios from 'axios';
 
 export default {
   name: "Postings"
@@ -47,7 +49,7 @@ export default {
     next:null,
   }),
   async created() {
-    RequestHandler.getPosts().then((response) => {
+   axios.get('posts/?ordering=-date_created').then((response) => {
       this.posts = response.data.results
     this.next = response.data.links.next
   })
@@ -63,7 +65,11 @@ watch: {
 methods: {
   createPost()
   {
-    Axios.post('post/', {text: this.newPost}).then(response => this.posts.push(response.data))
+    Axios.post('post/', {text: this.newPost}).then(response => {
+    response.data.is_author =true
+
+    this.posts.unshift(response.data)
+    this.newPost=''})
   }
 ,
   removeFromList(index)

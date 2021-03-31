@@ -1,12 +1,17 @@
 <template>
   <v-dialog v-model="dialog" scrollable max-width="70vh">
-    <template v-slot:activator="{ on, attrs }">
-      <v-icon v-bind="attrs" v-on="on" v-on:click.prevent="load()"
-        >mdi-plus</v-icon
-      >
+    <template v-slot:activator="{ on: dialog , attrs }">
+      <v-tooltip bottom max-width="40vh">
+        <template v-slot:activator="{ on : tooltip }">
+          <v-btn icon v-bind="attrs" v-on="{ ...tooltip, ...dialog }" v-on:click.prevent="load()">
+            <v-icon>mdi-file-plus-outline</v-icon></v-btn
+          >
+        </template>
+        {{ $t("card.addToCollectionToolTip") }}
+      </v-tooltip>
     </template>
     <v-card>
-      <v-card-title>Meine Sammlungen</v-card-title>
+      <v-card-title>{{ $t("card.myCollections") }}</v-card-title>
       <v-divider></v-divider>
       <v-card-text>
         <v-list>
@@ -14,13 +19,13 @@
             :value="false"
             no-action
             sub-group
-            v-for="(group, index) in groups"
+            v-for="(group) in groups"
             :key="group.id"
             v-model="group.active"
             ><template v-slot:activator>
               <v-list-item-content>
                 <v-list-item-title
-                  >{{ group.name }}{{ index }}</v-list-item-title
+                  >{{ group.name }}</v-list-item-title
                 >
               </v-list-item-content>
             </template>

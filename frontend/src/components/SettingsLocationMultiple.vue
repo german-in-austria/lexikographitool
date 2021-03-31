@@ -1,37 +1,42 @@
 <template>
   <div>
-    <v-radio-group
-            v-model="favorite"
-            mandatory
-        >
-    <v-row no-gutters v-for="(item, i) in items" :key="i" class="text-fields-row">
-      <v-radio
-              :value="item"
-            ></v-radio>
-      <v-col cols="6">
-        <input-location v-model="item.value"></input-location>
-      </v-col>
-      <v-col><v-icon @click="remove(i)" class="mt-7">mdi-delete</v-icon> </v-col>
-    </v-row>
-      <v-col><v-btn @click="addLine">zusätzlichen Ort hinzufügen</v-btn> </v-col>
+    <v-radio-group v-model="favorite" mandatory>
+      <v-row
+        no-gutters
+        v-for="(item, i) in items"
+        :key="i"
+        class="text-fields-row"
+      >
+        <v-radio :value="item"></v-radio>
+        <v-col cols="6">
+          {{ item.value.name }}
+        </v-col>
+        <v-col
+          ><v-icon @click="remove(i)" class="mt-7">mdi-delete</v-icon>
+        </v-col>
+      </v-row>
+      <v-row>
+        <input-field-location v-model="newLoc"></input-field-location
+        ><v-btn @click="addLine">zusätzlichen Ort hinzufügen</v-btn>
+      </v-row>
     </v-radio-group>
   </div>
-
 </template>
 <script>
-import InputLocation from "./InputLocation";
+import InputFieldLocation from "./InputFieldLocation.vue";
 
 export default {
   name: "SettignsLocationMultiple",
   props: ["value", "label"],
-  components: { InputLocation },
+  components: { InputFieldLocation },
   data: () => ({
-    favorite:{ "value": { "id": 18774, "zipcode": "6710", "place": "Nenzinger Himmel", "state": "Vorarlberg" } } ,
-    initFav: false,
+    favorite:null,
+    newLoc: { name: "" },
   }),
   methods: {
     addLine() {
-      this.value.push({ value: { id: -1, zipcode: "", place: "" } });
+      this.value.push({ value: this.newLoc });
+      this.newLoc = { name: "" };
     },
     remove(index) {
       this.items.splice(index, 1);
@@ -44,11 +49,11 @@ export default {
       return this.value;
     },
   },
-  watch:{
-    favorite(){
-      console.log('asd')
-      this.$emit('inputFav',this.favorite)
-    }
-  }
+  watch: {
+    favorite() {
+      console.log("asd");
+      this.$emit("inputFav", this.favorite);
+    },
+  },
 };
 </script>

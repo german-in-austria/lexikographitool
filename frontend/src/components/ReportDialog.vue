@@ -1,14 +1,10 @@
 <template>
-  <v-row justify="center">
     <v-dialog v-model="dialog" max-width="40rem" scrollable>
       <template v-slot:activator="{ on, attrs }">
         <slot name="activator">
-          <v-btn v-if="button" v-bind="attrs" v-on.native.stop="on" text
+          <v-list-item v-bind="attrs" v-on.native.stop="on" text
           >{{ $t("reportDialog.report") }}
-          </v-btn>
-          <span v-else v-bind="attrs" v-on.native.stop="on" text
-          >{{ $t("reportDialog.report") }}
-          </span>
+          </v-list-item>
         </slot>
       </template>
       <v-card>
@@ -21,7 +17,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-row>
 </template>
 
 <script>

@@ -22,6 +22,12 @@ CHOICE_GENUS = (
 
 
 class Address(models.Model):
+    
+    name = models.CharField(max_length=100, null=True, blank=True)
+    osm_id = models.CharField(max_length=100, null=True, blank=True)
+    osm_value = models.CharField(max_length=100, null=True, blank=True)
+    country = models.CharField(max_length=100, null=True, blank=True)
+    
     country_code = models.CharField(max_length=100, null=True, blank=True)
     zipcode = models.CharField(max_length=100, null=True,blank=True)
     place = models.CharField(max_length=100, null=True,blank=True)
@@ -44,13 +50,14 @@ class Lexeme(models.Model):
     def save(self, *args, **kwargs):
         super(Lexeme, self).save(*args, **kwargs)
 
-class LexemeContent(models.Model):
+
+class LexemeContent(SoftDeletionModel):
     date_created = models.DateTimeField(
          verbose_name='date joined', auto_now_add=True)
     word = models.CharField(max_length=100, null=True, blank=True)
-    source = models.CharField(max_length=100, null=True, blank=True)
+    source = models.CharField(max_length=500, null=True, blank=True)
     variety = models.CharField(max_length=100, null=True, blank=True)
-    description = models.CharField(max_length=100, null=True,blank=True)
+    description = models.CharField(max_length=500, null=True,blank=True)
     kind = models.CharField(max_length=255, choices=CHOICE_KIND,null=True)
     genus = models.CharField(max_length=255, choices=CHOICE_GENUS,null=True)
     dialectWord = models.CharField(max_length=100)

@@ -35,12 +35,14 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 
 #DataFlair
-EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'SMTP.office365.com'
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'lexiktool@outlook.de'
-EMAIL_HOST_PASSWORD = 'dioe1234'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  
+# MAILER_EMAIL_BACKEND = EMAIL_BACKEND  
+# EMAIL_HOST = 'your_mail_server'  
+# EMAIL_HOST_PASSWORD = 'your_password'  
+# EMAIL_HOST_USER = 'your_email'  
+# EMAIL_PORT = 465  
+# EMAIL_USE_SSL = True  
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 # Application definition

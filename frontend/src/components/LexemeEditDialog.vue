@@ -1,22 +1,18 @@
 <template>
-  <v-row justify="center">
     <v-dialog v-model="dialog" max-width="40rem" scrollable>
       <template v-slot:activator="{ on, attrs }">
-        <v-btn v-bind="attrs" v-on.native.stop="on" text small
-        >
-          <v-icon>mdi-pencil-outline</v-icon>
-          Wort bearbeiten
-        </v-btn>
+        <v-list-item v-bind="attrs" v-on.native.stop="on" >
+                   {{$t('card.edit')}}
+        </v-list-item>
       </template>
-      <v-card >
-        <v-card-title :class="color + ' lighten-4 headline' ">
-          Wort bearbeiten
+      <v-card>
+        <v-card-title :class="color + ' lighten-4 headline'">
+         {{$t('card.editTitle')}}
         </v-card-title>
 
         <v-divider></v-divider>
         <v-card-text>
-
-          <card-create-form :lexeme="lex"></card-create-form>
+          <card-create-form :lexeme="lex" :loadHome="false"></card-create-form>
         </v-card-text>
 
         <v-divider></v-divider>
@@ -24,18 +20,17 @@
           <v-btn text @click="createNewLexeme">Speichern</v-btn>
         </v-card-actions>
       </v-card>
-
-    </v-dialog>
+      
     <v-snackbar
-        v-model="snackbarSuccessful"
-        :timeout="2000"
-        color="success"
-        centered
-        height="500"
+      v-model="snackbarSuccessful"
+      :timeout="2000"
+      color="success"
+      centered
+      height="500"
     >
       Wort bearbeitet!
     </v-snackbar>
-  </v-row>
+    </v-dialog>
 </template>
 
 <script>
@@ -60,7 +55,7 @@ export default {
       etymologies: [{value: ""}],
       kind: null,
       genus: null,
-      location: {id: -1, zipcode: null, place: null},
+      location: {},
       categories: {value:[]},
       sensitive: false,
       source: '',
@@ -75,6 +70,7 @@ export default {
       this.lex.kind = this.lexeme.kind;
       this.lex.genus = this.lexeme.genus;
       this.lex.source = this.lexeme.source;
+      this.lex.location = this.lexeme.origin;
       this.lex.categories = {value: this.lexeme.categories}
       this.lex.examples = this.lexeme.examples.map((item) => {
         return {value: item.example};
@@ -115,13 +111,20 @@ export default {
     async createNewLexeme() {
       // var categories = [];
       // this.categories.forEach((item) => categories.push(new Category(item)));
+   
+
+        let location = {data:{id:this.lex.location.id}}
+      if (this.lex.location.id === '-1')
+        location = await Axios.post('location/',this.lex.location)
+
+
       var lexemeId;
       var lexeme = new Lexeme(
           this.lex.word,
           this.lex.description,
           this.lex.dialectWord,
           this.lex.kind,
-          this.lex.location.id,
+          location.data.id,
           this.lex.sensitive,
           this.lex.variety,
           this.lex.source,
@@ -143,11 +146,12 @@ export default {
     updateParent() {
       this.lexeme.dialectWord = this.lex.dialectWord;
       this.lexeme.word = this.lex.word;
-      this.lex.description = this.lexeme.description;
+      this.lexeme.description = this.lex.description;
       this.lexeme.veriety = this.lex.variety;
       this.lexeme.kind = this.lex.kind;
       this.lexeme.genus = this.lex.genus;
       this.lexeme.source = this.lex.source;
+      this.lexeme.origin = this.lex.location;
       this.lexeme.examples = this.lex.examples.map((item) => {
         return {example: item.value};
       });

@@ -1,16 +1,16 @@
 <template>
-<v-container fluid>
-  <p class="text-h4">{{$t("dataProtection.title")}}</p>
-  <p>{{$t("dataProtection.text")}}</p>
-</v-container>
+  <v-container fluid>
+    <data-protection-content></data-protection-content>
+  </v-container>
 </template>
 
 <script>
+import DataProtectionContent from "@/components/DataProtectionContent"
 export default {
-name: "Imprint"
-}
+  name: "Imprint",
+  components:{DataProtectionContent}
+};
 </script>
 
 <style scoped>
-
 </style>

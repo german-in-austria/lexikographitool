@@ -7,7 +7,7 @@
     >
       <v-text-field
           solo
-
+          v-rt-ipa
           flat
           :label="label"
           v-model="item.value"

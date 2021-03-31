@@ -8,10 +8,11 @@
           </p>
         </v-row>
         <v-row>
-          <v-col cols="6">
-            <p class="subtitle-1">{{$t("start.popular")}}</p>
+          <v-col cols="12" sm="6">
+            <p class="text-h4">{{$t("start.popular")}}</p>
+            <v-hover v-slot:default="{ hover }">
             <v-carousel light v-model="carousel"
-                        cycle
+                        :cycle="hover ? false : true"
                         height="400"
                         hide-delimiter-background
                         show-arrows-on-hover>
@@ -24,12 +25,17 @@
                   <card-dialect :card="lexeme"></card-dialect>
                 </v-sheet>
               </v-carousel-item>
+              
             </v-carousel>
+            </v-hover>
           </v-col>
-          <v-col cols="6">
-            <p class="subtitle-1">{{$t("start.discussed")}}</p>
+          <v-col cols="12" sm="6">
+            <p class="text-h4">{{$t("start.discussed")}}</p>
+            <v-hover v-slot:default="{ hover }">
+
             <v-carousel light v-model="carousel2"
-                        cycle
+                                                :cycle="hover ? false : true"
+
                         height="400"
                         hide-delimiter-background
                         show-arrows-on-hover
@@ -44,6 +50,7 @@
                 </v-sheet>
               </v-carousel-item>
             </v-carousel>
+            </v-hover>
           </v-col>
         </v-row>
         <v-row>
@@ -69,7 +76,7 @@
               </template>
             </i18n>
           </v-col>
-          <v-col class="ma-auto" cols="12" lg="6">
+          <v-col class="ma-auto" cols="12">
             <v-textarea
                 label="neue Frage"
                 placeholder="Stelle deine Frage hier!"
@@ -94,16 +101,16 @@
 import RequestHandler from "@/utils/RequestHandler";
 import CardDialect from "../components/CardDialect.vue";
 import CardDialectPrototype from "../components/CardDialectPrototype.vue";
-import axios from 'axios'
+import axios from "axios";
 
 export default {
-  components: {CardDialect, CardDialectPrototype},
+  components: { CardDialect, CardDialectPrototype },
   data: () => ({
     cards: [],
     cardActive: false,
     popular: [],
     discussed: [],
-    random: {examples: []},
+    random: { examples: [] },
     postText: "",
     carousel: null,
     carousel2: null,
@@ -112,15 +119,19 @@ export default {
     RequestHandler.getLexemesRandom().then((response) => {
       this.cards = response.data;
     });
-    axios.get('lexemes/popular/').then(response => this.popular = response.data)
-    axios.get('lexemes/discussed/').then(response => this.discussed = response.data)
+    axios
+      .get("lexemes/popular/")
+      .then((response) => (this.popular = response.data));
+    axios
+      .get("lexemes/discussed/")
+      .then((response) => (this.discussed = response.data));
   },
   methods: {
     createPost() {
       if (this.$refs.postText.validate()) {
         RequestHandler.createPost(this.postText, null).then(() => {
           this.postText = "";
-          this.$router.push('/postings');
+          this.$router.push("/postings");
         });
       }
     },

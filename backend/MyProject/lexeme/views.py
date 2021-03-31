@@ -14,7 +14,7 @@ from django.db.models import Q
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import filters
 from post.models import Post
-
+from MyProject import rulemanager
 from .pagination import MyPagination
 from .serializers import *
 from .models import *
@@ -32,25 +32,24 @@ class MyCustomOrdering(filters.OrderingFilter):
     allowed_custom_filters = ['content','dialectWord', '-dialectWord',
                               'date_created', '-date_created', 'word', '-word']
 
-    def get_ordering(self, request, queryset, view):
-        """
-        Ordering is set by a comma delimited ?ordering=... query parameter.
+    #def get_ordering(self, request, queryset, view):
+       
+        # params = request.query_params.get(self.ordering_param)
+        # if params:
+        #     fields = [param.strip() for param in params.split(',')]
+        #     # care with that - this will alow only custom ordering!
+        #     ordering = [f for f in fields if f in self.allowed_custom_filters]
 
-        The `ordering` query parameter can be overridden by setting
-        the `ordering_param` value on the OrderingFilter or by
-        specifying an `ORDERING_PARAM` value in the API settings.
-        """
-        params = request.query_params.get(self.ordering_param)
-        if params:
-            fields = [param.strip() for param in params.split(',')]
-            # care with that - this will alow only custom ordering!
-            ordering = [f for f in fields if f in self.allowed_custom_filters]
-
-            if ordering:
-                return ordering
+        #     if ordering:
+        #         return ordering
 
         # No ordering was included, or all the ordering fields were invalid
-        return self.get_default_ordering(view)
+        #return self.get_default_ordering(view)
+        # ordering = super().get_ordering(request, queryset, view)
+        # field_map = {
+        #     'y': 'x__y',
+        # }
+        # return [field_map.get(o, o) for o in ordering]
 
     def filter_queryset(self, request, queryset, view):
         ordering = self.get_ordering(request, queryset, view)
@@ -135,7 +134,7 @@ def card_own(request):
         return Response(serializers.data)
 
 
-@api_view(['GET','PUT'])
+@api_view(['GET','PUT','DELETE'])
 def get_lexeme(request, lexemeId):
     try:
         lexeme = Lexeme.objects.get(id=lexemeId)
@@ -162,6 +161,14 @@ def get_lexeme(request, lexemeId):
              
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    if request.method == 'DELETE':
+        account = request.user
+        if request.user and request.user.is_superuser:
+            lexeme.delete()
+            return Response()
+
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 @api_view(['GET'])
@@ -184,8 +191,8 @@ class LexemeView(ListAPIView):
     pagination_class = MyPagination
     pagination_class.page_size = 16
     filter_backends = [MyCustomOrdering, filters.SearchFilter]
-
-    search_fields = ['content__word', 'content__dialectWord', 'content__description']
+    ordering_fields = ['content__word', 'content__dialectWord','date_created' ]
+    search_fields = ['content__word', 'content__dialectWord', 'content__description','content__variety']
 
     def get_serializer_context(self):
         collection = -1
@@ -209,9 +216,9 @@ class LexemeView(ListAPIView):
             except Lexeme.DoesNotExist:
                 return Lexeme.objects.none()
             # check if collection is public or user is owner of collection
-            if collection.author != self.request.user and not collection.public:
+            if not rulemanager.can_see_lexemes_of_collection(collection,self.request.user):
                 return Lexeme.objects.none()
-            queryset = queryset.filter(collections=collection)
+            queryset = queryset.filter(Q(collections=collection)&Q(collectionlexeme__deleted_at__isnull=True))
         if 'mine' in self.request.GET and self.request.user:
             queryset = queryset.filter(author=self.request.user)
 
@@ -239,7 +246,7 @@ def create_lexeme(request):
             if s.is_valid():
                 s.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        lexeme.delete()
+        lexeme.hard_delete()
        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -282,15 +289,22 @@ def like_lexeme(request, lexemeId):
 
 @api_view(['GET'])
 def get_similar_lexemes(request, lexemeId):
+
+    print(request.GET)
     try:
         lexeme = Lexeme.objects.get(pk=lexemeId)
     except Lexeme.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    similars = Lexeme.objects.filter(Q(content__word__gt='') & Q(content__word__isnull=False) & Q(content__word=lexeme.content.word)
-                                     | Q(content__dialectWord=lexeme.content.dialectWord)
-                                     | Q(content__description__gt='') & Q(content__description__isnull=False) & Q(content__description=lexeme.content.description)).exclude(id=lexemeId)
+
+    if 'dialectword' in request.GET:
+        similars = Lexeme.objects.filter(content__dialectWord__iexact=lexeme.content.dialectWord).exclude(id=lexemeId)
+    else:
+        similars = Lexeme.objects.filter(Q(content__word__gt='') & Q(content__word__isnull=False) & Q(content__word__iexact=lexeme.content.word)).exclude(id=lexemeId)
+    
     return Response(LexemeSimpleSerializer(similars, many=True).data)
+
+
 # Dialect
 
 
@@ -361,12 +375,23 @@ def create_example(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, ])
-def create_category(request, pk):
+def create_category_with_lexeme(request, pk):
     lexeme = LexemeContent.objects.get(pk=pk)
     category, created = Category.objects.get_or_create(
         category=request.data['category'])
     serializer = CategorySerializer(category)
     category.lexemes.add(lexeme)
+    if created:
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, ])
+def create_category(request):
+    category, created = Category.objects.get_or_create(
+        category=request.data['category'])
+    serializer = CategorySerializer(category)
     if created:
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     else:
@@ -382,49 +407,39 @@ class CategoryListView(ListAPIView):
 
 
 # Origin
-
-
-@api_view(['GET'])
-def origin_by_zip_or_place(request, zip_or_place):
-    addresses = Address.objects.filter(
-        Q(place__icontains=zip_or_place) | Q(zipcode__startswith=zip_or_place)
-    )
-    serializers = ZipPlaceSerializer(addresses, many=True)
-    return Response(serializers.data, status=status.HTTP_200_OK)
-
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, ])
 def get_home(request):
     account = request.user
     location = account.home
-    serializers = ZipPlaceSerializer(location)
+    serializers = LocationSerializer(location)
     return Response(serializers.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
 def create_address(request):
+
     if request.method == 'POST':
-        serializer = ZipPlaceSerializer(data=request.data)
+        serializer = LocationCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
-def get_locations(request):
-    if request.method == 'GET':
-        if 'zip' in request.GET:
-            locations = Address.objects.filter(
-                zipcode__startswith=request.GET['zip'])
-        elif 'place' in request.GET:
-            locations = Address.objects.filter(
-                place__icontains=request.GET['place'])
-        else:
-            return Response()
-    serializers = ZipPlaceSerializer(locations, many=True)
-    return Response(serializers.data, status=status.HTTP_200_OK)
+# @api_view(['GET'])
+# def get_locations(request):
+#     if request.method == 'GET':
+#         if 'zip' in request.GET:
+#             locations = Address.objects.filter(
+#                 zipcode__startswith=request.GET['zip'])
+#         elif 'place' in request.GET:
+#             locations = Address.objects.filter(
+#                 place__icontains=request.GET['place'])
+#         else:
+#             return Response()
+#     serializers = ZipPlaceSerializer(locations, many=True)
+#     return Response(serializers.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])

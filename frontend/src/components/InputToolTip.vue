@@ -1,7 +1,7 @@
 <template>
-  <v-tooltip bottom max-width="30vh">
+  <v-tooltip v-model="show" bottom max-width="30vh" >
     <template v-slot:activator="{ on }">
-      <v-icon small v-on="on"> mdi-help-circle-outline </v-icon>
+      <v-icon small v-on="on" @click="!show"> mdi-help-circle-outline </v-icon>
     </template>
     {{tip}}
   </v-tooltip>
@@ -9,6 +9,9 @@
 
 <script>
 export default {
-  props:['tip']
+  props:['tip'],
+  data:()=>({
+    show:false
+  })
 }
 </script>

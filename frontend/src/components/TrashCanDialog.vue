@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" scrollable max-width="60vh">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn class='ml-5' v-bind="attrs" v-on="on"  outlined> <v-icon>mdi-trash-can</v-icon></v-btn>
+      <v-list-item v-bind="attrs" v-on="on" >{{$t("general.trash")}}</v-list-item>
     </template>
     <v-card height="80vh">
       <v-card-title>Papierkorb</v-card-title>

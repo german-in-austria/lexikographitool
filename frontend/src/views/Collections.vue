@@ -1,9 +1,28 @@
 <template>
   <v-container  fluid v-scroll="onScroll">
+    <v-row>
+      <v-col>
       <p class="text-h4">{{ $t("collections.title") }}</p>
-      <p class="text-body-1">
+      
+      </v-col>
+      <v-col align="right">
+        <v-menu left>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical </v-icon>
+          </template>
+          <v-list>
+              
+      <trash-can-dialog
+          :itemList="collections"
+          :collection="true"
+      ></trash-can-dialog>
+          </v-list>
+        </v-menu>
+      </v-col>
+      </v-row>
+      <v-row no-gutters><p class="text-body-1">
         {{ $t("collections.desciption") }}
-      </p>
+      </p></v-row>
     <v-row no-gutters class="pt-5">
       <v-text-field
           v-model="search"
@@ -20,10 +39,6 @@
         <v-btn large :value="false"> {{ $t("collections.myCollections") }}</v-btn>
         <v-btn large :value="true">{{ $t("collections.publicCollections") }}</v-btn>
       </v-btn-toggle>
-      <trash-can-dialog
-          :itemList="collections"
-          :collection="true"
-      ></trash-can-dialog>
     </v-row>
     <v-row no-gutters>
       <v-col cols="12" sd="4" md="3" v-if="!pub" class="pa-3">
@@ -103,7 +118,7 @@ export default {
     },
 
     collectionCreated(value) {
-      this.collections.push(value);
+      this.collections.unshift(value);
       this.search = "";
     },
 

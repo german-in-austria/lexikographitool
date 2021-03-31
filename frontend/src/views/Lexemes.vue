@@ -2,9 +2,9 @@
   <v-app>
     <v-container fluid v-scroll="onScroll">
       <div class="sticky">
-        <v-row no-gutters>
-          <v-col cols="12" sm="11"> <p class="text-h3">Wörterecke</p></v-col>
-          <v-col cols="12" sm="1">
+        <v-row  no-gutters>
+          <v-col > <p class="text-h3">Wörterecke</p></v-col>
+          <v-col align="right">
             <v-btn-toggle v-model="view" dense>
               <v-btn><v-icon>mdi-view-grid</v-icon> </v-btn>
               <v-btn> <v-icon>mdi-view-headline</v-icon></v-btn>
@@ -45,7 +45,7 @@
                 <td>{{ item.word }}</td>
                 <td>{{ item.descripton }}</td>
                 <td>{{ item.dialect }}</td>
-                <td>{{ item.origin }}</td>
+                <td><span>{{ item.origin.name }}</span><span v-if="!!item.origin.state">, {{item.origin.state}}</span></td>
                 <td>
                   <CollectionAddLexeme :card-id="item.id"></CollectionAddLexeme>
                 </td>
@@ -74,7 +74,7 @@ export default {
     count: 0,
     loaing: true,
     page: 1,
-    search: "",
+    search: "ordering=-date_created",
     next: null,
     view: 0,
     headers: [

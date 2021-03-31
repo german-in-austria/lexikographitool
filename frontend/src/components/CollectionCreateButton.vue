@@ -60,7 +60,7 @@ export default {
       name: "",
       description: "",
       organization: "",
-      categories: [],
+      categories: {value:[]},
       pub: false,
       canAddLexemePublic: false,
       canRemoveLexemePublic: false,
@@ -69,13 +69,18 @@ export default {
     },
   }),
   methods: {
-    createCollection() {
+    async createCollection() {
+      var categories = this.collection.categories.value.map(x =>{ return x.category})
+
+      for (const item of categories) {
+           await Axios.post("category_create/",{category:item})
+        }
       Axios.post("collection/", {
         name: this.collection.name,
         description: this.collection.description,
         organization: this.collection.organization,
         public: this.collection.pub,
-        categories: this.collection.categories,
+        categories: categories,
         can_add_lexemes_group: this.collection.canAddLexemeGroup,
         can_remove_lexemes_group: this.collection.canRemoveLexemeGroup,
         can_add_lexemes_public: this.collection.canAddLexemePublic,

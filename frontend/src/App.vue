@@ -1,5 +1,5 @@
 <template>
-   <Main></Main>
+   <Main ></Main>
 </template>
 
 <script>
@@ -10,7 +10,7 @@ import Main from "@/views/Main";
 export default {
   components: {Main},
   created () {
-    document.title = "LexikTool";
+    document.title = "Wortgut";
   }
 }
 </script>

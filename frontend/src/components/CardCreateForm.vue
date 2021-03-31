@@ -14,16 +14,10 @@
             :rules="[(v) => !!v || 'Lemma muss angegeben werde']"
             required
         >
-          <template v-slot:append
-          >
-            <input-tool-tip
-                :tip="$t('createWord.lemmaToolTip')"
-            ></input-tool-tip
-            >
-          </template>
+      
         </v-text-field>
       </v-col>
-      <v-col cols="12" v-if="!easy">
+      <v-col cols="12" v-if="!easy & !medium">
         <v-subheader>{{$t('createWord.pronunciation')}}<input-tool-tip
             :tip="$t('createWord.pronunciationToolTip')"
         ></input-tool-tip></v-subheader>
@@ -31,13 +25,7 @@
             :label="$t('createWord.pronunciation')"
             v-model="lexeme.pronunciations"
         >
-          <template v-slot:prepend
-          >
-            <input-tool-tip
-                :tip="$t('createWord.pronunciationToolTip')"
-            ></input-tool-tip
-            >
-          </template>
+        
         </input-multiple>
       </v-col>
 
@@ -49,7 +37,7 @@
         ></input-button-group>
       </v-col>
       <v-expand-transition>
-      <v-col cols="12" v-if="lexeme.kind=='N'">
+      <v-col class="mt-4" cols="12" v-if="lexeme.kind=='N'">
 
         <input-button-group
             v-model="lexeme.genus"
@@ -71,13 +59,7 @@
             v-model="lexeme.word"
             type="lexeme"
         >
-          <template v-slot:append
-          >
-            <input-tool-tip
-                :tip="$t('createWord.lexemeToolTip')"
-            ></input-tool-tip
-            >
-          </template>
+         
         </input-lemma-box>
       </v-col>
       <v-col cols="12">
@@ -85,22 +67,17 @@
           {{$t('createWord.description')}}<input-tool-tip
             :tip="$t('createWord.descriptionToolTip')"
         ></input-tool-tip></v-subheader>
-        <v-text-field
+        <v-textarea
             solo
-
+            rows="2"
+            
             flat
             v-model="lexeme.description"
             :label="$t('createWord.description')"
             required
         >
-          <template v-slot:append
-          >
-            <input-tool-tip
-                :tip="$t('createWord.descriptionToolTip')"
-            ></input-tool-tip
-            >
-          </template>
-        </v-text-field>
+
+        </v-textarea>
       </v-col>
 
       <v-col cols="12" v-if="!easy">
@@ -109,13 +86,6 @@
             :tip="$t('createWord.exampleToolTip')"
         ></input-tool-tip></v-subheader>
         <input-multiple :label="$t('createWord.example')" v-model="lexeme.examples">
-          <template v-slot:append
-          >
-            <input-tool-tip
-                :tip="$t('createWord.exampleToolTip')"
-            ></input-tool-tip
-            >
-          </template>
         </input-multiple>
       </v-col>
 
@@ -126,13 +96,7 @@
             :tip="$t('createWord.etymologyToolTip')"
         ></input-tool-tip></v-subheader>
         <input-multiple :label="$t('createWord.etymology')" v-model="lexeme.etymologies">
-          <template v-slot:append
-          >
-            <input-tool-tip
-                :tip="$t('createWord.etymologyToolTip')"
-            ></input-tool-tip
-            >
-          </template>
+
         </input-multiple>
       </v-col>
 
@@ -143,7 +107,7 @@
           {{$t('createWord.category')}}<input-tool-tip
             :tip="$t('createWord.categoryToolTip')"
         ></input-tool-tip></v-subheader>
-        <card-create-add-category :model="lexeme.categories"></card-create-add-category>
+        <card-create-add-category :solo="true" :model="lexeme.categories"></card-create-add-category>
 
       </v-col>
 
@@ -154,30 +118,16 @@
         ></input-tool-tip></v-subheader>
         <input-lemma-box
             :label="$t('createWord.variety')"
-            v-model="lexeme.dialect"
+            v-model="lexeme.variety"
             type="variety"
         >
-          <template v-slot:append
-          >
-            <input-tool-tip
-                :tip="$t('createWord.varietyToolTip')"
-            ></input-tool-tip
-            >
-          </template>
+
         </input-lemma-box>
       </v-col>
     </v-row>
     <v-row no-gutters class="ma-3 create-section">
       <v-col cols="12">
-        <input-location :loadHome="true" v-model="lexeme.location">
-          <template v-slot:append
-          >
-            <input-tool-tip
-                :tip="$t('createWord.locationToolTip')"
-            ></input-tool-tip
-            >
-          </template>
-        </input-location>
+        <input-field-location :solo="true" :loadHome="loadHome" v-model="lexeme.location"></input-field-location>
       </v-col>
       <v-col cols="12" v-if="!easy">
         <v-textarea
@@ -188,13 +138,7 @@
             :label="$t('createWord.source')"
             single-line
         >
-          <template v-slot:append
-          >
-            <input-tool-tip
-                :tip="$t('createWord.sourceToolTip')"
-            ></input-tool-tip
-            >
-          </template>
+
         </v-textarea>
       </v-col>
       <v-col>
@@ -212,20 +156,20 @@
 import InputLemmaBox from "@/components/InputLemmaBox";
 import InputMultiple from "@/components/InputMultiple";
 import InputButtonGroup from "@/components/InputButtonGroup";
-import InputLocation from "@/components/InputLocation";
+import InputFieldLocation from "@/components/InputFieldLocation";
 import InputToolTip from "./InputToolTip.vue";
 import Axios from "axios";
 import CardCreateAddCategory from "@/components/CardCreateAddCategory";
 
 export default {
-  props: ["lexeme", 'medium', 'easy'],
+  props: ["lexeme", 'medium', 'easy','loadHome'],
   components: {
     CardCreateAddCategory,
     InputButtonGroup,
     InputMultiple,
     InputLemmaBox,
-    InputLocation,
     InputToolTip,
+    InputFieldLocation,
   },
   data: function () {
     return {

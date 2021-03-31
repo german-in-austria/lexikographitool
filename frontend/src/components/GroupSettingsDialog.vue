@@ -1,16 +1,12 @@
 <template>
-  <v-row justify="center">
     <v-dialog v-model="dialog" persistent max-width="30rem" scrollable>
       <template v-slot:activator="{ on, attrs }">
-        <v-icon size="30px" v-bind="attrs" v-on="on"> mdi-cog </v-icon>
+        <v-list-item v-bind="attrs" v-on="on">{{$t("general.settings")}}</v-list-item>
+        
       </template>
       <v-card>
         <v-card-title class="headline">
-          Einstellungen
-          <v-spacer></v-spacer>
-          <v-btn x-small color="error" text @click="deleteGroup">
-            Gruppe löschen
-          </v-btn>
+          {{$t("general.settings")}}
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
@@ -28,7 +24,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-row>
 </template>
 
 <script>
@@ -89,11 +84,6 @@ export default {
           this.dialog = false;
 
         });
-    },
-    deleteGroup() {
-      axios.delete("group/" + this.group.id + "/").then(() => {
-        this.$router.push("/groups/");
-      });
     },
   },
   watch: {

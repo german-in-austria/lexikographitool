@@ -1,8 +1,7 @@
 <template>
   <v-container fluid>
     <p class="text-h3">Suche nach: {{ $route.params.search }}</p>
-
-    <v-list>
+    <v-list v-if="lexemes.length != 0">
       <v-list-item-subtitle>Wörter</v-list-item-subtitle>
       <v-list-item
         v-for="(lexeme, index) in lexemes"
@@ -17,7 +16,7 @@
         <v-btn text @click="loadMoreLexemes"> Mehr..</v-btn>
       </v-list-item>
     </v-list>
-    <v-list>
+    <v-list v-if="collections.length != 0">
       <v-list-item-subtitle>Sammlungen</v-list-item-subtitle>
       <v-list-item
         v-for="(collection, index) in collections"
@@ -33,7 +32,7 @@
       </v-list-item>
     </v-list>
 
-    <v-list>
+    <v-list v-if="groups.length != 0">
       <v-list-item-subtitle>Gruppen</v-list-item-subtitle>
       <v-list-item
         v-for="(group, index) in groups"
@@ -48,6 +47,7 @@
         <v-btn text @click="loadMoreGroups"> Mehr..</v-btn>
       </v-list-item>
     </v-list>
+    <p v-if="groups.length + collections.length + lexemes.length===0">{{$t("search.noResults")}}</p>
   </v-container>
 </template>
 
