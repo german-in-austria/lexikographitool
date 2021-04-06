@@ -2,8 +2,8 @@
   <v-app>
     <v-container fluid v-scroll="onScroll">
       <div class="sticky">
-        <v-row  no-gutters>
-          <v-col > <p class="text-h3">Wörterecke</p></v-col>
+        <v-row >
+          <v-col > <p class="text-h4">Wörterecke</p></v-col>
           <v-col align="right">
             <v-btn-toggle v-model="view" dense>
               <v-btn><v-icon>mdi-view-grid</v-icon> </v-btn>
@@ -11,7 +11,10 @@
             </v-btn-toggle>
           </v-col>
         </v-row>
-        <search-bar v-on:input="search = $event"></search-bar>
+        <v-row no-gutters><p class="text-body-1">
+        {{ $t("lexemes.desciption") }}
+      </p></v-row>
+        <search-bar  v-on:input="search = $event"></search-bar>
       </div>
       <v-row no-gutters v-if="view == 0">
         <v-col
@@ -147,7 +150,6 @@ export default {
 
 <style >
 .sticky {
-  padding-top: 1rem;
   background-color: white;
   position: sticky;
   top: 5rem;

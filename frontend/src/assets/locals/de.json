@@ -1,24 +1,27 @@
 {
   "start": {
     "title": "Willkommen",
-    "introductionText":  "Willkommen bei Wortgut! Auf dieser Seite des Citizen Science Projekt IamDiÖ kannst du Wörter und Informationen zu ihnen, wie Bedeutung, wie sie verwendet werden und weiteres eintragen aber auch suchen. Du kannst die Wörter in Sammlungen zusammenstellen und somit dein eigenes digitales \"Wörterbuch\" erstellen - alleine oder mit anderen. Alle können hier zum/r Lexikographen/in werden.",
+    "introductionText":  "Willkommen bei Wortgut! Auf dieser Seite des Citizen Science Projekt  <a href='http://iam.dioe.at/' target='_blank'>IamDiÖ</a> kannst du Wörter und Informationen zu ihnen, wie Bedeutung, wie sie verwendet werden und Weiteres eintragen, aber auch suchen. Du kannst die Wörter in Sammlungen zusammenstellen und somit dein eigenes digitales „Wörterbuch“ erstellen – alleine oder mit anderen. Alle können hier zum/r Lexikographen/in werden.",
     "popular": "beliebt",
     "discussed": "heiß diskutiert",
     "title2": "Leg gleich los!",
-    "chapter2text":  "Der erste Schritt ist,  ein Wort zu sammeln - du kannst hier alle möglichen Wörter sammeln, die dir einfallen. Zum Beispiel aus einem bestimmten Dialekt, aus einer Jugendsprache, einer Fachsprache, Wörter die üblicherweise in deiner Gegend verwendet werden - jedes Wort ist ein gutes Wort und kann Bestandteil unserer Wortgutsammlung werden. Starte mit deinem ersten Wort:",
+    "chapter2text":  "Der erste Schritt ist, ein Wort zu sammeln – du kannst hier alle möglichen Wörter sammeln, die dir einfallen. Zum Beispiel aus einem bestimmten Dialekt, aus einer Jugendsprache, einer Fachsprache, Wörter, die üblicherweise in deiner Gegend verwendet werden – jedes Wort ist ein gutes Wort und kann Bestandteil unserer Wortgutsammlung werden. Starte mit deinem ersten Wort:",
     "title3": "Was wolltest du schon immer wissen?",
-    "chapter3text":  "Hast du vielleicht ein Wort gehört und kennst dessen Bedeutung nicht? Dann frag' einfach unsere Community. Oder schau' bei {postings} vorbei, welche offenen Fragen es gibt - vielleicht kannst du ja anderen dabei helfen, der Bedeutung, Verwendung oder Herkunft eines Worts auf die Schliche zu kommen. Wortgut versammelt Interessent*innen von überall: Citizen Scientists genauso wie ausgebildete Lexikograph*innen.",
+    "chapter3text":  "Hast du vielleicht ein Wort gehört und kennst dessen Bedeutung nicht? Dann frag einfach unsere Community. Oder schau bei {postings}, welche offenen Fragen es gibt – vielleicht kannst du ja anderen dabei helfen, der Bedeutung, Verwendung oder Herkunft eines Worts auf die Schliche zu kommen. Wortgut versammelt Interessent*innen von überall: Citizen Scientists genauso wie ausgebildete Lexikograph*innen.",
     "postings" : "Fragen"
+  },
+  "lexemes":{
+    "desciption":  "Hier findest du alle Wörter, die in Wortgut gesammelt worden sind und kannst unsere Sammlung durchsuchen und Wörter zu deinen Sammlungen hinzufügen."
   },
   "collections": {
     "title": "Sammlungen",
-    "desciption":  "Hier kannst du eigene Sammlungen erstellen, um verschiedenste Wörter zu sammeln und zu ordnen. Küchenausdrücke, mathematische Begriffe oder doch lieber die Wörter, die in deinem Dorf verwendet werden - du entscheidest was in deine Sammlung kommt! Schau auch nach, welche interessanten Sammlungen andere Mitglieder bereits erstellt und öffentlich gemacht haben.",
+    "desciption":  "Hier kannst du eigene Sammlungen erstellen, um verschiedenste Wörter zu sammeln und zu ordnen. Küchenausdrücke, mathematische Begriffe oder doch lieber die Wörter, die in deinem Dorf verwendet werden – du entscheidest, was in deine Sammlung kommt! Schau auch nach, welche interessanten Sammlungen andere Mitglieder bereits erstellt und veröffentlicht haben.",
     "myCollections": "meine Sammlungen",
     "publicCollections": "alle Sammlungen"
   },
   "groups": {
     "title": "Gruppen",
-    "desciption":  "Hier kannst du deine Gruppen managen.",
+    "desciption":  "Du willst nicht alleine auf die Wörtersammlung gehen? Dann erstelle hier eine Gruppe und lade andere ein, mit dir gemeinsam an Sammlungen zu arbeiten. Du kannst innerhalb einer Gruppe eine Sammlung anlegen, die nur für euch zu sehen ist. So könnt ihr vor der Veröffentlichung in Ruhe gemeinsam an Wörtern und Sammlungen arbeiten. ",
     "myCollections": "meine Gruppen",
     "publicCollections": "alle Gruppen"
   },
@@ -38,8 +41,9 @@
     "discover": "Entdecke neue Wörter",
     "posts": "Fragen"
   },
-  "card_create": {
+  "card_create":{  
     "title": "Wort hinzufügen",
+    "description":"Hier kannst du deine eigenen Wörter nach und nach eintragen. Und zwar in 3 Detailgraden: Beginn am besten als \"Anfänger*in\", wenn du allerdings mehr zu einem Wort zu sagen hast, kannst du sicherlich den \"Sammler*in\"-Modus verwenden. Wenn du schon Expert*in bist, dann kannst du die meisten Informationen als \"Lexikograph*in\" eintragen - bitte vergiss nicht, Quellen anzugeben, wenn du Informationen aus Wörterbüchern oder anderen Quellen verwendest",
     "tab_title1": "Anfänger*in",
     "tab_title2": "Sammler*in",
     "tab_title3": "Lexikograph*in",

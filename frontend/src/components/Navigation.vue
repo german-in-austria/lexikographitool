@@ -3,7 +3,7 @@
   <v-sheet height="100vh" style="border-right: solid; border-right-width: 1px;
    border-color: lightgray" width=auto >
     <v-list color="transparent" class="mt-15">
-      <NavigationListItem link="/neuerStart" icon="mdi-home-outline" name="Start"></NavigationListItem>
+      <NavigationListItem link="/" icon="mdi-home-outline" name="Start"></NavigationListItem>
       <v-divider></v-divider>
       <NavigationListItem v-if="false" link="/" icon="mdi-home-outline" name="Home"></NavigationListItem>
       <v-divider></v-divider>

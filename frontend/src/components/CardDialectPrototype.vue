@@ -30,9 +30,9 @@
               solo
               flat
               dense
-              ref="description"
+              ref="standarddeutsche Entsprechung"
               placeholder="Fußball spielen"
-              v-model="description"
+              v-model="word"
             ></v-text-field>
           </span>
           <p>
@@ -56,7 +56,7 @@
 
           <v-fab-transition>
             <v-btn
-              v-if="isActive && !!this.dialectWord && !!this.description"
+              v-if="isActive && !!this.dialectWord && !!this.word"
               color="primary"
               dark
               absolute
@@ -89,10 +89,9 @@ export default {
     word: "",
     dialectWord: "",
     dialect: "",
-    description: "",
     snackbarSuccessful: false,
     dialectWordActive: false,
-    descriptionActive: false,
+    wordActive: false,
     variatyActive: false,
     isActive: false,
   }),
@@ -110,7 +109,7 @@ export default {
       axios
         .post("lexeme/", {
           dialectWord: this.dialectWord,
-          description: this.description,
+          word: this.word,
         })
         .then((response) => {
           this.$router.push("/lexeme/" + response.data.lexeme);

@@ -7,7 +7,27 @@
     >
       <v-text-field
           solo
-          v-rt-ipa
+          v-if="ipa"
+          v-rt-ipa="true"
+          flat
+          :label="label"
+          v-model="item.value"
+          @input="$emit('input',items)"
+
+      >
+        <template v-slot:append>
+          <v-fab-transition group>
+          <v-icon key="1" v-if="i == items.length-1 && !!item.value" @click="addLine">mdi-plus</v-icon>
+          <v-icon key=2 v-if="!!item.value || i != 0" @click="remove(i)">mdi-delete</v-icon>
+          </v-fab-transition>
+          <slot name='append'></slot>
+        </template>
+       <template v-slot:append-outer v-if="i==0"></template>
+
+      </v-text-field>
+       <v-text-field
+          solo
+          v-else
           flat
           :label="label"
           v-model="item.value"
@@ -34,7 +54,7 @@
 
 export default {
   name: "InputMultiple",
-  props: ['value', 'label'],
+  props: ['value', 'label','ipa'],
   data: () => ({
     text: null,
     asdf: [''],

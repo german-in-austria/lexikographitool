@@ -62,7 +62,7 @@
             Erstellt von <span class="font-weight-bold">{{ card.author }}</span>
           </p>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions v-if="authenticated">
           <v-btn icon>
             <v-icon v-if="!card.liked" @click.prevent="like"
               >mdi-thumb-up-outline</v-icon
@@ -186,6 +186,8 @@ export default {
     },
     ...mapGetters({
       isSuperUser: "auth/isSuperUser",
+      authenticated: "auth/authenticated",
+
     }),
     kind() {
       switch (this.card.kind) {
@@ -223,6 +225,7 @@ export default {
           return null;
       }
     },
+    
   },
 };
 </script>

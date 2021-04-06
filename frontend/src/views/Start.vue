@@ -3,9 +3,9 @@
         <v-row>
           <p class="text-h3">{{ $t("start.title") }}</p>
 
-          <p>
-            {{ $t("start.introductionText") }}
-          </p>
+           <p
+          v-html="$t('start.introductionText')"
+        ></p>
         </v-row>
         <v-row>
           <v-col cols="12" sm="6">
@@ -53,20 +53,20 @@
             </v-hover>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="authenticated">
           <p class="text-h4">{{$t("start.title2")}}</p>
           <p class="">{{$t("start.chapter2text")}}</p>
         </v-row>
-        <v-row no-gutters class="pa-5">
+        <v-row v-if="authenticated" no-gutters class="pa-5">
 
-          <v-col cols="12" md="6" class="ma-auto">
+          <v-col cols="12"  align="center">
             <card-dialect-prototype></card-dialect-prototype>
           </v-col>
 
         </v-row>
 
 
-        <v-row no no-gutters class="mt-10">
+        <v-row v-if="authenticated" no no-gutters class="mt-10">
           <v-col cols="12">
             <p class="text-h4">{{$t("start.title3")}}</p>
 
@@ -102,6 +102,7 @@ import RequestHandler from "@/utils/RequestHandler";
 import CardDialect from "../components/CardDialect.vue";
 import CardDialectPrototype from "../components/CardDialectPrototype.vue";
 import axios from "axios";
+import { mapGetters } from "vuex";
 
 export default {
   components: { CardDialect, CardDialectPrototype },
@@ -135,6 +136,11 @@ export default {
         });
       }
     },
+  },
+  computed: {
+    ...mapGetters({
+      authenticated: "auth/authenticated",
+    }),
   },
 };
 </script>

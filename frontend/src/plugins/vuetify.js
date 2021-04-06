@@ -25,6 +25,7 @@ const vuetify = new Vuetify({
                 card5: colors.pink,
                 card6: colors.cyan,
                 card7: colors.blue,
+                logocolor: "#0364a7"
             },
             dark: {
                 primary: colors.blue.lighten3,

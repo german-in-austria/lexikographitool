@@ -20,8 +20,10 @@
       <v-col cols="12" v-if="!easy & !medium">
         <v-subheader>{{$t('createWord.pronunciation')}}<input-tool-tip
             :tip="$t('createWord.pronunciationToolTip')"
+            
         ></input-tool-tip></v-subheader>
         <input-multiple
+        :ipa="true"
             :label="$t('createWord.pronunciation')"
             v-model="lexeme.pronunciations"
         >
@@ -55,6 +57,7 @@
             :tip="$t('createWord.lexemeToolTip')"
         ></input-tool-tip></v-subheader>
         <input-lemma-box
+            :rules="[(v) => !!v | !!lexeme.description || 'standarddeutsche Entsprechung oder Beschreibung muss angegeben werden']"
             :label="$t('createWord.lexeme')"
             v-model="lexeme.word"
             type="lexeme"
@@ -70,6 +73,7 @@
         <v-textarea
             solo
             rows="2"
+            :rules="[(v) => !!v | !!lexeme.word || 'standarddeutsche Entsprechung oder Beschreibung muss angegeben werden']"
             
             flat
             v-model="lexeme.description"

@@ -1,9 +1,10 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import store from "@/store";
+import VueMeta from 'vue-meta'
 
 Vue.use(Router);
-
+Vue.use(VueMeta)
 const router = new Router({
     mode: 'history',
     scrollBehavior (to, from, savedPosition) {
@@ -16,10 +17,10 @@ const router = new Router({
 
     routes: [{
         path: '/start',
-        name: 'home',
+        name: 'start',
 
-        // component: () => import(/*webpackChunkName: "Home"*/ "./views/Home.vue")
-        component: () => import(/*webpackChunkName: "Home"*/ "./views/ConstructionSite")
+        // component: () => import(/*webpackChunkName: "Start"*/ "./views/Home.vue")
+        component: () => import(/*webpackChunkName: "Home"*/ "./views/Start.vue")
     },
         {
             path: '/collections',
@@ -34,12 +35,6 @@ const router = new Router({
             meta: {requiresAuth: true}
         },
         {
-            path: '/neuerstart',
-            name: 'start',
-            component: () => import(/*webpackChunkName: "Collections"*/ "./views/Start.vue"),
-            meta: {requiresAuth: true}
-        },
-        {
             path: '/search/:search',
             name: 'search',
             component: () => import(/*webpackChunkName: "Search"*/ "./views/Search.vue"),
@@ -49,7 +44,7 @@ const router = new Router({
             path: '/',
             name: 'start',
             // component: () => import(/*webpackChunkName: "Collections"*/ "./views/Start.vue"),
-            component: () => import(/*webpackChunkName: "Collections"*/ "./views/ConstructionSite.vue"),
+            component: () => import(/*webpackChunkName: "Collections"*/ "./views/Start.vue"),
             meta: {requiresAuth: false}
         }, {
             path: '/collections/:id',

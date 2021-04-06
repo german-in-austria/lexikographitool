@@ -25,6 +25,8 @@
         style="background-color: rgb(255, 255, 255, 0.4)"
       ></v-img>
 
+      <v-spacer class="hidden-sm-and-down"></v-spacer>
+      <p class="hidden-sm-and-down text-h3 logocolor--text font-weight-bold mt-2" >WORTGUT</p>
       <v-spacer></v-spacer>
 
       <v-text-field
@@ -63,23 +65,23 @@
         <v-list-item-group
           active-class="deep-purple--text text--accent-4"
         >
-          <v-list-item to="/neuerStart">
+          <v-list-item to="/">
             <v-list-item-icon>
               <v-icon>mdi-home-outline</v-icon>
             </v-list-item-icon>
             <v-list-item-title>Start</v-list-item-title>
           </v-list-item>
-          <v-divider></v-divider>
+          <v-divider v-if="authenticated"></v-divider>
 
-          <v-list-item to="/dashboard">
+          <v-list-item to="/dashboard" v-if="authenticated">
             <v-list-item-icon>
               <v-icon>mdi-view-dashboard-variant-outline</v-icon>
             </v-list-item-icon>
             <v-list-item-title>Pinnwand</v-list-item-title>
           </v-list-item>
 
-          <v-divider></v-divider>
-           <v-list-item to="/account">
+          <v-divider v-if="authenticated"></v-divider>
+           <v-list-item to="/account" v-if="authenticated">
             <v-list-item-icon>
               <v-icon>mdi-cog-outline</v-icon>
             </v-list-item-icon>
@@ -94,11 +96,18 @@
           </v-list-item>
           <v-divider></v-divider>
 
-          <v-list-item  @click="signOut">
+          <v-list-item v-if="authenticated"  @click="signOut">
             <v-list-item-icon>
               <v-icon>mdi-logout</v-icon>
             </v-list-item-icon>
             <v-list-item-title>Abmelden</v-list-item-title>
+          </v-list-item>
+
+          <v-list-item v-if="!authenticated"  to="/login">
+            <v-list-item-icon>
+              <v-icon>mdi-login</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Einloggen</v-list-item-title>
           </v-list-item>
         </v-list-item-group>
       </v-list>

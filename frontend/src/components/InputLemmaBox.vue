@@ -11,7 +11,7 @@
               :items="items"
               append-icon=""
               :required="true"
-              :rules="[(v) => !!v || 'Lemma muss angegeben werde']"
+              :rules="rules"
 
   ><template v-slot:append><slot name="append"></slot></template>
   </v-combobox>
@@ -24,7 +24,7 @@ import Axios from 'axios';
 
 export default {
   name: "InputLemmaBox",
-  props: ['value','label','type','required'],
+  props: ['value','label','type','required','rules'],
   data: () => ({
     text:null,
     items:[],

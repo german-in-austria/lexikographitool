@@ -41,7 +41,7 @@ class Address(models.Model):
     longitude = models.CharField(max_length=100, null=True,blank=True)
 
 
-class Lexeme(models.Model):
+class Lexeme(SoftDeletionModel):
     liked_from = models.ManyToManyField('account.Account', related_name='collections',through = 'LikeLexeme')
     date_created = models.DateTimeField(
          verbose_name='date joined', auto_now_add=True)
@@ -55,9 +55,9 @@ class LexemeContent(SoftDeletionModel):
     date_created = models.DateTimeField(
          verbose_name='date joined', auto_now_add=True)
     word = models.CharField(max_length=100, null=True, blank=True)
-    source = models.CharField(max_length=500, null=True, blank=True)
+    source = models.TextField(null=True, blank=True)
     variety = models.CharField(max_length=100, null=True, blank=True)
-    description = models.CharField(max_length=500, null=True,blank=True)
+    description = models.TextField( null=True,blank=True)
     kind = models.CharField(max_length=255, choices=CHOICE_KIND,null=True)
     genus = models.CharField(max_length=255, choices=CHOICE_GENUS,null=True)
     dialectWord = models.CharField(max_length=100)
@@ -83,7 +83,7 @@ class Category(models.Model):
 
 
 class Example(models.Model):
-    example = models.CharField(max_length=100)
+    example = models.TextField()
     dialectWord = models.ForeignKey(LexemeContent, related_name='examples', on_delete=models.CASCADE)
 
     def __str__(self):
@@ -99,14 +99,14 @@ class Pronunciation(models.Model):
 
 
 class Etymology(models.Model):
-    etymology = models.CharField(max_length=100)
+    etymology = models.TextField()
     dialectWord = models.ForeignKey(LexemeContent, related_name='etymologies', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.etymology
 
 class Report(models.Model):
-    message = models.CharField(max_length=100)
+    message = models.TextField()
     lexeme = models.ForeignKey(Lexeme, related_name='reports', on_delete=models.CASCADE)
     content = models.ForeignKey(LexemeContent, related_name='reports', on_delete=models.CASCADE)
     date_created = models.DateTimeField(

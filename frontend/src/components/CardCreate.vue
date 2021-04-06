@@ -1,10 +1,8 @@
 <template>
   <v-container fluid>
-    <v-text-field v-rt-ipa="true" />
-    <input v-rt-ipa="true" />
-
-    
+     
     <p class="text-h3">{{ $t("card_create.title") }}</p>
+    <p class="text-body-1">{{ $t("card_create.description") }}</p>
     <v-tabs v-model="tab" align-with-title>
       <v-tabs-slider color="yellow"></v-tabs-slider>
 
@@ -14,14 +12,29 @@
     </v-tabs>
     <v-tabs-items v-model="tab">
       <v-tab-item>
+        <v-form
+              ref="create"
+              @submit="submit"
+              v-model="valid">
         <card-create-form :easy="true" :loadHome="true" :lexeme="lex"></card-create-form>
+        </v-form>
       </v-tab-item>
       <v-tab-item>
+         <v-form
+              ref="create"
+              @submit="submit"
+              v-model="valid">
         <card-create-form :medium="true" :lexeme="lex" :loadHome="true"></card-create-form>
-      </v-tab-item>
+      
+         </v-form></v-tab-item>
       <v-tab-item>
+         <v-form
+              ref="create"
+              @submit="submit"
+              v-model="valid">
         <card-create-form :lexeme="lex" :loadHome="true"></card-create-form>
-      </v-tab-item>
+      
+         </v-form></v-tab-item>
     </v-tabs-items>
     <v-row no-gutters class="ma-3 create-section">
       <v-col cols="12">
@@ -32,7 +45,7 @@
       </v-col>
     </v-row>
     <v-col>
-      <v-btn color="primary" @click="createNewLexeme('leave')">{{
+      <v-btn color="primary" @click="submit">{{
         $t("card_create.createButton1")
       }}</v-btn>
     </v-col>
@@ -145,8 +158,9 @@ export default {
         this.resetPartForm();
     },
     submit() {
-      if (this.$refs.form_normal.validate()) {
-        this.createNewLexeme();
+      console.log(this.$refs)
+      if (this.$refs.create.validate()) {
+        this.createNewLexeme('leave');
       }
     },
     addToCollection(lexemeId) {

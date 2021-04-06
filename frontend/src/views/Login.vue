@@ -42,6 +42,7 @@
                 </v-col>
                 <v-col class="d-flex" cols="12" sm="6" xsm="12"> </v-col>
                 <v-spacer></v-spacer>
+              <v-col><reset-password-dialog></reset-password-dialog></v-col>
                 <v-col class="d-flex" cols="12" sm="3" xsm="12" align-end>
                   <v-btn
                     x-large
@@ -68,6 +69,7 @@
                     v-model="email"
                     :rules="emailRules"
                     label="E-mail"
+                    hint="wird benötigt damit das Passwort zurückgesetzt werden kann."
                     required
                   ></v-text-field>
                 </v-col>
@@ -112,6 +114,14 @@
                     @click:append="show1 = !show1"
                   ></v-text-field>
                 </v-col>
+                <v-col cols="12">
+                  <v-checkbox v-model="dataprotection"
+                  
+                    :rules="[rules.required]">
+                    <template v-slot:label><p>Ich habe die <data-protection-dialog></data-protection-dialog> gelesen und akzeptiere sie.</p></template></v-checkbox
+                  >
+                  
+                </v-col>
 
                 <v-spacer></v-spacer>
                 <v-col class="d-flex ml-auto" cols="12" sm="3" xsm="12">
@@ -148,25 +158,27 @@
 <script>
 import Login from "@/objects/Login";
 import Register from "@/objects/Register";
-import {mapActions} from 'vuex'
-import InputFieldLocation from '../components/InputFieldLocation.vue';
-import axios from 'axios';
+import { mapActions } from "vuex";
+import InputFieldLocation from "../components/InputFieldLocation.vue";
+import DataProtectionDialog from "../components/DataProtectionDialog.vue";
+import axios from "axios";
+import ResetPasswordDialog from '../components/ResetPasswordDialog.vue';
 
 export default {
-  components: { InputFieldLocation },
+  components: { InputFieldLocation, DataProtectionDialog,
+    ResetPasswordDialog },
   data: () => ({
-    successMessage:'Erfolgreich',
-
+    successMessage: "Erfolgreich",
+    dataprotection:false,
     snackbarSuccessful: false,
     snackbarFailure: false,
-    failureMessage:'Fehler!',
+    failureMessage: "Fehler!",
     dialog: false,
     tab: null,
     tabs: [
-      {name: "Login", icon: "mdi-account"},
+      { name: "Login", icon: "mdi-account" },
 
-     // {name: "Registrieren", icon: "mdi-account-outline"},
-
+      { name: "Registrieren", icon: "mdi-account-outline" },
     ],
     valid: true,
     age: 21,
@@ -174,27 +186,28 @@ export default {
     password: "",
     username: "",
     verify: "",
-    location:{name:''},
+    location: { name: "" },
     loginPassword: "",
     loginEmail: "",
     loginEmailRules: [
-      v => !!v || "wird benötigt",
-      v => /.+@.+\..+/.test(v) || "E-mail ist ungültig"
+      (v) => !!v || "wird benötigt",
+      (v) => /.+@.+\..+/.test(v) || "E-mail ist ungültig",
     ],
     emailRules: [
-      v => !!v || "wird benötigt",
-      v => /.+@.+\..+/.test(v) || "E-mail ist ungültig"
+      (v) => !!v || "wird benötigt",
+      (v) => /.+@.+\..+/.test(v) || "E-mail ist ungültig",
     ],
     show1: false,
     rules: {
-      required: value => !!value || "wird benötigt",
-      min: v => (v && v.length >= 8) || "mindestens 8 Zeichen"
-    }
+      required: (value) => !!value || "wird benötigt",
+      min: (v) => (v && v.length >= 8) || "mindestens 8 Zeichen",
+    },
   }),
   computed: {
     passwordMatch() {
-      return () => this.password === this.verify || "Passwörter stimmen nicht überein";
-    }
+      return () =>
+        this.password === this.verify || "Passwörter stimmen nicht überein";
+    },
   },
   methods: {
     validate() {
@@ -212,46 +225,52 @@ export default {
     },
     login() {
       if (this.$refs.loginForm.validate()) {
-        this.signIn(new Login(this.loginEmail, this.loginPassword)).then(() => {
-              if(this.$route.query.nextUrl)
-                this.$router.push(this.$route.query.nextUrl)
-          else
-                this.$router.push('/')
-            }
-        ).catch(()=>{
-          this.failureMessage = 'Benutzername oder Passwort stimmen nicht!'
-          this.snackbarFailure = true
-        })
-
-    }
-  },
-  async register() {
-    if (this.$refs.registerForm.validate()) {
+        this.signIn(new Login(this.loginEmail, this.loginPassword))
+          .then(() => {
+            if (this.$route.query.nextUrl)
+              this.$router.push(this.$route.query.nextUrl);
+            else this.$router.push("/");
+          })
+          .catch(() => {
+            this.failureMessage = "Benutzername oder Passwort stimmen nicht!";
+            this.snackbarFailure = true;
+          });
+      }
+    },
+    async register() {
+      if (this.$refs.registerForm.validate()) {
         //first create new location, then register
-        try{
-        let location = await axios.post('location/', this.location)
-          
-        this.signUp(new Register(this.username, this.email, this.password, this.password, location.data.id, this.age))
-        if(this.$route.query.nextUrl)
-          this.$router.push(this.$route.query.nextUrl)
-        else
-          this.$router.push('/')
-        }
-        catch{
-          this.failureMessage = 'Benutzername oder Passwort stimmen nicht!'
-          this.snackbarFailure = true
+        try {
+          let location = await axios.post("location/", this.location);
+
+          this.signUp(
+            new Register(
+              this.username,
+              this.email,
+              this.password,
+              this.password,
+              location.data.id,
+              this.age
+            )
+          );
+          if (this.$route.query.nextUrl)
+            this.$router.push(this.$route.query.nextUrl);
+          else this.$router.push("/");
+        } catch {
+          this.failureMessage = "Benutzername oder Passwort stimmen nicht!";
+          this.snackbarFailure = true;
         }
       }
+    },
+    ...mapActions({
+      signIn: "auth/signIn",
+      signUp: "auth/register",
+    }),
+    updateParent: function () {
+      this.$emit("inputData", this.zip);
+    },
   },
-  ...mapActions({
-    signIn: 'auth/signIn',
-    signUp: 'auth/register',
-
-  }),
-  updateParent: function () {
-    this.$emit('inputData', this.zip)
-  },},
-}
+};
 </script>
 
 <style scoped>
