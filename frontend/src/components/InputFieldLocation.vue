@@ -1,6 +1,8 @@
 <template>
   <div>
+    <v-form autocomplete="off">
     <v-autocomplete
+       autocomplete="off"
       :solo="solo"
       flat
       v-model="valueComp"
@@ -28,8 +30,9 @@
           </v-list-item-content>
         </v-list-item>
       </template></v-autocomplete
-    >
+    ></v-form>
   </div>
+
 </template>
 
 <script>

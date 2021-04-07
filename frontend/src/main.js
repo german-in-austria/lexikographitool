@@ -12,7 +12,9 @@ import VueI18n from "vue-i18n";
 import "@/sass/variables.scss"
 import VueHtmlToPaper from "vue-html-to-paper";
 import ipaDirectives from './directives/ipa.js'
+
 Vue.directive('rt-ipa', ipaDirectives)
+
 
 Vue.config.productionTip = false
 require('@/store/subscriber')
