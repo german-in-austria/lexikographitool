@@ -46,7 +46,7 @@
               <tr v-for="(item, index) in items" :key="index">
                 <td>{{ item.dialectWord }}</td>
                 <td>{{ item.word }}</td>
-                <td>{{ item.descripton }}</td>
+                <td>{{ item.description }}</td>
                 <td>{{ item.dialect }}</td>
                 <td><span>{{ item.origin.name }}</span><span v-if="!!item.origin.state">, {{item.origin.state}}</span></td>
                 <td>

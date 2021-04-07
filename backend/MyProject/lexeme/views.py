@@ -191,7 +191,7 @@ class LexemeView(ListAPIView):
     pagination_class = MyPagination
     pagination_class.page_size = 16
     filter_backends = [MyCustomOrdering, filters.SearchFilter]
-    ordering_fields = ['content__word', 'content__dialectWord','date_created' ]
+    ordering_fields = ['content__word', 'content__dialectWord','date_created']
     search_fields = ['content__word', 'content__dialectWord', 'content__description','content__variety']
 
     def get_serializer_context(self):

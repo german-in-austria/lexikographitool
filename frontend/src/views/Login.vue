@@ -131,7 +131,7 @@
                     :disabled="!valid"
                     color="success"
                     @click="register"
-                    >Register</v-btn
+                    >Registrieren</v-btn
                   >
                 </v-col>
               </v-row>

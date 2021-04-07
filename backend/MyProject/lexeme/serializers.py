@@ -161,6 +161,8 @@ class CardSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_word(self, obj):
+        if not obj.content:
+            return None
         return obj.content.word
 
     def get_variety(self, obj):

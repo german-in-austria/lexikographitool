@@ -106,7 +106,7 @@ export default {
     ],
     orderItems: [
       { text: this.$t("card.lemma"), value: "content__dialectWord" },
-      { text: this.$t("card.lexeme"), value: "content_word" },
+      { text: this.$t("card.lexeme"), value: "content__word" },
       { text: this.$t("searchbar.created_at"), value: "date_created" },
     ],
     filters: [],

@@ -22,18 +22,17 @@
           </span>
         </p>
       </v-col>
-      <v-col align="right">
+      <v-col align="right" v-if="collection.is_owner">
         <v-menu left>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical </v-icon>
           </template>
           <v-list>
               <collection-settings-dialog
-                v-if="collection.is_owner"
                 :collection="collection"
               ></collection-settings-dialog>
             <collection-detail-trash-can-dialog
-              v-if="collection.is_owner"
+
               :collectionId="collection.id"
               :lexemes="lexemes"
             ></collection-detail-trash-can-dialog>

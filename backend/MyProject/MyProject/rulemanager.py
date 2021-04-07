@@ -53,7 +53,7 @@ def can_add_collection_to_group(group,user):
     is_authorized = is_authorized or user in group.members.all() and group.settings.members_create_collection
 
     #if public and allowed
-    is_authorized = is_authorized or group.settings.public and group.settings.members_create_collection
+    is_authorized = is_authorized or group.settings.public and group.settings.public_create_collection
     return is_authorized
 
 
