@@ -102,6 +102,6 @@ def reset_password(request):
 
     user.set_password(newPassword)
     user.save()
-    send_mail('Neues Password', 'Dein neues Passwort lautet: {} '.format(newPassword), 'noreply@dioe.at',
+    send_mail('Neues Password', u'Hallo {}, \ndein Passwort wurde erfolgreich zurückgesetzt lautet:\n{}\n\nDu kannst in den Profileinstellungen dein Passwort wieder ändern.\nWir wünschen dir noch viel Spaß auf Wortgut!'.format(user.username,newPassword), 'noreply@dioe.at',
               [email], fail_silently=False, )
     return Response()
