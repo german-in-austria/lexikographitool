@@ -9,21 +9,18 @@ import PerfectScrollbar from 'vue2-perfect-scrollbar'
 import 'vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css'
 import de from "./assets/locals/de.json"
 import VueI18n from "vue-i18n";
-import "@/sass/variables.scss"
 import VueHtmlToPaper from "vue-html-to-paper";
 import ipaDirectives from './directives/ipa.js'
-
+import VueMeta from "vue-meta";Vue.use(VueMeta)
 Vue.directive('rt-ipa', ipaDirectives)
 
 
-Vue.config.productionTip = false
 require('@/store/subscriber')
 Vue.use(VueHtmlToPaper);
 Vue.use(PerfectScrollbar)
 Vue.use(VueI18n)
 // axios.defaults.baseURL = '/api/'
 axios.defaults.baseURL = process.env.VUE_APP_API_ENDPOINT
-console.log(process.env.VUE_APP_API_ENDPOINT)
 
 const i18n = new VueI18n({
   locale: 'de', // set locale

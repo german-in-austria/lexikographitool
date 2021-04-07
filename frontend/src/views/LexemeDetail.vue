@@ -3,6 +3,7 @@
     <v-row>
       <v-col cols="12" lg="">
         <card-dialect
+            :all-information="true"
           style="max-width: 25rem; margin: auto"
           :card="lexeme"
         >

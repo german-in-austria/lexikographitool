@@ -96,6 +96,7 @@ export default {
   name: "SearchBar",
   data: function () {
     return {
+      show:false,
     selectItems: [
       { text: this.$t("card.lemma"), value: "dialectWord", disabled: false },
       { text: this.$t("card.meaning"), value: "description", disabled: false },

@@ -1,11 +1,13 @@
 import Vue from 'vue';
-import Router from 'vue-router';
+import VueRouter from 'vue-router';
 import store from "@/store";
 import VueMeta from 'vue-meta'
 
-Vue.use(Router);
-Vue.use(VueMeta)
-const router = new Router({
+Vue.use(VueRouter);
+Vue.use(VueMeta,{
+    keyName: 'head'
+})
+const router = new VueRouter({
     mode: 'history',
     scrollBehavior (to, from, savedPosition) {
         if (savedPosition) {

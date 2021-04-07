@@ -2,9 +2,9 @@
   <div>
     <v-hover v-slot="{ hover }">
       <v-card
-        :elevation="hover ? 5 : 0"
-        outlined
-        :to="'/lexeme/' + card.id"
+        :elevation="hover && !allInformation ? 5 : 0"
+
+        :to="allInformation ? false : '/lexeme/' + card.id"
         :color="color + ' lighten-4'"
         class="transition-swing"
       >
@@ -23,7 +23,7 @@
           <p v-if="card.description && !!card.word">
             Beschreibung: {{ card.description }}
           </p>
-          <p v-if="!!card.examples && card.examples.length && !small">
+          <p v-if="!!card.examples && card.examples.length && allInformation">
             Beispiel:
             <span v-for="(example, index) in card.examples" :key="index">
               {{ example.example }},
@@ -34,7 +34,7 @@
 
           <p>Verwendet in {{ card.origin.name }}</p>
 
-          <p v-if="!!card.categories && card.categories.length && !small">
+          <p v-if="!!card.categories && card.categories.length && allInformation">
             Kategorie:
             <span v-for="(category, index) in card.categories" :key="index">
               {{ category.category }},
@@ -42,7 +42,7 @@
           </p>
 
           <p
-            v-if="!!card.pronunciations && card.pronunciations.length && !small"
+            v-if="!!card.pronunciations && card.pronunciations.length && allInformation"
           >
             Aussprache:
             <span
@@ -53,7 +53,7 @@
             </span>
           </p>
 
-          <p v-if="!!card.etymologies && card.etymologies.length && !small">
+          <p v-if="!!card.etymologies && card.etymologies.length && allInformation">
             Etymologie:
             <span v-for="(etymology, index) in card.etymologies" :key="index">
               {{ etymology.etymology }},
@@ -127,7 +127,7 @@ import { mapGetters } from "vuex";
 import axios from "axios";
 export default {
   components: { CollectionAddLexeme, ReportDialog, LexemeEditDialog },
-  props: ["card", "small"],
+  props: ["card", "allInformation"],
   name: "CardDialect",
   data: () => ({
     collectionsDialog: false,
@@ -232,4 +232,7 @@ export default {
 </script>
 
 <style scoped>
+p{
+  margin-bottom: 2px;
+}
 </style>
