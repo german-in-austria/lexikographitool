@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" scrollable max-width="60vh">
+  <v-dialog v-model="dialog" scrollable max-width="90vh">
     <template v-slot:activator="{ on, attrs }">
       <a v-bind="attrs" v-on="on"> Datenschutrichtlinien </a>
     </template>

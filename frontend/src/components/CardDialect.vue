@@ -9,15 +9,16 @@
         class="transition-swing"
       >
         <v-card-text class="text-body-2">
+          <p v-if="card.sensitive" ><v-icon color="error"> mdi-alert</v-icon> <span class="text-caption error--text"> {{$t("card.sensitive")}}</span>
+          </p>
           <span>{{ card.word }}</span>
           <span v-if="!card.word">{{ card.description }}</span>
 
           <p :class="color + '--text text--darken-4 text-h4'">
             {{ card.dialectWord }}
-            <v-icon v-if="card.sensitive" color="red"> mdi-alert</v-icon>
           </p>
-          <p v-if="card.kind">{{ kind }}</p>
-          <p v-if="card.kind === 'N'">{{ genus }}</p>
+          <p ><span v-if="card.kind">{{ kind }}</span><span v-if="card.kind === 'N'">, {{ genus }}</span>
+          </p>
 
           <p v-if="card.description && !!card.word">
             Beschreibung: {{ card.description }}

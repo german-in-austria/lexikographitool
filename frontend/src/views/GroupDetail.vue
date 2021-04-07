@@ -1,15 +1,15 @@
 <template>
   <v-container fluid v-if="group">
     <v-row no-gutters>
-      <v-col cols="12" sm="8">
-        <v-row>
-          <v-col >
+      <v-col cols="12" >
+        <v-row no-gutters>
+          <v-col col="12">
             <p class="text-h3">{{ group.name }}</p>
-            <p class="text-h5">{{ group.description }}</p>
-            <p class="text-h5">{{ group.organization }}</p>
+            <p class="text-body-2">{{ group.organization }}</p>
+            <p class="text-body-1">{{ group.description }}</p>
           </v-col>
-          <v-col align="right">
-            <v-menu left>
+          <v-col align="right" cols="1">
+            <v-menu left v-if="group.is_member">
               <template v-slot:activator="{ on, attrs }">
                 <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical </v-icon>
               </template>
@@ -18,6 +18,8 @@
                   :group="group"
                   v-if="group.is_owner"
                 ></group-settings-dialog>
+                <GroupDetailMemberDialog v-if="group.is_member" :group="group"></GroupDetailMemberDialog>
+                <group-detail-invitation-link-dialog v-if="group.is_owner"></group-detail-invitation-link-dialog>
                 <v-list-item v-if="!group.is_owner" @click="leaveGroup"
                   ><span class="error--text">{{
                     $t("groupDetails.leaveGroup")
@@ -30,6 +32,8 @@
                 >
               </v-list>
             </v-menu>
+            <v-btn outlined v-if="!group.is_member & group.can_join & !group.requires_password" @click="join">Gruppe beitreten</v-btn>
+            <group-detail-join-with-password-dialog v-if="!group.is_member & group.can_join & group.requires_password" :group="group"></group-detail-join-with-password-dialog>
           </v-col>
         </v-row>
         <v-row no-gutters class="mt-5">
@@ -55,49 +59,10 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-divider
-        :vertical="!$vuetify.breakpoint.xs"
-        style="height: 83vh"
-        class="mx-5"
-      ></v-divider>
-      <v-col cols="12" sm="3">
-        <v-list>
-          <v-list-item v-if="group.is_owner">
-            <v-text-field
-              v-model="inviteLink"
-              id="tocopy"
-              append-icon="mdi-content-copy"
-              @click:append="copyText"
-              outlined
-              readonly
-              label="Einladungs-Link"
-            ></v-text-field>
-          </v-list-item>
-          <v-subheader class="text-h6">Mitglieder</v-subheader>
-          <v-list-item>
-            <v-list-item-title>
-              {{ group.owner.username }}
-            </v-list-item-title>
-          </v-list-item>
-          <v-list-item
-            v-for="(member, index) in group.members"
-            :key="member.username"
-          >
-            <v-list-item-title>
-              {{ member.username }}
-            </v-list-item-title>
-            <v-list-item-icon v-if="group.is_owner"
-              ><v-icon @click="removeMember(member.username, index)"
-                >mdi-delete</v-icon
-              ></v-list-item-icon
-            >
-          </v-list-item>
-        </v-list>
-      </v-col>
+
+
     </v-row>
-    <v-snackbar v-model="snackbar" :timeout="1000" color="info">
-      Kopiert
-    </v-snackbar>
+
   </v-container>
 </template>
 
@@ -108,8 +73,14 @@ import CollectionCreateButton from "../components/CollectionCreateButton";
 import { mapGetters } from "vuex";
 import GroupSettingsDialog from "@/components/GroupSettingsDialog";
 import axios from "axios";
+import GroupDetailMemberDialog from "@/components/GroupDetailMemberDialog";
+import GroupDetailInvitationLinkDialog from "@/components/GroupDetailInvitationLinkDialog";
+import GroupDetailJoinWithPasswordDialog from "@/components/GroupDetailJoinWithPasswordDialog";
 export default {
-  components: { GroupSettingsDialog, CardCollection, CollectionCreateButton },
+  components: {
+    GroupDetailJoinWithPasswordDialog,
+    GroupDetailInvitationLinkDialog,
+    GroupDetailMemberDialog, GroupSettingsDialog, CardCollection, CollectionCreateButton },
   data: () => ({
     snackbar: false,
     users: [],
@@ -119,6 +90,7 @@ export default {
     loadUsers: null,
     collectionAdd: "",
     inviteLink: "",
+    password:'',
   }),
   mounted() {
     RequestHandler.getGroup(this.$route.params.id).then((response) => {
@@ -134,20 +106,9 @@ export default {
     });
   },
   methods: {
-    addMember() {
-      RequestHandler.addMemberToGroup(this.$route.params.id, this.user).then(
-        (response) => (this.group = response.data)
-      );
-    },
-    removeMember(user, listindex) {
-      axios
-        .delete("group/" + this.$route.params.id + "/" + user + "/")
-        .then(() => {
-          this.group.members.splice(listindex, 1);
-        });
-    },
+
     leaveGroup() {
-      axios.post("group/leave/" + this.group.id + "/");
+      axios.post("group/leave/" + this.group.id + "/").then(()=>this.$router.go());
     },
     collectionCreated(value) {
       this.group.collections.push(value);
@@ -155,17 +116,18 @@ export default {
         .put("/collection/group/" + value.id + "/" + this.group.id + "/")
         .then(() => this.$router.push("/collections/" + value.id));
     },
-    copyText() {
-      let input = document.getElementById("tocopy");
-      input.select();
-      document.execCommand("copy");
-      this.snackbar = true;
-    },
+
 
     deleteGroup() {
       axios.delete("group/" + this.group.id + "/").then(() => {
         this.$router.push("/groups/");
       });
+    },
+    join() {
+      axios.post('join/' + this.$route.params.id + '/', {
+        password: this.password
+      }).then(() => this.$router.go())
+
     },
   },
   watch: {

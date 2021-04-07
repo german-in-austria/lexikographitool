@@ -16,12 +16,14 @@ class GroupSerializer(serializers.ModelSerializer):
     owner = UserNameSerializer(read_only=True)
     is_owner = serializers.SerializerMethodField('check_if_owner')
     can_create_collection = serializers.SerializerMethodField()
-    is_owner = serializers.SerializerMethodField('check_if_owner')
+    is_member = serializers.SerializerMethodField()
+    can_join = serializers.SerializerMethodField()
+    requires_password = serializers.SerializerMethodField()
 
     class Meta:
         model = Group
-        fields = ['id', 'name', 'description', 'members', 'collections', 'owner', 'is_owner', 'can_create_collection',
-                  'organization']
+        fields = ['id', 'name', 'description', 'members', 'collections', 'owner', 'is_owner','is_member','can_create_collection',
+                  'organization', 'can_join','requires_password']
 
     def check_if_owner(self, group):
         if 'account' in self.context:
@@ -35,6 +37,16 @@ class GroupSerializer(serializers.ModelSerializer):
         
         return rulemanager.can_add_collection_to_group(group,user)
 
+    def get_is_member(self, group):
+        if 'account' in self.context:
+            return self.context['account'] == group.owner or self.context['account'] in group.members.all()
+        return False
+
+    def get_can_join(self, group):
+        return group.settings.public_can_join
+
+    def get_requires_password(self, group):
+        return group.settings.need_password
 
 class GroupNameSerializer(serializers.ModelSerializer):
     requires_password = serializers.SerializerMethodField()

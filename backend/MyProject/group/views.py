@@ -164,23 +164,26 @@ def get_invite_link(request, groupId):
 @permission_classes([IsAuthenticated, ])
 def join_group(request, groupId):
     account = request.user
-    print(request.data)
     try:
         group = Group.objects.get(id=groupId)
     except Group.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    try:
-        decoded = jwt.decode(request.data['hash'], "secret", algorithms=["HS256"])
-    except jwt.ExpiredSignatureError:
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    #if public join is deactivated, hash is required
+    if not group.settings.public_can_join:
+        try:
+            decoded = jwt.decode(request.data['hash'], "secret", algorithms=["HS256"])
+        except jwt.ExpiredSignatureError:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        if 'groupId' not in decoded or 'groupId' not in decoded and groupId != decoded['groupId']:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
     if group.settings.need_password and group.settings.join_password != request.data['password']:
         return Response("Wrong password",status=status.HTTP_401_UNAUTHORIZED,)
 
-    if 'groupId' in decoded:
-        if groupId == decoded['groupId']:
-            group.members.add(account)
+
+    group.members.add(account)
     return Response()
 
 

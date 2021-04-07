@@ -7,6 +7,7 @@ class GroupSettings(models.Model):
     members_create_collection = models.BooleanField(default=True)
 
     public_create_collection = models.BooleanField(default=False)
+    public_can_join = models.BooleanField(default=False)
 
     need_password = models.BooleanField(default=False)
     join_password = models.CharField(max_length=100, null=True,blank=True)

@@ -32,7 +32,10 @@
   },
   "groupDetails":{
     "leaveGroup":"Gruppe verlassen",
-    "deleteGroup": "Gruppe löschen"
+    "deleteGroup": "Gruppe löschen",
+    "members" : "Mitglieder",
+    "owner": "Besitzer*In",
+    "invitationLink": "Einladungs-Link"
   },
   "dashboard": {
     "title": "Meine Pinnwand",
@@ -161,8 +164,8 @@
     "variety" : "Varietät",
     "kind":"Wortart",
     "category":"Kategorie",
-    "removeFromCollection": "Wort aus Sammlung entfernen"
-
+    "removeFromCollection": "Wort aus Sammlung entfernen",
+    "sensitive": "vulgär oder beleidigend"
 
   },
   "searchbar":{

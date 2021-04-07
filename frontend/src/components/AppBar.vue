@@ -57,7 +57,7 @@
           </v-btn>
         </v-btn-toggle>
 
-        <v-btn v-else to="/login" class="mb-4">Login</v-btn>
+        <v-btn outlined v-else to="/login" class="mb-4">Login</v-btn>
       </div>
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" app fixed temporary>
