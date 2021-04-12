@@ -1,22 +1,27 @@
 <template>
-  <div>
-    <v-hover v-slot="{ hover }">
-      <v-card
-        @click.prevent="dialog = true"
-        :elevation="hover ? 4 : 0"
-        class="mx-auto"
-        outlined
-      >
-        <v-card-actions class="justify-center"
-          ><v-icon
-            size="48
-"
-            >mdi-plus</v-icon
-          ></v-card-actions
-        >
-      </v-card>
-    </v-hover>
-    <v-dialog v-model="dialog" width="500">
+  <div >
+    <slot :dialog="dialog">
+
+<!--    <v-hover v-slot="{ hover }">-->
+<!--      <v-card-->
+<!--        @click.prevent="dialog.dialog = true"-->
+<!--        :elevation="hover ? 4 : 0"-->
+<!--        class="mx-auto"-->
+<!--        outlined-->
+<!--      >-->
+<!--        <v-card-actions class="justify-center"-->
+<!--          ><v-icon-->
+<!--            size="48-->
+<!--"-->
+<!--            >mdi-plus</v-icon-->
+<!--          ></v-card-actions-->
+<!--        >-->
+<!--      </v-card>-->
+
+<!--    </v-hover>-->
+    </slot>
+
+    <v-dialog v-model="dialog.dialog" width="500">
       <v-card>
         <v-card-title>
           <span class="headline">Neue Sammlung</span>
@@ -50,7 +55,7 @@ export default {
   name: "CollectionCreateButton",
   props: ["organization",'group'],
   data: () => ({
-    dialog: false,
+    dialog: {dialog:false},
     collectionTitle: "",
     collectionDescription: "",
     collectionCategories: [],
@@ -87,7 +92,7 @@ export default {
         can_remove_lexemes_public: this.collection.canRemoveLexemePublic,
       }).then((response) => {
         this.$emit("created", response.data);
-        this.dialog = false;
+        this.dialog.dialog = false;
         this.collectionTitle = "";
       });
     },

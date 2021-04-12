@@ -145,6 +145,7 @@ class CardSerializer(serializers.ModelSerializer):
     liked = serializers.SerializerMethodField(read_only=True)
 
     author = serializers.SerializerMethodField(read_only=True)
+    date_updated = serializers.SerializerMethodField(read_only=True)
 
 
     in_favorites = serializers.SerializerMethodField(read_only=True)
@@ -187,6 +188,9 @@ class CardSerializer(serializers.ModelSerializer):
         return EtymologySerializer(obj.content.etymologies, many=True).data
     def get_source(self, obj):
         return  obj.content.source
+
+    def get_date_updated(self, obj):
+        return  obj.content.date_created
     
 
 

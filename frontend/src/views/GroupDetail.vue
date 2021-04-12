@@ -1,14 +1,12 @@
 <template>
   <v-container fluid v-if="group">
-    <v-row no-gutters>
-      <v-col cols="12" >
         <v-row no-gutters>
           <v-col col="12">
-            <p class="text-h3">{{ group.name }}</p>
-            <p class="text-body-2">{{ group.organization }}</p>
+            <p class="text-h3 ma-0">{{ group.name }}</p>
+            <p class="text-body-2 ">{{ group.organization }}</p>
             <p class="text-body-1">{{ group.description }}</p>
           </v-col>
-          <v-col align="right" cols="1">
+          <v-col class="col-auto" cols="1">
             <v-menu left v-if="group.is_member">
               <template v-slot:activator="{ on, attrs }">
                 <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical </v-icon>
@@ -36,16 +34,26 @@
             <group-detail-join-with-password-dialog v-if="!group.is_member & group.can_join & group.requires_password" :group="group"></group-detail-join-with-password-dialog>
           </v-col>
         </v-row>
-        <v-row no-gutters class="mt-5">
-          <v-col cols="12" sd="6" md="4" v-if="group.can_create_collection">
-            <collection-create-button
+
+        <v-sheet outlined rounded="lg" class="pa-3">
+          <v-row no-gutters>
+            <v-col>
+          <p class="text-h5">{{$t("groupDetails.ourCollections")}}</p>
+            </v-col>
+            <v-col class="col-auto">
+          <collection-create-button
               v-if="group.can_create_collection"
               :group="true"
               :organization="group.organization"
               @created="collectionCreated"
               class="ma-1"
-            ></collection-create-button>
-          </v-col>
+          >
+            <template v-slot="{dialog}"><v-btn color="success" text @click="dialog.dialog=true">Sammlung erstellen</v-btn></template>
+          </collection-create-button>
+            </v-col>
+          </v-row>
+        <v-row no-gutters class="mt-5">
+
           <v-col
             md="4"
             sd="6"
@@ -57,11 +65,10 @@
               class="ma-1"
             ></card-collection>
           </v-col>
+          <p v-if="!group.collections.length">{{ $t("groupDetails.noCollectionMessages") }}</p>
         </v-row>
-      </v-col>
+        </v-sheet>
 
-
-    </v-row>
 
   </v-container>
 </template>
@@ -133,7 +140,7 @@ export default {
   watch: {
     loadUsers() {
       this.user = this.loadUsers;
-      if (this.loadUsers.length != 1) return;
+      if (this.loadUsers.length !== 1) return;
       this.isLoading = true;
       RequestHandler.getUsersByUsername(this.loadUsers)
         .then((response) => (this.users = response.data))

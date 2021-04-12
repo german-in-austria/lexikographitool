@@ -25,7 +25,7 @@ class PostSimpleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'text', 'author']
+        fields = ['id', 'text', 'author','date_created']
 
 class PostCreateSerializer(serializers.ModelSerializer):
     author = UserNameSerializer(read_only=True)

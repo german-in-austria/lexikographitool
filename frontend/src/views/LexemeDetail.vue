@@ -11,7 +11,7 @@
         </card-dialect>
       </v-col>
     </v-row>
-    <v-row no-gutters v-if="similarDialectWords.length != 0">
+    <v-row no-gutters v-if="similarDialectWords.length !== 0">
       <v-col cols="12"
         ><p class="text-h6">
           andere Begriffe für {{ lexeme.dialectWord }}
@@ -30,7 +30,7 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-row no-gutters v-if="similarWords.length != 0">
+    <v-row no-gutters v-if="similarWords.length !== 0">
       <v-col
         ><p class="text-h6">andere Begriffe für {{ lexeme.word }}</p></v-col
       >
@@ -52,7 +52,7 @@
             <v-list-item-content>
               <v-list-item-content>{{ post.text }}</v-list-item-content>
               <v-list-item-subtitle
-                >{{ post.author.username }}
+                ><span class="font-weight-bold">{{ post.author.username }}</span>, {{dateCreated(post.date_created)}}
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -62,6 +62,7 @@
 
       <v-list-item>
         <v-textarea
+            v-if="authenticated"
           label="Kommentar verfassen "
           v-model="postText"
           flat
@@ -85,6 +86,8 @@
 import RequestHandler from "../utils/RequestHandler.js";
 import CardDialect from "@/components/CardDialect";
 import axios from "axios";
+import {mapGetters} from "vuex";
+import moment from "moment";
 
 export default {
   components: { CardDialect },
@@ -125,6 +128,10 @@ export default {
         () => (this.lexeme.in_favorites = true)
       );
     },
+    dateCreated(time) {
+      moment.locale("de");
+      return moment(time).fromNow();
+    },
     removeFromFavorites() {
       RequestHandler.removeLexemeFromFavorite(this.lexeme.id).then(
         () => (this.lexeme.in_favorites = false)
@@ -149,12 +156,14 @@ export default {
       return colors[Math.floor(parseInt(hash, 16) % colors.length)];
     },
   },
-  computed: {},
+  computed: {
+    ...mapGetters({
+      authenticated: "auth/authenticated",
+    }),
+  },
 };
 </script>
 
 <style>
-.ps {
-  height: 85vh;
-}
+
 </style>

@@ -58,6 +58,6 @@ export default {
 
 <style>
 p {
-  text-align: justify !important
+  text-align: justify;
 }
 </style>

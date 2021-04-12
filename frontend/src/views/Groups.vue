@@ -4,39 +4,41 @@
       <v-col>
         <p class="text-h4">{{ $t("groups.title") }}</p>
       </v-col>
-      <v-col align="right">
+      <v-col class="col-auto">
         <v-menu left>
           <template v-slot:activator="{ on, attrs }">
-            <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical </v-icon>
+            <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical</v-icon>
           </template>
           <v-list>
-                  <trash-can-dialog :itemList="groups" :group="true"></trash-can-dialog>
+            <group-create-button ></group-create-button>
+
+            <trash-can-dialog :itemList="groups" :group="true"></trash-can-dialog>
 
           </v-list>
         </v-menu>
       </v-col>
     </v-row>
-    <v-row no no-gutters>
+    <v-row  no-gutters>
       <p class="text-body-1">
         {{ $t("groups.desciption") }}
       </p></v-row
     >
     <v-row no-gutters class="pt-5">
       <v-text-field
-        v-model="search"
-        label="Suche"
-        single-line
-        clearable
-        flat
-        solo-inverted
-        hide-details
-        prepend-inner-icon="mdi-magnify"
-        class="pr-5"
+          v-model="search"
+          label="Suche"
+          single-line
+          clearable
+          flat
+          solo-inverted
+          hide-details
+          prepend-inner-icon="mdi-magnify"
+          class="pr-5"
       ></v-text-field>
       <v-btn-toggle
-        v-model="pub"
-        mandatory
-        :style="$vuetify.breakpoint.xs ? 'flex-direction: column;' : ''"
+          v-model="pub"
+          mandatory
+          :style="$vuetify.breakpoint.xs ? 'flex-direction: column;' : ''"
       >
         <v-btn large :value="false"> Meine Gruppen</v-btn>
         <v-btn large :value="true"> öffentliche Gruppen</v-btn>
@@ -44,30 +46,31 @@
 
     </v-row>
     <v-row no-gutters>
-      <v-col cols="12" sd="4" md="3" v-if="!pub" class="pa-3">
-        <group-create-button></group-create-button>
-      </v-col>
+
+     <group-create-button v-if="!groups.length" :text="true"></group-create-button>
+
+
       <v-col
-        cols="12"
-        sd="4"
-        md="3"
-        v-for="group in groups"
-        :key="group.id"
-        class="pa-3"
+          cols="12"
+          sd="4"
+          md="3"
+          v-for="group in groups"
+          :key="group.id"
+          class="pa-3"
       >
         <v-hover v-slot="{ hover }">
           <v-card
-            :to="'/groups/' + group.id"
-            :elevation="hover ? 4 : 0"
-            class="mx-auto"
-            outlined
+              :to="'/groups/' + group.id"
+              :elevation="hover ? 4 : 0"
+              class="mx-auto"
+              outlined
           >
             <v-card-title>{{ group.name }}</v-card-title>
             <v-card-text>{{ group.description }}</v-card-text>
           </v-card>
         </v-hover>
       </v-col>
-      <p class="text-body-1" v-if="(groups.length == 0) & !!search">
+      <p class="text-body-1" v-if="(!groups.length) & !!search">
         Keine Treffer
       </p>
     </v-row>
@@ -80,7 +83,7 @@ import Axios from "axios";
 import GroupCreateButton from "../components/GroupCreateButton.vue";
 
 export default {
-  components: { TrashCanDialog, GroupCreateButton },
+  components: {TrashCanDialog, GroupCreateButton},
   name: "Group",
   data: () => ({
     groups: [],
@@ -97,7 +100,7 @@ export default {
     loadGroups() {
       const public_python_param = this.pub ? "True" : "False";
       Axios.get(
-        "groups/public/?page=1&page_size=25&public=" +
+          "groups/public/?page=1&page_size=25&public=" +
           public_python_param +
           "&search=" +
           this.search
@@ -109,9 +112,9 @@ export default {
     onScroll(e) {
       console.log(this.next);
       if (
-        e.target.scrollingElement.scrollTop + 400 >
+          e.target.scrollingElement.scrollTop + 400 >
           e.target.scrollingElement.scrollTopMax &&
-        !!this.next
+          !!this.next
       ) {
         const next = this.next;
         this.next = null;
@@ -125,10 +128,10 @@ export default {
   },
   mounted() {
     Axios.get("groups/public/?page=1&public=False&page_size=25").then(
-      (response) => {
-        this.groups = response.data.results;
-        this.next = response.data.links.next;
-      }
+        (response) => {
+          this.groups = response.data.results;
+          this.next = response.data.links.next;
+        }
     );
   },
   watch: {

@@ -14,9 +14,15 @@
           <span>{{ card.word }}</span>
           <span v-if="!card.word">{{ card.description }}</span>
 
-          <p :class="color + '--text text--darken-4 text-h4'">
+          <v-tooltip bottom  open-delay="100">
+            <template v-slot:activator="{ on, attrs }">
+          <p v-bind="attrs"
+             v-on="on" :class="color + '--text text--darken-4 text-h4 text-truncate' ">
             {{ card.dialectWord }}
           </p>
+            </template>
+            {{card.dialectWord}}
+          </v-tooltip>
           <p ><span v-if="card.kind">{{ kind }}</span><span v-if="card.kind === 'N'">, {{ genus }}</span>
           </p>
 
@@ -59,8 +65,11 @@
               {{ etymology.etymology }},
             </span>
           </p>
-          <p>
+          <p v-if="allInformation">
             Erstellt von <span class="font-weight-bold">{{ card.author }}</span>
+          </p>
+          <p v-if="allInformation">
+            zuletzt geändert: <span class="font-weight-bold">{{dateCreated(card.date_updated)}}</span>
           </p>
         </v-card-text>
         <v-card-actions v-if="authenticated">
@@ -125,6 +134,7 @@ import ReportDialog from "@/components/ReportDialog";
 import LexemeEditDialog from "@/components/LexemeEditDialog";
 import { mapGetters } from "vuex";
 import axios from "axios";
+import moment from "moment";
 export default {
   components: { CollectionAddLexeme, ReportDialog, LexemeEditDialog },
   props: ["card", "allInformation"],
@@ -164,9 +174,13 @@ export default {
     deleteLexeme() {
       axios.delete("lexeme/" + this.card.id + "/");
     },
+    dateCreated(time) {
+      moment.locale("de");
+      return moment(time).fromNow();
+    },
   },
-  mounted() {},
   computed: {
+
     color() {
       const crypto = require("crypto");
       const hash = crypto
@@ -233,6 +247,10 @@ export default {
 
 <style scoped>
 p{
-  margin-bottom: 2px;
+  margin-bottom: 3px;
+
+  text-align: left;
+
 }
+
 </style>

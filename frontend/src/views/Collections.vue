@@ -3,15 +3,21 @@
     <v-row>
       <v-col>
       <p class="text-h4">{{ $t("collections.title") }}</p>
-      
+
       </v-col>
-      <v-col align="right">
+      <v-col class="col-auto">
         <v-menu left>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical </v-icon>
           </template>
           <v-list>
-              
+            <collection-create-button class="d-inline-block"
+                                      @created="collectionCreated"
+
+            ><template v-slot="{dialog}">
+              <v-list-item @click.stop="dialog.dialog=true">Neue Sammlung erstellen</v-list-item>
+
+            </template></collection-create-button>
       <trash-can-dialog
           :itemList="collections"
           :collection="true"
@@ -20,9 +26,19 @@
         </v-menu>
       </v-col>
       </v-row>
-      <v-row no-gutters><p class="text-body-1">
-        {{ $t("collections.desciption") }}
-      </p></v-row>
+      <v-row no-gutters>
+        <i18n class="text-body-1" path="collections.description" tag="p">
+          <template v-slot:createCollection>
+            <collection-create-button class="d-inline-block"
+                                      @created="collectionCreated"
+
+            ><template v-slot="{dialog}">
+              <a class="success--text" @click="dialog.dialog=true">{{$t("collections.createCollection")}}
+              </a>
+            </template></collection-create-button>
+          </template>
+        </i18n>
+      </v-row>
     <v-row no-gutters class="pt-5">
       <v-text-field
           v-model="search"
@@ -41,11 +57,7 @@
       </v-btn-toggle>
     </v-row>
     <v-row no-gutters>
-      <v-col cols="12" sd="4" md="3" v-if="!pub" class="pa-3">
-        <collection-create-button
-            @created="collectionCreated"
-        ></collection-create-button>
-      </v-col>
+
       <v-col
           cols="12"
           sd="4"
@@ -56,7 +68,7 @@
       >
         <card-collection :collection="collection"></card-collection>
       </v-col>
-      <p class="text-body-1" v-if="(collections.length == 0) & !!search">
+      <p class="text-body-1" v-if="(!collections.length) & !!search">
         Keine Treffer
       </p>
     </v-row>

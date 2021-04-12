@@ -3,7 +3,7 @@
     <template v-slot:activator="{ on, attrs }">
       <v-hover v-slot="{ hover }">
         <v-card
-          :elevation="hover ? 5 : 0"
+          :elevation="hover ? 0 : 0"
           outlined
           class="transition-swing"
           :color="color + ' lighten-4'"
@@ -16,7 +16,7 @@
               style="margin-left: 5px; margin-top: -15px"
               class="text--accent-1 text--secondary"
             >
-              {{ dateCreated }}
+              {{ dateCreated(post.date_created) }}
             </p>
           </v-card-subtitle>
           <v-card-text v-if="!edit">
@@ -79,17 +79,16 @@
 
       <v-card-text>
         <p
-          v-if="!!children && children.length == 0"
+          v-if="!!children && children.length === 0"
           v-html="
             $t('postings.noCommentMessage', { user: post.author.username })
           "
         ></p>
         <div v-for="(answer, index) in children" :key="index">
-          <v-list-item-subtitle class="font-weight-bold">{{
-            answer.author.username
-          }}</v-list-item-subtitle>
+          <v-list-item-subtitle ><span class="font-weight-bold">{{
+              answer.author.username}}</span>, {{dateCreated(answer.date_created)}}</v-list-item-subtitle>
 
-          <v-list-item-title>{{ answer.text }}</v-list-item-title>
+          {{ answer.text }}
         </div>
       </v-card-text>
       <v-spacer></v-spacer>
@@ -157,6 +156,11 @@ export default {
       Axios.delete("post/" + this.post.id + "/");
       this.$emit("deleted");
     },
+    dateCreated(time) {
+      moment.locale("de");
+      return moment(time).fromNow();
+    },
+
   },
   watch: {
     dialog() {
@@ -187,10 +191,7 @@ export default {
       ];
       return colors[Math.floor(parseInt(hash, 16) % colors.length)];
     },
-    dateCreated() {
-      moment.locale("de");
-      return moment(this.post.date_created).fromNow();
-    },
+
   },
 };
 </script>
@@ -199,5 +200,8 @@ export default {
 .post-textarea {
   max-height: 150px;
   overflow: auto;
+}
+p{
+  alignment: left;
 }
 </style>

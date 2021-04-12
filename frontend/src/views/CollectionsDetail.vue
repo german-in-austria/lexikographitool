@@ -3,7 +3,7 @@
     <v-row no-gutters>
       <v-col cols="8">
         <p>
-          <printer-tool v-if="false" :cards="lexemes"></printer-tool>
+          <printer-tool  :cards="lexemes"></printer-tool>
 
           <span class="text-h4">{{ collection.name }}</span>
           <span v-if="collection.public" style="color: red">
@@ -12,7 +12,7 @@
         </p>
         <p class="text-h5">{{ collection.description }}</p>
         <p class="text-h8">{{ collection.organization }}</p>
-        <p v-if="collection.categories.length != 0">
+        <p v-if="collection.categories.length !== 0">
           <span class="text-h8">Kategorien:</span>
           <span
             class="text-h8"
@@ -22,12 +22,14 @@
           </span>
         </p>
       </v-col>
-      <v-col align="right" v-if="collection.is_owner">
+
+      <v-col class="col-auto" v-if="collection.is_owner">
         <v-menu left>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical </v-icon>
           </template>
           <v-list>
+            <v-list-item @click="print">{{$t("collectionDetail.print")}}</v-list-item>
               <collection-settings-dialog
                 :collection="collection"
               ></collection-settings-dialog>
@@ -40,8 +42,8 @@
           </v-list>
         </v-menu>
       </v-col>
-      <v-col cols="12">
-        <v-row no-gutters>
+      </v-row>
+        <v-row no-gutters >
           <v-text-field
             v-model="search"
             :label="$t('general.search')"
@@ -57,9 +59,18 @@
             :lexemes="lexemes"
             v-if="collection.can_add_lexeme_to_collection"
           ></collection-add-lexeme-dialog>
+          <v-spacer></v-spacer>
+            <v-btn-toggle v-model="view" dense>
+              <v-btn>
+                <v-icon>mdi-view-grid</v-icon>
+              </v-btn>
+              <v-btn>
+                <v-icon>mdi-view-headline</v-icon>
+              </v-btn>
+            </v-btn-toggle>
         </v-row>
-        <v-row no-gutters>
-          <p v-if="lexemes.length == 0" class="pa-10 text-body-1">
+        <v-row no-gutters v-if="!view">
+          <p v-if="lexemes.length === 0" class="pa-10 text-body-1">
             {{ $t("collectionDetail.collectionEmpty") }}
           </p>
           <v-scale-transition group class="row">
@@ -82,7 +93,36 @@
             </v-col>
           </v-scale-transition>
         </v-row>
-      </v-col>
+
+    <v-row no-gutters v-else>
+      <v-simple-table id="printMe">
+        <template v-slot:default>
+          <thead>
+          <tr>
+            <th
+                class="text-left"
+                v-for="(header, index) in headers"
+                :key="index"
+            >
+              {{ header.text }}
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(item, index) in lexemes" :key="index">
+            <td>{{ item.dialectWord }}</td>
+            <td>{{ item.word }}</td>
+            <td>{{ item.description }}</td>
+            <td>{{ item.variety }}</td>
+            <td><span>{{ item.origin.name }}</span><span v-if="!!item.origin.state">, {{ item.origin.state }}</span>
+            </td>
+            <td v-if="!printing">
+              <a @click="$router.push('/lexeme/' + item.id)">alle Infos</a>
+            </td>
+          </tr>
+          </tbody>
+        </template>
+      </v-simple-table>
     </v-row>
   </v-container>
 </template>
@@ -110,6 +150,16 @@ export default {
     search: "",
     lexemes: [],
     next: null,
+    view:false,
+    headers: [
+      {text: "Lemma", value: "dialectWord"},
+      {text: "hochdeutsche Bedeutung", value: "word"},
+      {text: "Bedeutung", value: "description"},
+      {text: "Varietät", value: "variety"},
+      {text: "Ursrpung", value: "origin"},
+      {text: "", value: "info"},
+    ],
+    printing : false,
   }),
   mounted() {
     RequestHandler.getCollection(this.$route.params.id).then((response) => {
@@ -165,29 +215,21 @@ export default {
         this.$router.push("/collections");
       });
     },
+    print() {
+      this.printing=true;
+      this.view = true;
+
+      // Use nextTick to trigger the print on next update
+      this.$nextTick(() => {
+        this.$htmlToPaper("printMe", null, () => {
+          console.warn("done");
+          this.printing = false; // hide the <p> tag when printing is done
+        });
+      });
+    },
   },
 };
 </script>
 
 <style scoped>
-.item {
-  margin: 5px;
-  border-radius: 4px;
-}
-
-.item:hover {
-  background: lightgray;
-}
-
-/* This is for documentation purposes and will not be needed in your application */
-.v-btn--example {
-  bottom: 0;
-  position: absolute;
-  margin: 0 0 16px 16px;
-}
-
-.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
-  opacity: 0;
-  transform: translateY(30px);
-}
 </style>

@@ -15,7 +15,8 @@
   },
   "collections": {
     "title": "Sammlungen",
-    "desciption":  "Hier kannst du eigene Sammlungen erstellen, um verschiedenste Wörter zu sammeln und zu ordnen. Küchenausdrücke, mathematische Begriffe oder doch lieber die Wörter, die in deinem Dorf verwendet werden – du entscheidest, was in deine Sammlung kommt! Schau auch nach, welche interessanten Sammlungen andere Mitglieder bereits erstellt und veröffentlicht haben.",
+    "description":  "Hier kannst du {createCollection}, um verschiedenste Wörter zu sammeln und zu ordnen. Küchenausdrücke, mathematische Begriffe oder doch lieber die Wörter, die in deinem Dorf verwendet werden – du entscheidest, was in deine Sammlung kommt! Schau auch nach, welche interessanten Sammlungen andere Mitglieder bereits erstellt und veröffentlicht haben.",
+    "createCollection": "eigene Sammlungen erstellen",
     "myCollections": "meine Sammlungen",
     "publicCollections": "alle Sammlungen"
   },
@@ -28,14 +29,17 @@
   "collectionDetail": {
     "collectionEmpty": "Diese Sammlung ist leer. Fülle sie mit deinen Lieblingswörtern!",
     "addWords":"Wörter Hinzufügen",
-    "deleteCollection": "Sammlung löschen"
+    "deleteCollection": "Sammlung löschen",
+    "print": "Sammlung ausdrucken"
   },
   "groupDetails":{
     "leaveGroup":"Gruppe verlassen",
     "deleteGroup": "Gruppe löschen",
     "members" : "Mitglieder",
     "owner": "Besitzer*In",
-    "invitationLink": "Einladungs-Link"
+    "invitationLink": "Einladungs-Link",
+    "ourCollections": "Unsere Sammlungen",
+    "noCollectionMessages": "Diese Gruppe besitzt noch keine Sammlungen."
   },
   "dashboard": {
     "title": "Meine Pinnwand",
@@ -132,11 +136,11 @@
     "interjectionTooltip": "auch Empfindungs- oder Ausfrufewort genannt",
     "phrase": "Phrase",
     "phraseTooltip": "auch Redewendung oder Idiom genannt (feste Verbindung mehrerer Wörter, die eine eigene Bedeutung haben)",
-    "female": "Weiblich",
+    "female": "Femininum",
     "femaleToolTip": "",
-    "male": "Männlich",
+    "male": "Maskulinum",
     "maleToolTip": "",
-    "neuter": "Sächlich",
+    "neuter": "Neutrum",
     "neuterToolTip": "",
     "collection":"zu Sammlungen hinzufügen",
     "collectionToolTip": "Suche nach deinen Sammlungen oder erstelle eine neue Sammlung, indem du einfach den gewünschten Namen für die Sammlung eingibst."
@@ -159,8 +163,8 @@
     "edit":"bearbeiten",
     "editTitle": "Wort bearbeiten",
     "lemma":"Lemma",
-    "meaning":"Bedeutung",
-    "lexeme": "hochdeutscher Begriff",
+    "meaning":"Bedeutungserklärung",
+    "lexeme": "standarddt. Entsprechung",
     "variety" : "Varietät",
     "kind":"Wortart",
     "category":"Kategorie",

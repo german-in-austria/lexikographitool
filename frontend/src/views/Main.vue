@@ -14,7 +14,7 @@
           ></Navigation>
 
           <v-container
-              :style="$route.fullPath == '/dashboard' ? 'margin-top: 3rem;' : ' max-width: 56rem; margin-top: 3rem;' + ' '"
+              :style="$route.fullPath === '/dashboard' ? 'margin-top: 3rem;' : ' max-width: 56rem; margin-top: 3rem;' + ' '"
               rounded="lg"
           >
 
@@ -48,7 +48,5 @@ export default {
 </script>
 
 <style scoped>
-.centered-text {
-  text-align: center;
-}
+
 </style>
