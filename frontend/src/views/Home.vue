@@ -7,7 +7,7 @@
       <v-row>
         <v-col cols="9">
           <v-row>
-            <v-col cols="12" sd="6" md="4" v-for="card in cards" :key="card.id">
+            <v-col cols="12" sm="6" md="4" v-for="card in cards" :key="card.id">
               <CardDialect :card="card" class="ma-0"></CardDialect>
             </v-col>
           </v-row>

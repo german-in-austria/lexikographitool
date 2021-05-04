@@ -22,6 +22,7 @@ urlpatterns = [
     path('category/<pk>/', create_category_with_lexeme),
     path('category_create/', create_category),
     path('lexeme/<lexemeId>/', get_lexeme),
+    path('restore/<lexemeId>/', restore_word),
     path('lexemes/', LexemeView.as_view()),
     path('lexeme/like/<lexemeId>/', like_lexeme),
     path('lexemes/random/',get_random_lexemes),
@@ -31,5 +32,9 @@ urlpatterns = [
     path('report/lexeme/<lexemeId>/', report_lexeme),
     path('reports/lexeme/', ReportView.as_view()),
     path('report/lexeme/deactivate/<reportId>/', deactive_report),
+    path('reports/amount/', get_amount_of_reports_total),
+    path('lexemes_count/', get_lexemes_count),
+    path('lexemes_my_count/', get_my_lexemes_count),
+    path('highscore/', HighscoreView.as_view()),
 
 ]

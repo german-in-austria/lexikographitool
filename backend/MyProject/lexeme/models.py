@@ -45,7 +45,7 @@ class Lexeme(SoftDeletionModel):
     liked_from = models.ManyToManyField('account.Account', related_name='collections',through = 'LikeLexeme')
     date_created = models.DateTimeField(
          verbose_name='date joined', auto_now_add=True)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,related_name='lexemes')
     content = models.OneToOneField('LexemeContent',related_name='activeLexeme',on_delete=models.CASCADE,null=True)
     def save(self, *args, **kwargs):
         super(Lexeme, self).save(*args, **kwargs)
@@ -67,7 +67,7 @@ class LexemeContent(SoftDeletionModel):
 
 class LikeLexeme(SoftDeletionModel):
     user = models.ForeignKey('account.Account',on_delete=models.CASCADE)
-    lexeme = models.ForeignKey(Lexeme,on_delete=models.CASCADE)
+    lexeme = models.ForeignKey(Lexeme,on_delete=models.CASCADE,related_name="likes")
     like = models.BooleanField(default=False)
     date_updated = models.DateTimeField(auto_now=True)
 

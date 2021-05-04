@@ -11,28 +11,38 @@
     "postings" : "Fragen"
   },
   "lexemes":{
-    "desciption":  "Hier findest du alle Wörter, die in Wortgut gesammelt worden sind und kannst unsere Sammlung durchsuchen und Wörter zu deinen Sammlungen hinzufügen."
+    "desciption":  "Hier findest du alle {amount} Wörter, die in Wortgut bis jetzt gesammelt worden sind und kannst unsere Sammlung durchsuchen und Wörter zu deinen Sammlungen hinzufügen.",
+    "authorizedAdded": "Du hast bereits {amount} Wörter hinzugefügt. Mach weiter so!",
+    "notAuthorized":  "Wenn du auch anderen helfen willst neue Wörter zu entdecken, dann melde dich an und füge deine eigenen Wörter hinzu."
   },
   "collections": {
     "title": "Sammlungen",
-    "description":  "Hier kannst du {createCollection}, um verschiedenste Wörter zu sammeln und zu ordnen. Küchenausdrücke, mathematische Begriffe oder doch lieber die Wörter, die in deinem Dorf verwendet werden – du entscheidest, was in deine Sammlung kommt! Schau auch nach, welche interessanten Sammlungen andere Mitglieder bereits erstellt und veröffentlicht haben.",
+    "description":  "Hier kannst du {createCollection}, um verschiedenste Wörter zu sammeln und zu ordnen. Küchenausdrücke, mathematische Begriffe oder doch lieber die Wörter, die in deinem Dorf verwendet werden – du entscheidest, was in deine Sammlung kommt! Schau auch nach, welche interessanten Sammlungen andere Mitglieder bereits erstellt und veröffentlicht haben. ",
     "createCollection": "eigene Sammlungen erstellen",
-    "myCollections": "meine Sammlungen",
-    "publicCollections": "alle Sammlungen"
+    "myCollections": "privat",
+    "publicCollections": "öffentlich"
   },
   "groups": {
     "title": "Gruppen",
-    "desciption":  "Du willst nicht alleine auf die Wörtersammlung gehen? Dann erstelle hier eine Gruppe und lade andere ein, mit dir gemeinsam an Sammlungen zu arbeiten. Du kannst innerhalb einer Gruppe eine Sammlung anlegen, die nur für euch zu sehen ist. So könnt ihr vor der Veröffentlichung in Ruhe gemeinsam an Wörtern und Sammlungen arbeiten. ",
+    "description":  "Du willst nicht alleine auf die Wörtersammlung gehen? Dann {createGroup} und lade andere ein, mit dir gemeinsam an Sammlungen zu arbeiten. Du kannst innerhalb einer Gruppe eine Sammlung anlegen, die nur für euch zu sehen ist. So könnt ihr vor der Veröffentlichung in Ruhe gemeinsam an Wörtern und Sammlungen arbeiten. ",
     "myCollections": "meine Gruppen",
+    "createGroup": "erstelle hier eine Gruppe",
+    "publicCollections": "alle Gruppen"
+  },
+  "highscore": {
+    "title": "Bestenliste",
+    "description": "",
     "publicCollections": "alle Gruppen"
   },
   "collectionDetail": {
     "collectionEmpty": "Diese Sammlung ist leer. Fülle sie mit deinen Lieblingswörtern!",
-    "addWords":"Wörter Hinzufügen",
+    "addWords":"Wörter hinzufügen",
     "deleteCollection": "Sammlung löschen",
-    "print": "Sammlung ausdrucken"
+    "pdf": "in eine PDF-Datei umwandeln",
+    "csv": "in eine CSV-Datei umwandeln"
   },
   "groupDetails":{
+    "created":"erstellt von",
     "leaveGroup":"Gruppe verlassen",
     "deleteGroup": "Gruppe löschen",
     "members" : "Mitglieder",
@@ -40,6 +50,16 @@
     "invitationLink": "Einladungs-Link",
     "ourCollections": "Unsere Sammlungen",
     "noCollectionMessages": "Diese Gruppe besitzt noch keine Sammlungen."
+  },
+  "groupSettings": {
+    "name": "Gruppenname",
+    "description": "Beschreibung",
+    "organization": "Organisation",
+    "addCollection": "kann Sammlungen erstellen",
+    "addCollectionMembers": "können Sammlungen erstellen",
+    "seeGroup": "kann Gruppe sehen",
+    "joinGroup": "jeder kann Gruppe beitreten",
+    "needPassword": "Zum Beitreten wird ein Passwort benötigt"
   },
   "dashboard": {
     "title": "Meine Pinnwand",
@@ -49,7 +69,7 @@
     "posts": "Fragen"
   },
   "card_create":{  
-    "title": "Wort hinzufügen",
+    "title": "Wort erstellen",
     "description":"Hier kannst du deine eigenen Wörter nach und nach eintragen. Und zwar in 3 Detailgraden: Beginn am besten als \"Anfänger*in\", wenn du allerdings mehr zu einem Wort zu sagen hast, kannst du sicherlich den \"Sammler*in\"-Modus verwenden. Wenn du schon Expert*in bist, dann kannst du die meisten Informationen als \"Lexikograph*in\" eintragen - bitte vergiss nicht, Quellen anzugeben, wenn du Informationen aus Wörterbüchern oder anderen Quellen verwendest",
     "tab_title1": "Anfänger*in",
     "tab_title2": "Sammler*in",
@@ -143,7 +163,8 @@
     "neuter": "Neutrum",
     "neuterToolTip": "",
     "collection":"zu Sammlungen hinzufügen",
-    "collectionToolTip": "Suche nach deinen Sammlungen oder erstelle eine neue Sammlung, indem du einfach den gewünschten Namen für die Sammlung eingibst."
+    "collectionToolTip": "Suche nach deinen Sammlungen oder erstelle eine neue Sammlung, indem du einfach den gewünschten Namen für die Sammlung eingibst.",
+    "usedIn": "wird verwendet in"
   },
   "general": {
     "delete": "löschen",
@@ -151,7 +172,8 @@
     "public": "öffentlich",
     "password": "Passwort",
     "trash": "Papierkorb",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "save": "speichern"
   },
   "joinGroup":{
     "text": "Möchtest du der Gruppe '{group}' beitreten?",
@@ -181,6 +203,9 @@
   },
   "search":{
     "noResults":"Leider konnten keine passenden Ergebnisse gefunden werden."
+  },
+  "login": {
+    "notAuhtenticated": "Um auf die von dir gewünschte Seite zuzugreifen, musst du angemeldet sein. Wenn du bereits einen Account hast melde dich an. Andernfalls kannst du dich hier auch ganz einfach registrieren und Wortgut mit allen Features nutzen."
   }
   
 }

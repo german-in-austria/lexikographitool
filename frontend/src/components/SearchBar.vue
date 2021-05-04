@@ -1,39 +1,59 @@
 <template>
-  <div style="background-color: white">
+  <div>
     <v-row no-gutters>
-      <v-col>
-        <v-row no-gutters>
-          <v-col cols="12">{{ $t("searchbar.search") }}</v-col>
-          <v-col>
-            <v-select dense
-                      label="Suche nach"
-                      :items="selectItems"
-                      v-model="field"
-                      :return-object="true"
-                      flat
-                      solo-inverted
-                      hide-details
-                      prepend-inner-icon="mdi-magnify"
-            ></v-select>
-          </v-col>
-          <v-col>
-            <v-text-field
-                dense
+      <v-col cols="12" sm="" >
+        <v-row no-gutters class="mb-n2">
+          <v-col cols="12" class="text-body-2">{{ $t("searchbar.search") }}</v-col>
 
+          <v-col class="ma-0 pa-0" >
+            <v-text-field
+                v-if="field.value!=='content__kind__icontains'"
+                dense
                 v-model="search"
                 label="Suche"
                 :disabled="field.disabled"
                 flat
                 solo-inverted
-                hide-details
+
             ></v-text-field>
+            <v-select
+
+
+                dense
+                label="Wortart"
+                flat
+                solo-inverted
+                :items="searchSelectItems"
+                item-value="value"
+                item-text="name"
+                v-model="search"
+                hide-details
+                v-else></v-select>
+          </v-col>
+          <v-col >
+            <v-select
+
+
+                style="max-width: 150px"
+                dense
+                label="Suche nach"
+                :items="selectItems"
+                v-model="field"
+                :return-object="true"
+                flat
+                solo-inverted
+                hide-details
+                prepend-inner-icon="mdi-magnify"
+            ></v-select>
           </v-col>
           <v-col class="hidden-xs-only">
             <v-btn
+
                 @click="addToFilter"
                 :disabled="field.disabled || !search"
                 color="primary"
-                height="38px"
+                height="37px"
+
             >
               <v-icon>mdi-plus</v-icon>
             </v-btn>
@@ -41,12 +61,16 @@
         </v-row>
       </v-col>
       <v-col
+          cols="12" sm=""
+
+
       >
         <v-row no-gutters>
-          <v-col cols="12">{{ $t("searchbar.orderby") }}</v-col>
+          <v-col cols="12" class="text-body-2 pa-0 ma-0 ">{{ $t("searchbar.orderby") }}</v-col>
 
           <v-col>
             <v-select
+
                 dense
                 label="Sortieren nach"
                 :items="orderItems"
@@ -56,12 +80,13 @@
                 solo-inverted
                 hide-details
                 prepend-inner-icon="mdi-sort-variant"
-                style="max-width: 10rem"
+                style="max-width: 10rem;"
             ></v-select>
           </v-col>
           <v-col>
-            <v-btn-toggle dense v-model="sortDesc" mandatory>
-              <v-tooltip v-model="show" bottom max-width="20vh">
+            <v-btn-toggle color="primary"
+                          dense v-model="sortDesc" mandatory>
+              <v-tooltip bottom max-width="20vh">
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn v-on="on" v-bind="attrs" depressed :value="false">
                     <v-icon>mdi-arrow-up</v-icon>
@@ -69,7 +94,7 @@
                 </template>
                 {{ $t("searchbar.ascending") }}
               </v-tooltip>
-              <v-tooltip v-model="show" bottom max-width="20vh">
+              <v-tooltip bottom max-width="20vh">
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn v-on="on" v-bind="attrs" depressed :value="true">
                     <v-icon>mdi-arrow-down</v-icon>
@@ -82,18 +107,23 @@
         </v-row>
       </v-col
       >
+      <v-col cols="12">
+      <v-row no-gutters >
+        <v-chip
+            v-for="(filter, index) in filters"
+            :key="index"
+
+            close
+            small
+            label
+            @click:close="removeFromFilters(index)"
+        >
+          {{ filter.field.text }} : {{ filter.value }}
+        </v-chip>
+      </v-row>
+      </v-col>
     </v-row>
-    <v-row>
-      <v-chip
-          v-for="(filter, index) in filters"
-          :key="index"
-          class="ma-2"
-          close
-          @click:close="removeFromFilters(index)"
-      >
-        {{ filter.field.text }} : {{ filter.value }}
-      </v-chip>
-    </v-row>
+
   </div>
 </template>
 <script>
@@ -103,11 +133,13 @@ export default {
     return {
       show: false,
       selectItems: [
-        {text: this.$t("card.lemma"), value: "dialectWord", disabled: false},
-        {text: this.$t("card.lexeme"), value: "word", disabled: false},
-        {text: this.$t("card.meaning"), value: "description", disabled: false},
-        {text: this.$t("card.category"), value: "categories__category", disabled: false},
-        {text: this.$t("card.variety"), value: "variety", disabled: false},
+        {text: "alle Kategorien", value: "search", disabled: false},
+        {text: this.$t("card.lemma"), value:  "content__dialectWord__icontains", disabled: false},
+        {text: this.$t("card.lexeme"), value:  "content__word__icontains", disabled: false},
+        {text: this.$t("card.meaning"), value: "content__description__icontains", disabled: false},
+        {text: this.$t("card.category"), value: "content__categories__category__icontains", disabled: false},
+        {text: this.$t("card.variety"), value: "content__variety__icontains", disabled: false},
+        {text: this.$t("card.kind"), value: "content__kind__icontains", disabled: false},
 
         // { text: this.$t("card.kind"), value: "kind", disabled: false },
       ],
@@ -117,10 +149,61 @@ export default {
         {text: this.$t("searchbar.created_at"), value: "date_created"},
       ],
       filters: [],
-      field: {text: this.$t("card.lemma"), value: "dialectWord", disabled: false},
+      field: {text: "alle Kategorien", value: "search", disabled: false},
       search: "",
       sortDesc: true,
       orderBy: {text: this.$t("searchbar.created_at"), value: "date_created"},
+
+      kindItems: [
+        {
+          id: 1,
+          name: this.$t("createWord.noun"),
+          value: "N",
+          tooltip: this.$t("createWord.noun"),
+        },
+        {
+          id: 2,
+          name: this.$t("createWord.verb"),
+          value: "V",
+          tooltip: this.$t("createWord.verbTooltip"),
+
+        },
+        {
+          id: 3,
+          name: this.$t("createWord.adjective"),
+          value: "Aj",
+          tooltip: this.$t("createWord.adjectiveTooltip"),
+
+        },
+        {
+          id: 4,
+          name: this.$t("createWord.adverb"),
+          value: "Av",
+          tooltip: this.$t("createWord.adverbTooltip"),
+
+        },
+        {
+          id: 5,
+          name: this.$t("createWord.interjection"),
+          value: 'I',
+          tooltip: this.$t("createWord.interjectionTooltip"),
+
+        },
+        {
+          id: 6,
+          name: this.$t("createWord.phrase"),
+          value: "P",
+          tooltip: this.$t("createWord.phraseTooltip"),
+        },
+      ],
+
+    }
+  },
+  mounted() {
+    //check if params are passed
+    console.log(this.$route.params)
+    if (this.$route.params.search) {
+      this.search = this.$route.params.search
     }
   },
   methods: {
@@ -146,6 +229,10 @@ export default {
     requestString() {
       this.$emit("input", this.requestString);
     },
+    searchBarHeight(){
+      this.$emit("searchBarHeight", this.searchBarHeight)
+    }
+
   },
   computed: {
     orderingString() {
@@ -158,15 +245,14 @@ export default {
       if (this.filters.length !== 0)
         this.filters.forEach((item) => {
           requestString +=
-              "content__" + item.field.value + "__icontains=" + item.value + "&";
+             item.field.value + "=" + item.value + "&";
         });
       //add current search to filters
       if (!this.field.disabled)
         requestString =
             requestString +
-            "content__" +
             this.field.value +
-            "__icontains=" +
+            "=" +
             this.search +
             "&";
 
@@ -174,6 +260,38 @@ export default {
       requestString += this.orderingString;
       return requestString;
     },
+    searchSelectItems() {
+      return this.kindItems
+    },
+    searchBarHeight(){
+      var height = 0
+      switch (this.$vuetify.breakpoint.name) {
+        case "xs":
+          height =150;
+          break;
+
+        case "sm":
+          height =110;
+          break;
+
+
+        case "md":
+          height =100;
+          break;
+
+        default:
+          height =80
+          break;
+
+      }
+      if (this.filters.length >= 1)
+        height +=20;
+      return height + "px"
+    }
   },
 };
 </script>
+
+<style>
+
+</style>

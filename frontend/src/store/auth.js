@@ -24,12 +24,19 @@ export default {
             state.token = token
         },
         SET_USER(state, user) {
+
             state.user = user
+            console.log(state.user)
+
         },
 
 
     },
     actions: {
+        async setUser({commit}, user) {
+
+            commit('SET_USER', user)
+        },
         async signIn({dispatch}, register) {
             let response = await RequestHandler.login(register)
             await dispatch('attempt', response.data.token)

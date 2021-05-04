@@ -80,7 +80,7 @@ class PostView(ListAPIView):
     pagination_class = MyPagination
     pagination_class.page_size = 25
     filter_backends = [MyCustomOrdering,filters.SearchFilter]
-    search_fields = ['text', 'description']
+    search_fields = ['text']
 
     def get_queryset(self):
         queryset = Post.objects.all()
@@ -138,6 +138,6 @@ def deactive_report(request,reportId):
             report = Report.objects.get(id=reportId)
         except Report.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        report.active = False
+        report.active = not report.active
         report.save()
         return Response()

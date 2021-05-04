@@ -7,7 +7,7 @@ from MyProject.models import SoftDeletionModel
 
 
 class Post(SoftDeletionModel):
-    text = models.CharField(max_length=100)
+    text = models.TextField()
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     parent = models.ForeignKey(

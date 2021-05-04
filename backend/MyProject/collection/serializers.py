@@ -17,11 +17,13 @@ class CollectionSerializer(serializers.ModelSerializer):
     can_add_lexeme_to_collection = serializers.SerializerMethodField()
     can_remove_lexeme_from_collection = serializers.SerializerMethodField()
     is_owner=serializers.SerializerMethodField()
+    count_lexemes = serializers.SerializerMethodField('get_count_lexemes')
+
 
     class Meta:
         model = Collection
         fields = ['id','name', 'username','group', 'description','organization', 'public',
-        'categories','can_add_lexeme_to_collection','can_remove_lexeme_from_collection','is_owner','can_add_lexemes_group', 'can_remove_lexemes_group' ,'can_add_lexemes_public', 'can_remove_lexemes_public']
+        'categories','can_add_lexeme_to_collection','can_remove_lexeme_from_collection','count_lexemes','is_owner','can_add_lexemes_group', 'can_remove_lexemes_group' ,'can_add_lexemes_public', 'can_remove_lexemes_public']
 
     def get_username_by_author(self, collection):
         username = collection.author.username
@@ -44,6 +46,9 @@ class CollectionSerializer(serializers.ModelSerializer):
         if 'account' in self.context:
             return collection.author == self.context['account']
 
+    def get_count_lexemes(self, collection):
+        return collection.collectionlexeme_set.count()
+
 class CollectionSimpleSerializer(serializers.ModelSerializer):
     groupname = serializers.SerializerMethodField('get_group_name')
     count_lexemes = serializers.SerializerMethodField('get_count_lexemes')
@@ -63,6 +68,8 @@ class CollectionSimpleSerializer(serializers.ModelSerializer):
 
 class CollectionSimpleSerializerWithContainment(serializers.ModelSerializer):
     in_collection = serializers.SerializerMethodField('ifcontained')
+    count_lexemes = serializers.SerializerMethodField('get_count_lexemes')
+
     class Meta:
         model = Collection
         fields = ['id','name', 'description' ,'in_collection']
@@ -71,3 +78,6 @@ class CollectionSimpleSerializerWithContainment(serializers.ModelSerializer):
         if collection.lexemes.filter(id=self.context['lexeme_id']).exists():
             return True
         return False
+
+    def get_count_lexemes(self, collection):
+        return collection.collectionlexeme_set.count()

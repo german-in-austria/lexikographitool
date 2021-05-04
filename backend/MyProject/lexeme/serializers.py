@@ -6,12 +6,14 @@ from django.db.models import Q
 # Category
 from collection.models import Collection,CollectionLexeme
 
+from account.models import Account
+
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['category']
-
+        ordering = ['category']
         extra_kwargs = {
             'category': {'validators': []},
         }
@@ -141,7 +143,7 @@ class CardSerializer(serializers.ModelSerializer):
     etymologies = serializers.SerializerMethodField(read_only=True)
     categories = serializers.SerializerMethodField(read_only=True)
     source = serializers.SerializerMethodField(read_only=True)
-
+    likes_amount = serializers.SerializerMethodField(read_only=True)
     liked = serializers.SerializerMethodField(read_only=True)
 
     author = serializers.SerializerMethodField(read_only=True)
@@ -167,38 +169,66 @@ class CardSerializer(serializers.ModelSerializer):
         return obj.content.word
 
     def get_variety(self, obj):
+        if not obj.content:
+            return None
         return obj.content.variety
     def get_description(self, obj):
+        if not obj.content:
+            return None
         return obj.content.description
     def get_kind(self, obj):
+        if not obj.content:
+            return None
         return obj.content.kind
     def get_genus(self, obj):
+        if not obj.content:
+            return None
         return obj.content.genus
     def get_dialectWord(self, obj):
+        if not obj.content:
+            return None
         return obj.content.dialectWord
     def get_sensitive(self, obj):
+        if not obj.content:
+            return None
         return obj.content.sensitive
     def get_examples(self, obj):
+        if not obj.content:
+            return None
         return ExampleSerializer(obj.content.examples, many=True).data
     def get_pronunciations(self, obj):
+        if not obj.content:
+            return None
         return PronunciationSerializer(obj.content.pronunciations, many=True).data
     def get_categories(self, obj):
+        if not obj.content:
+            return None
         return CategorySerializer(obj.content.categories, many=True).data
     def get_etymologies(self, obj):
+        if not obj.content:
+            return None
         return EtymologySerializer(obj.content.etymologies, many=True).data
     def get_source(self, obj):
+        if not obj.content:
+            return None
         return  obj.content.source
 
     def get_date_updated(self, obj):
+        if not obj.content:
+            return None
         return  obj.content.date_created
     
 
 
     def get_origin(self, obj):
-        print(obj.content.origin)
+        if not obj.content:
+            return None
         return LocationSerializer(obj.content.origin).data
 
-    
+    def get_likes_amount(self, card):
+        amount = card.likes.all().count()
+        return amount
+
     def get_liked(self,card):
         request = self.context.get("request")
         if request and hasattr(request, "user") and hasattr(request.user, "favorite"):
@@ -271,6 +301,7 @@ class ReportCreateSerializer(serializers.ModelSerializer):
 class ReportSerializer(serializers.ModelSerializer):
     lexeme = CardSerializer()
     report_from = serializers.SerializerMethodField(read_only=True)
+    reported_user = serializers.SerializerMethodField(read_only=True)
     already_changed = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -279,9 +310,23 @@ class ReportSerializer(serializers.ModelSerializer):
 
 
     def get_report_from(self, report):
-        return report.report_from.username
+        return report.report_from.email
+
+    def get_reported_user(self, report):
+        return report.lexeme.author.email
 
     def get_already_changed(self, report):
         if report.lexeme.content == report.content:
             return False
         return True
+
+
+class HighscoreSerializer(serializers.ModelSerializer):
+    count = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Account
+        fields = ['username','count']
+
+    def get_count(self, account):
+        return account.lexemes__count

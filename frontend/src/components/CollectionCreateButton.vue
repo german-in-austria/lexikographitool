@@ -2,23 +2,23 @@
   <div >
     <slot :dialog="dialog">
 
-<!--    <v-hover v-slot="{ hover }">-->
-<!--      <v-card-->
-<!--        @click.prevent="dialog.dialog = true"-->
-<!--        :elevation="hover ? 4 : 0"-->
-<!--        class="mx-auto"-->
-<!--        outlined-->
-<!--      >-->
-<!--        <v-card-actions class="justify-center"-->
-<!--          ><v-icon-->
-<!--            size="48-->
-<!--"-->
-<!--            >mdi-plus</v-icon-->
-<!--          ></v-card-actions-->
-<!--        >-->
-<!--      </v-card>-->
+    <v-hover v-slot="{ hover }">
+      <v-card
+        @click.prevent="dialog.dialog = true"
+        :elevation="hover ? 4 : 0"
+        class="mx-auto"
+        outlined
+      >
+        <v-card-actions class="justify-center"
+          ><v-icon
+            size="48
+"
+            >mdi-plus</v-icon
+          ></v-card-actions
+        >
+      </v-card>
 
-<!--    </v-hover>-->
+    </v-hover>
     </slot>
 
     <v-dialog v-model="dialog.dialog" width="500">

@@ -43,7 +43,7 @@ def add_or_remove_user(request, groupId, username):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     user = request.user
-    if group.owner != user:
+    if group.owner != user and not user.is_superuser:
         return Response({'response': 'You dont have permissions to add users to this group'},
                         status=status.HTTP_401_UNAUTHORIZED)
 
@@ -65,7 +65,7 @@ def get_own_groups(request):
     groups = Group.objects.filter(
         Q(owner=account) | Q(members=account)
     ).distinct()
-    serializers = GroupSerializer(groups, many=True)
+    serializers = GroupNameSerializer(groups, many=True)
     return Response(serializers.data, status=status.HTTP_200_OK)
 
 
@@ -115,7 +115,7 @@ def get_update_group(request, groupId):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'PUT':
-        if group.owner != account:
+        if group.owner != account and not account.is_superuser:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         serializer = GroupSerializer(group, data=request.data)
         if serializer.is_valid():
@@ -124,7 +124,7 @@ def get_update_group(request, groupId):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'DELETE':
-        if group.owner != account:
+        if group.owner != account and not account.is_superuser:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         group.delete()
         return Response()
@@ -201,10 +201,10 @@ class GroupView(ListAPIView):
             if 'public' in self.request.GET:
                 public = self.request.GET['public']
                 if public == 'False':
-                    return queryset.filter(Q(owner=user) | Q(members=user))
+                    return queryset.filter(Q(owner=user) | Q(members=user)).distinct().order_by("date_created")
             else:
-                return queryset.filter(Q(owner=user) | Q(members=user) | Q(settings__public=True))
-        return queryset.filter(settings__public=True)
+                return queryset.filter(Q(owner=user) | Q(members=user) | Q(settings__public=True)).distinct().order_by("date_created")
+        return queryset.filter(settings__public=True).order_by("date_created")
 
 
 @api_view(['GET'])

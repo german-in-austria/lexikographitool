@@ -12,7 +12,15 @@
 
         <v-divider></v-divider>
         <v-card-text>
-          <card-create-form :lexeme="lex" :loadHome="false"></card-create-form>
+          <v-btn-toggle
+
+              color="primary"
+                              style="width: 100%" v-model="level" mandatory class="py-2">
+            <v-btn small :width="100/3 + '%'" value="easy"> {{ $t("card_create.tab_title1") }}</v-btn>
+            <v-btn small :width="100/3 + '%'" value="medium">{{ $t("card_create.tab_title2") }}</v-btn>
+            <v-btn small :width="100/3 + '%'" value="expert">{{ $t("card_create.tab_title3") }}</v-btn>
+          </v-btn-toggle>
+          <card-create-form :level="level"  :lexeme="lex" :loadHome="false"></card-create-form>
         </v-card-text>
 
         <v-divider></v-divider>
@@ -60,6 +68,8 @@ export default {
       sensitive: false,
       source: '',
     },
+    level:'expert',
+
   }),
   watch: {
     dialog() {

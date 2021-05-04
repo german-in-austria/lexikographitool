@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions
 from rest_framework import mixins
@@ -14,6 +15,7 @@ from django.db.models import Q
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import filters
 from post.models import Post
+from post.models import Report as PostReport
 from MyProject import rulemanager
 from .pagination import MyPagination
 from .serializers import *
@@ -25,31 +27,35 @@ from django.db.models import Count
 from .permissions import IsSuperUser
 from datetime import datetime, timedelta
 
+from account.models import Account
+from datetime import date, timedelta
+from django.core import serializers
+
 
 class MyCustomOrdering(filters.OrderingFilter):
-    allowed_fields = ['content','word', 'dialectWord', 'kind',
+    allowed_fields = ['content', 'word', 'dialectWord', 'kind',
                       'dialect', 'categories', 'description']
-    allowed_custom_filters = ['content','dialectWord', '-dialectWord',
+    allowed_custom_filters = ['content', 'dialectWord', '-dialectWord',
                               'date_created', '-date_created', 'word', '-word']
 
-    #def get_ordering(self, request, queryset, view):
-       
-        # params = request.query_params.get(self.ordering_param)
-        # if params:
-        #     fields = [param.strip() for param in params.split(',')]
-        #     # care with that - this will alow only custom ordering!
-        #     ordering = [f for f in fields if f in self.allowed_custom_filters]
+    # def get_ordering(self, request, queryset, view):
 
-        #     if ordering:
-        #         return ordering
+    # params = request.query_params.get(self.ordering_param)
+    # if params:
+    #     fields = [param.strip() for param in params.split(',')]
+    #     # care with that - this will alow only custom ordering!
+    #     ordering = [f for f in fields if f in self.allowed_custom_filters]
 
-        # No ordering was included, or all the ordering fields were invalid
-        #return self.get_default_ordering(view)
-        # ordering = super().get_ordering(request, queryset, view)
-        # field_map = {
-        #     'y': 'x__y',
-        # }
-        # return [field_map.get(o, o) for o in ordering]
+    #     if ordering:
+    #         return ordering
+
+    # No ordering was included, or all the ordering fields were invalid
+    # return self.get_default_ordering(view)
+    # ordering = super().get_ordering(request, queryset, view)
+    # field_map = {
+    #     'y': 'x__y',
+    # }
+    # return [field_map.get(o, o) for o in ordering]
 
     def filter_queryset(self, request, queryset, view):
         ordering = self.get_ordering(request, queryset, view)
@@ -66,6 +72,7 @@ class MyCustomOrdering(filters.OrderingFilter):
 
         return queryset.filter(**flt)
 
+
 # Lexeme
 
 
@@ -74,10 +81,10 @@ def get_most_popular(request):
     if request.method == 'GET':
         countlist = LikeLexeme.objects.filter(Q(date_updated__gte=datetime.now(
         ) - timedelta(days=14)) & Q(like=True)).values('lexeme').annotate(total=Count('lexeme')).order_by('-total')
-        id_list = countlist.values_list('lexeme',flat=True)
+        id_list = countlist.values_list('lexeme', flat=True)
         id_list = id_list[0:5]
         lexemes = Lexeme.objects.filter(pk__in=id_list)
-        return Response(CardSerializer(lexemes,many=True, context={'request': request}).data)
+        return Response(CardSerializer(lexemes, many=True, context={'request': request}).data)
 
 
 @api_view(['GET'])
@@ -134,7 +141,7 @@ def card_own(request):
         return Response(serializers.data)
 
 
-@api_view(['GET','PUT','DELETE'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def get_lexeme(request, lexemeId):
     try:
         lexeme = Lexeme.objects.get(id=lexemeId)
@@ -146,19 +153,19 @@ def get_lexeme(request, lexemeId):
 
     if request.method == 'PUT':
         account = request.user
-        data=request.data
-        data['lexeme']=lexeme.id
+        data = request.data
+        data['lexeme'] = lexeme.id
 
         serializer = LexemeContentCreateSerializer(data=data)
 
         if serializer.is_valid():
             serializer.save()
 
-            s = LexemeCreateSerializer(lexeme,data={'content':serializer.data['id']})
+            s = LexemeCreateSerializer(lexeme, data={'content': serializer.data['id']})
             if s.is_valid():
                 s.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-             
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'DELETE':
@@ -166,9 +173,20 @@ def get_lexeme(request, lexemeId):
         if request.user and request.user.is_superuser:
             lexeme.delete()
             return Response()
-
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+
+@api_view(['POST'])
+def restore_word(request, lexemeId):
+    try:
+        lexeme = Lexeme.all_objects.get(id=lexemeId)
+    except Lexeme.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    if request.user and request.user.is_superuser:
+        lexeme.deleted_at = None
+        lexeme.save()
+        return Response()
+    return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(['GET'])
@@ -180,19 +198,22 @@ def lexeme_first_by_word(request, word):
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+
 class LexemeSimpleListView(ListAPIView):
     queryset = Lexeme.objects.all()
     serializer_class = LexemeSimpleSerializer
     filter_backends = [SearchFilter]
     search_fields = ['content__word']
 
+
 class LexemeView(ListAPIView):
     serializer_class = CardSerializer
     pagination_class = MyPagination
-    pagination_class.page_size = 16
+    pagination_class.page_size = 4
     filter_backends = [MyCustomOrdering, filters.SearchFilter]
-    ordering_fields = ['content__word', 'content__dialectWord','date_created']
-    search_fields = ['content__word', 'content__dialectWord', 'content__description','content__variety']
+    ordering_fields = ['content__word', 'content__dialectWord', 'date_created']
+    search_fields = ['content__word', 'content__dialectWord', 'content__description', 'content__variety',
+                     'content__categories__category', 'content__kind']
 
     def get_serializer_context(self):
         collection = -1
@@ -204,7 +225,7 @@ class LexemeView(ListAPIView):
 
     def get_queryset(self):
         queryset = Lexeme.objects.all()
-        if self.request.auth == None or not self.request.user.show_sensitive_words:
+        if self.request.auth is None or not self.request.user.show_sensitive_words:
             queryset = queryset.filter(content__sensitive=False)
         print('hoi')
 
@@ -216,14 +237,24 @@ class LexemeView(ListAPIView):
             except Lexeme.DoesNotExist:
                 return Lexeme.objects.none()
             # check if collection is public or user is owner of collection
-            if not rulemanager.can_see_lexemes_of_collection(collection,self.request.user):
+            if not rulemanager.can_see_lexemes_of_collection(collection, self.request.user):
                 return Lexeme.objects.none()
-            queryset = queryset.filter(Q(collections=collection)&Q(collectionlexeme__deleted_at__isnull=True))
+            queryset = queryset.filter(Q(collections=collection) & Q(collectionlexeme__deleted_at__isnull=True))
         if 'mine' in self.request.GET and self.request.user:
             queryset = queryset.filter(author=self.request.user)
 
-        return queryset
+        return queryset.order_by("date_created")
 
+
+@api_view(['GET'])
+def get_lexemes_count(request):
+    return Response(Lexeme.objects.all().count())
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, ])
+def get_my_lexemes_count(request):
+    return Response(Lexeme.objects.filter(author=request.user).count())
 
 
 @api_view(['POST'])
@@ -231,23 +262,27 @@ class LexemeView(ListAPIView):
 def create_lexeme(request):
     account = request.user
     if request.method == 'POST':
-        
-        
+
         lexeme = Lexeme(author=account)
         lexeme.save()
-        data=request.data
-        data['lexeme']=lexeme.id
-        
+        data = request.data
+        data['lexeme'] = lexeme.id
+
         serializer = LexemeContentCreateSerializer(data=data)
 
         if serializer.is_valid():
             serializer.save()
-            s = LexemeCreateSerializer(lexeme,data={'content':serializer.data['id']})
+            s = LexemeCreateSerializer(lexeme, data={'content': serializer.data['id']})
             if s.is_valid():
-                s.save()
+                try:
+                    s.save()
+                except:
+                    lexeme.hard_delete()
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         lexeme.hard_delete()
-       
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -289,19 +324,30 @@ def like_lexeme(request, lexemeId):
 
 @api_view(['GET'])
 def get_similar_lexemes(request, lexemeId):
-
     print(request.GET)
     try:
         lexeme = Lexeme.objects.get(pk=lexemeId)
     except Lexeme.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-
     if 'dialectword' in request.GET:
-        similars = Lexeme.objects.filter(content__dialectWord__iexact=lexeme.content.dialectWord).exclude(id=lexemeId)
+        similars = Lexeme.objects.filter(Q(content__dialectWord__iexact=lexeme.content.dialectWord) &
+                                         ~Q(content__word__iexact=lexeme.content.word)).exclude(
+            id=lexemeId).distinct("content__word")
+    elif 'word' in request.GET:
+        similars = Lexeme.objects.filter(Q(content__word__gt='') &
+                                         Q(content__word__isnull=False) &
+                                         Q(content__word__iexact=lexeme.content.word) &
+                                         ~Q(content__dialectWord__iexact=lexeme.content.dialectWord)).exclude(
+            id=lexemeId)
     else:
-        similars = Lexeme.objects.filter(Q(content__word__gt='') & Q(content__word__isnull=False) & Q(content__word__iexact=lexeme.content.word)).exclude(id=lexemeId)
-    
+        similars = Lexeme.objects.filter(Q(content__word__gt='') &
+                                         Q(content__word__isnull=False) &
+                                         Q(content__word__iexact=lexeme.content.word) &
+                                         Q(content__dialectWord__iexact=lexeme.content.dialectWord)).exclude(
+            id=lexemeId).distinct(
+            "content__dialectWord")
+
     return Response(LexemeSimpleSerializer(similars, many=True).data)
 
 
@@ -325,10 +371,11 @@ def create_dialect(request):
 
 
 @api_view(['GET'])
-def get_variety_list(request,search):
+def get_variety_list(request, search):
     if request.method == 'GET':
-        varieties = LexemeContent.objects.filter(variety__icontains=search).distinct().values_list('variety',flat=True)
+        varieties = LexemeContent.objects.filter(variety__icontains=search).distinct().values_list('variety', flat=True)
         return Response(varieties, status=status.HTTP_200_OK)
+
 
 # Etymology
 
@@ -386,6 +433,7 @@ def create_category_with_lexeme(request, pk):
     else:
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, ])
 def create_category(request):
@@ -418,7 +466,6 @@ def get_home(request):
 
 @api_view(['POST'])
 def create_address(request):
-
     if request.method == 'POST':
         serializer = LocationCreateSerializer(data=request.data)
         if serializer.is_valid():
@@ -444,7 +491,7 @@ def create_address(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, ])
-def report_lexeme(request,lexemeId):
+def report_lexeme(request, lexemeId):
     if request.method == 'POST':
         try:
             lexeme = Lexeme.objects.get(id=lexemeId)
@@ -463,6 +510,7 @@ def report_lexeme(request,lexemeId):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class ReportView(ListAPIView):
     permission_classes = [permissions.IsAuthenticated, IsSuperUser]
     serializer_class = ReportSerializer
@@ -471,14 +519,37 @@ class ReportView(ListAPIView):
     filter_backends = [filters.OrderingFilter]
     queryset = Report.objects.all()
 
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, ])
-def deactive_report(request,reportId):
+def deactive_report(request, reportId):
     if request.method == 'PUT':
         try:
             report = Report.objects.get(id=reportId)
         except Report.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        report.active= False
+        report.active = not report.active
         report.save()
         return Response()
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, ])
+def get_amount_of_reports_total(request):
+    if request.method == 'GET':
+        number_of_reports = Report.objects.filter(active=True).count() + PostReport.objects.filter(active=True).count()
+        return Response(number_of_reports)
+
+
+class HighscoreView(ListAPIView):
+    serializer_class = HighscoreSerializer
+    pagination_class = MyPagination
+    pagination_class.page_size = 4
+
+    def get_queryset(self):
+        highscore = Account.objects
+        if 'daysPast' in self.request.GET:
+            dateTil = date.today() - timedelta(days=int(self.request.GET['daysPast']))
+            highscore = highscore.filter(lexemes__date_created__gte=dateTil)
+        highscore = highscore.annotate(Count('lexemes')).order_by('-lexemes__count')
+        return highscore

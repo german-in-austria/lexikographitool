@@ -10,7 +10,7 @@
             <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical</v-icon>
           </template>
           <v-list>
-            <group-create-button ></group-create-button>
+            <group-create-button></group-create-button>
 
             <trash-can-dialog :itemList="groups" :group="true"></trash-can-dialog>
 
@@ -18,12 +18,25 @@
         </v-menu>
       </v-col>
     </v-row>
-    <v-row  no-gutters>
-      <p class="text-body-1">
-        {{ $t("groups.desciption") }}
-      </p></v-row
-    >
+    <v-row no-gutters>
+      <i18n class="text-body-1" path="groups.description" tag="p">
+        <template v-slot:createGroup>
+          <group-create-button class="d-inline-block" :text="$t('groups.createGroup')"></group-create-button>
+        </template>
+      </i18n>
+    </v-row>
     <v-row no-gutters class="pt-5">
+      <v-btn-toggle
+          color="primary"
+          class="pb-2"
+          style="width: 100%"
+          v-model="pub"
+          mandatory
+
+      >
+        <v-btn :small="$vuetify.breakpoint.xs" width="50%" class="text-truncate" :value="false"> Meine Gruppen</v-btn>
+        <v-btn :small="$vuetify.breakpoint.xs"  width="50%" class="text-truncate" :value="true"> öffentliche Gruppen</v-btn>
+      </v-btn-toggle>
       <v-text-field
           v-model="search"
           label="Suche"
@@ -33,26 +46,20 @@
           solo-inverted
           hide-details
           prepend-inner-icon="mdi-magnify"
-          class="pr-5"
+
       ></v-text-field>
-      <v-btn-toggle
-          v-model="pub"
-          mandatory
-          :style="$vuetify.breakpoint.xs ? 'flex-direction: column;' : ''"
-      >
-        <v-btn large :value="false"> Meine Gruppen</v-btn>
-        <v-btn large :value="true"> öffentliche Gruppen</v-btn>
-      </v-btn-toggle>
+
 
     </v-row>
     <v-row no-gutters>
-
-     <group-create-button v-if="!groups.length" :text="true"></group-create-button>
+      <p v-if="!groups.length">Du bist momentan in keiner Gruppe.
+        <group-create-button class="d-inline-block"  :text="'Erstelle eine neue Gruppe'"></group-create-button>
+        oder suche bei öffentliche Gruppen nach einer Gruppe, der du beitreten möchtest.</p>
 
 
       <v-col
           cols="12"
-          sd="4"
+          sm="4"
           md="3"
           v-for="group in groups"
           :key="group.id"
@@ -74,6 +81,15 @@
         Keine Treffer
       </p>
     </v-row>
+    <v-row>
+      <v-progress-circular
+          class="ma-auto"
+          v-if="!!loading"
+          :size="150"
+          indeterminate
+      ></v-progress-circular>
+      <v-btn v-if="!loading & !!next" class="ma-auto" outlined @click="loadMore">Mehr laden</v-btn>
+    </v-row>
   </v-container>
 </template>
 
@@ -93,12 +109,13 @@ export default {
     tab: null,
     groupTitle: "",
     groupDescription: "",
-
+    loading:false,
     timeout: null,
   }),
   methods: {
     loadGroups() {
       const public_python_param = this.pub ? "True" : "False";
+      this.loading=true
       Axios.get(
           "groups/public/?page=1&page_size=25&public=" +
           public_python_param +
@@ -107,7 +124,7 @@ export default {
       ).then((response) => {
         this.groups = response.data.results;
         this.next = response.data.links.next;
-      });
+      }).finally(()=>this.loading=false);
     },
     onScroll(e) {
       console.log(this.next);
@@ -118,21 +135,29 @@ export default {
       ) {
         const next = this.next;
         this.next = null;
-
+        this.loading =true;
         Axios.get(next).then((response) => {
           this.groups = this.groups.concat(response.data.results);
           this.next = response.data.links.next;
-        });
+        }).finally(()=>this.loading=false);
       }
     },
+    loadMore() {
+      this.loading=true;
+      Axios.get(this.next).then((response) => {
+        this.groups = this.groups.concat(response.data.results);
+        this.next = response.data.links.next;
+      }).finally(()=>this.loading=false);
+    }
   },
   mounted() {
+    this.loading=true
     Axios.get("groups/public/?page=1&public=False&page_size=25").then(
         (response) => {
           this.groups = response.data.results;
           this.next = response.data.links.next;
         }
-    );
+    ).finally(()=>this.loading=false);
   },
   watch: {
     pub() {

@@ -1,66 +1,48 @@
 <template>
   <v-container fluid>
-     
+
     <p class="text-h3">{{ $t("card_create.title") }}</p>
     <p class="text-body-1">{{ $t("card_create.description") }}</p>
-    <v-tabs v-model="tab" align-with-title>
-      <v-tabs-slider color="yellow"></v-tabs-slider>
+    <v-btn-toggle       color="primary"
+                        style="width: 100%" v-model="level" mandatory class="pb-2">
+      <v-btn :width="100/3 + '%'" value="easy"> {{ $t("card_create.tab_title1") }}</v-btn>
+      <v-btn :width="100/3 + '%'" value="medium">{{ $t("card_create.tab_title2") }}</v-btn>
+      <v-btn :width="100/3 + '%'" value="expert">{{ $t("card_create.tab_title3") }}</v-btn>
 
-      <v-tab>{{ $t("card_create.tab_title1") }}</v-tab>
-      <v-tab>{{ $t("card_create.tab_title2") }}</v-tab>
-      <v-tab>{{ $t("card_create.tab_title3") }}</v-tab>
-    </v-tabs>
-    <v-tabs-items v-model="tab">
-      <v-tab-item>
-        <v-form
-              ref="create"
-              @submit="submit"
-              v-model="valid">
-        <card-create-form :easy="true" :loadHome="true" :lexeme="lex"></card-create-form>
-        </v-form>
-      </v-tab-item>
-      <v-tab-item>
-         <v-form
-              ref="create"
-              @submit="submit"
-              v-model="valid">
-        <card-create-form :medium="true" :lexeme="lex" :loadHome="true"></card-create-form>
-      
-         </v-form></v-tab-item>
-      <v-tab-item>
-         <v-form
-              ref="create"
-              @submit="submit"
-              v-model="valid">
-        <card-create-form :lexeme="lex" :loadHome="true"></card-create-form>
-      
-         </v-form></v-tab-item>
-    </v-tabs-items>
-    <v-row no-gutters class="ma-3 create-section">
+    </v-btn-toggle>
+  <v-form     ref="form"
+              v-model="valid"
+              lazy-validation>
+    <card-create-form :level="level" :loadHome="true" :lexeme="lex"></card-create-form>
+  </v-form>
+    <v-row no-gutters class="mb-3 mt-3 create-section">
       <v-col cols="12">
-        <v-subheader>{{$t("createWord.collection")}}<input-tool-tip
-            :tip="$t('createWord.collectionToolTip')"
-        ></input-tool-tip></v-subheader>
+        <v-subheader>{{ $t("createWord.collection") }}
+          <input-tool-tip
+              :tip="$t('createWord.collectionToolTip')"
+          ></input-tool-tip>
+        </v-subheader>
         <CardCreateAddCollection :solo="true" :model="collections"></CardCreateAddCollection>
       </v-col>
     </v-row>
     <v-col>
       <v-btn color="primary" @click="submit">{{
-        $t("card_create.createButton1")
-      }}</v-btn>
+          $t("card_create.createButton1")
+        }}
+      </v-btn>
     </v-col>
     <!--    <v-btn @click="createNewLexeme('reset')">{{ $t("card_create.createButton2") }}</v-btn>-->
     <!--    <v-btn @click="createNewLexeme('addMeaning')">{{ $t("card_create.createButton3") }}</v-btn>-->
     <v-expand-transition>
       <v-snackbar
-        multi-line
-        min-height="500"
-        min-width="500"
-        v-model="snackbarSuccessful"
-        :timeout="2000"
-        color="success"
-        style="margin-top: 100px"
-        top
+          multi-line
+          min-height="500"
+          min-width="500"
+          v-model="snackbarSuccessful"
+          :timeout="2000"
+          color="success"
+          style="margin-top: 100px"
+          top
       >
         {{ $t("card_create.successMessage") }}
       </v-snackbar>
@@ -109,15 +91,16 @@ export default {
     snackbarFailure: false,
     valid: false,
     tab: null,
-    collections: {value: []}
+    collections: {value: []},
+    level: "easy"
   }),
   methods: {
     async createNewLexeme(finishedOption) {
-      let location = {data:{id:this.lex.location.id}}
+      let location = {data: {id: this.lex.location.id}}
       if (this.lex.location.id === '-1')
-        location = await axios.post('location/',this.lex.location)
+        location = await axios.post('location/', this.lex.location)
 
-      
+
       let lexeme = new Lexeme(
           this.lex.word,
           this.lex.description,
@@ -159,7 +142,7 @@ export default {
     },
     submit() {
       console.log(this.$refs)
-      if (this.$refs.create.validate()) {
+      if (this.$refs.form.validate()) {
         this.createNewLexeme('leave');
       }
     },

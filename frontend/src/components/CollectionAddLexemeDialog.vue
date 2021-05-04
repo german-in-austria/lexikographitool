@@ -4,12 +4,14 @@
       <v-btn v-bind="attrs" v-on="on" elevation="0" large> {{$t("collectionDetail.addWords")}} </v-btn>
     </template>
     <v-card height="80vh">
-      <v-card-title>{{$t("collectionDetail.addWords")}}</v-card-title>
+      <v-card-title class="d-block">
+        {{$t("collectionDetail.addWords")}}
+        <v-text-field class="mt-5" solo-inverted dense flat label="Suche" v-model="search">{{$t("general.search")}}</v-text-field>
+</v-card-title>
 
-      <v-card-text>
-        <v-text-field label="Suche" v-model="search">{{$t("general.search")}}</v-text-field>
-      </v-card-text>
-      <v-card-text v-scroll.self="onScroll">
+
+      <v-card-text v-scroll.self="onScroll" class="float-top">
+
         <v-list>
           <v-list-item v-if="loading">
             <v-progress-circular
@@ -26,9 +28,12 @@
               >mdi-delete</v-icon
             >
             ></v-scroll-y-transition>
-
-            <span class="font-weight-bold">{{ item.dialectWord }}</span
-            >, {{ item.word }} {{ item.description }}
+            <v-list-item-content>
+              <p class="ma-1">
+                <span class="font-weight-bold mr-2">{{item.dialectWord}}</span> -
+                <span class="body-2 ml-2">{{item.word}}</span><span v-if="!!item.word & !!item.description">,</span> <span class=" text-body2 text--secondary">{{item.description}}</span>
+              </p>
+            </v-list-item-content>
           </v-list-item>
         </v-list>
       </v-card-text>

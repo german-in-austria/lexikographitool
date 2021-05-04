@@ -2,8 +2,7 @@
   <div>
 
     <span v-if="text">
-    Du bist momentan in keiner Gruppe. <a class="success--text" @click="dialog=true">Erstelle eine neue
-    Gruppe</a> oder suche bei öffentliche Gruppen nach einer Gruppe, der du beitreten möchtest.</span>
+    <a class="success--text" @click="dialog=true">{{ text }}</a></span>
     <v-list-item v-else @click.stop="dialog=true">neue Gruppe erstellen</v-list-item>
     <!--    <v-hover v-slot="{ hover }">-->
     <!--      <v-card-->

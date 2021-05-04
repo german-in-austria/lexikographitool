@@ -2,6 +2,26 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import store from "@/store";
 import VueMeta from 'vue-meta'
+import PostDetail from "@/views/PostDetail";
+import LexemeEdit from "@/views/LexemeEdit";
+import Postings from "@/views/Postings";
+import CardCreate from "@/components/CardCreate";
+import Start from "@/views/Start";
+import Collections from "@/views/Collections";
+import Dashboard from "@/views/Dashboard";
+import Search from "@/views/Search";
+import CollectionsDetail from "@/views/CollectionsDetail";
+import GroupDetail from "@/views/GroupDetail";
+import GroupJoin from "@/views/GroupJoin";
+import Groups from "@/views/Groups";
+import LexemeDetail from "@/views/LexemeDetail";
+import Settings from "@/views/Settings";
+import Lexemes from "@/views/Lexemes";
+import Login from "@/views/Login";
+import Reports from "@/views/Reports";
+import Imprint from "@/views/Imprint";
+import DataProtection from "@/views/DataProtection";
+import Highscore from "@/views/Highscore";
 
 Vue.use(VueRouter);
 Vue.use(VueMeta,{
@@ -22,106 +42,118 @@ const router = new VueRouter({
         name: 'start',
 
         // component: () => import(/*webpackChunkName: "Start"*/ "./views/Home.vue")
-        component: () => import(/*webpackChunkName: "Home"*/ "./views/Start.vue")
+        component: Start
     },
         {
             path: '/collections',
             name: 'collections',
-            component: () => import(/*webpackChunkName: "Collections"*/ "./views/Collections.vue"),
+            component: Collections,
             meta: {requiresAuth: true}
         },
         {
             path: '/dashboard',
             name: 'dashboard',
-            component: () => import(/*webpackChunkName: "Collections"*/ "./views/Dashboard"),
+            component: Dashboard,
             meta: {requiresAuth: true}
         },
         {
             path: '/search/:search',
             name: 'search',
-            component: () => import(/*webpackChunkName: "Search"*/ "./views/Search.vue"),
+            component: Search,
             meta: {requiresAuth: false}
         },
         {
             path: '/',
-            name: 'start',
+            name: 'Home',
             // component: () => import(/*webpackChunkName: "Collections"*/ "./views/Start.vue"),
-            component: () => import(/*webpackChunkName: "Collections"*/ "./views/Start.vue"),
+            component: Lexemes,
             meta: {requiresAuth: false}
         }, {
             path: '/collections/:id',
             name: 'collection',
-            component: () => import(/*webpackChunkName: "CollectionsDetail"*/ "./views/CollectionsDetail.vue"),
+            component: CollectionsDetail,
             meta: {requiresAuth: true}
         }, {
             path: '/groups/:id',
             name: 'group',
-            component: () => import(/*webpackChunkName: "GroupDetail"*/ "./views/GroupDetail.vue"),
+            component: GroupDetail,
             meta: {requiresAuth: true}
         }, {
             path: '/groups/join/:id/:hash',
             name: 'groupJoin',
-            component: () => import(/*webpackChunkName: "GroupJoin"*/ "./views/GroupJoin.vue"),
+            component: GroupJoin,
             meta: {requiresAuth: true}
         }, {
             path: '/groups',
             name: 'groups',
-            component: () => import(/*webpackChunkName: "Groups"*/ "./views/Groups.vue"),
+            component: Groups,
             meta: {requiresAuth: true}
         }, {
             path: '/lexeme/:id',
             name: 'lexeme',
-            component: () => import(/*webpackChunkName: "LexemeDetail"*/ "./views/LexemeDetail.vue")
+            component: LexemeDetail
         }, {
             path: '/posting/:id',
             name: 'post',
-            component: () => import(/*webpackChunkName: "PostDetail"*/ "./views/PostDetail.vue")
+            component: PostDetail
+        },
+        {
+            path: '/lexeme_Edit/:id',
+            name: 'lexemeEdit',
+            component: LexemeEdit,
+            meta: {requiresAuth: true}
+
         },
         {
             path: '/postings',
             name: 'postings',
-            component: () => import(/*webpackChunkName: "Postings"*/ "./views/Postings.vue")
+            component: Postings
         }
         ,
         {
             path: '/card-create',
             name: 'card-create',
-            component: () => import(/*webpackChunkName: "CardCreate"*/ "./components/CardCreate.vue"),
+            component: CardCreate,
             meta: {requiresAuth: true}
         },
         {
             path: '/lexemes',
             name: 'lexemes',
-            component: () => import(/*webpackChunkName: "Lexemes"*/ "./views/Lexemes.vue"),
+            component: Lexemes,
             meta: {requiresAuth: false}
         },
 
         {
             path: '/account',
             name: 'account',
-            component: () => import(/*webpackChunkName: "Account"*/ "./views/Settings.vue"),
+            component: Settings,
             meta: {requiresAuth: true}
         },
         {
             path: '/login',
             name: 'login',
-            component: () => import(/*webpackChunkName: "Login"*/ "./views/Login.vue"),
+            component: Login,
         }, {
             path: '/reports',
             name: 'reports',
-            component: () => import(/*webpackChunkName: "Reports"*/ "./views/Reports.vue"),
+            component: Reports,
             meta: {requiresSuperUser: true}
 
         }, {
+            path: '/highscore',
+            name: 'highscore',
+            component: Highscore,
+
+        },
+        {
             path: '/imprint',
             name: 'imprint',
-            component: () => import(/*webpackChunkName: "Imprint"*/ "./views/Imprint"),
+            component: Imprint,
 
-        }, {
+        },{
             path: '/dataprotection',
             name: 'dataprotection',
-            component: () => import(/*webpackChunkName: "DataProtection"*/ "./views/DataProtection.vue"),
-            meta: {requiresSuperUser: true}
+            component: DataProtection,
 
         },
     ]
@@ -139,12 +171,22 @@ router.beforeEach((to, from, next) => {
                         nextUrl: to.fullPath,
                     }
                 });
-            } else {
-                next();
             }
-        } else {
-            next()
         }
+
+    if (to.matched.some(record => record.meta.requiresSuperUser)) {
+        const isSuperUser = store.getters['auth/isSuperUser'];
+
+        if (!isSuperUser) {
+            next({
+                name: "login",
+                query: {
+                    nextUrl: to.fullPath,
+                }
+            });
+        }
+    }
+        next();
     }
 )
 

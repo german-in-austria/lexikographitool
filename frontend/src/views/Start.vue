@@ -7,13 +7,15 @@
           v-html="$t('start.introductionText')"
         ></p>
         </v-row>
-        <v-row>
-          <v-col cols="12" sm="6">
+
+    <v-row no-gutters style="min-height: 400px">
+          <v-col cols="12" class="ma-auto"  sm="12" md="6"  v-if="!!popular.length">
+
             <p class="text-h4">{{$t("start.popular")}}</p>
             <v-hover v-slot:default="{ hover }">
             <v-carousel light v-model="carousel"
                         :cycle="hover ? false : true"
-                        height="400"
+                        height="auto"
                         hide-delimiter-background
                         show-arrows-on-hover>
               <v-carousel-item
@@ -21,22 +23,22 @@
                   :key="lexeme.id"
 
               >
-                <v-sheet class="pa-15 pt-0">
+                <v-sheet  :class="$vuetify.breakpoint.xs ? 'pt-0 pb-15' : 'pa-15 pt-0'">
                   <card-dialect :card="lexeme"></card-dialect>
                 </v-sheet>
               </v-carousel-item>
-              
+
             </v-carousel>
             </v-hover>
           </v-col>
-          <v-col cols="12" sm="6">
+          <v-col cols="12" class="ma-auto" md="6" v-if="!!discussed.length">
             <p class="text-h4">{{$t("start.discussed")}}</p>
             <v-hover v-slot:default="{ hover }">
 
             <v-carousel light v-model="carousel2"
                                                 :cycle="hover ? false : true"
 
-                        height="400"
+                        height="auto"
                         hide-delimiter-background
                         show-arrows-on-hover
                         :interval="7000">
@@ -45,7 +47,7 @@
                   :key="lexeme.id"
 
               >
-                <v-sheet class="pa-15 pt-0">
+                <v-sheet :class="$vuetify.breakpoint.xs ? 'pb-15 pt-0' : 'pa-15 pt-0'">
                   <card-dialect :card="lexeme"></card-dialect>
                 </v-sheet>
               </v-carousel-item>

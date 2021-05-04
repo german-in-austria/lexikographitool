@@ -12,7 +12,7 @@ class GroupSettingsSerializer(serializers.ModelSerializer):
 
 class GroupSerializer(serializers.ModelSerializer):
     members = UserNameSerializer(many=True, read_only=True)
-    collections = CollectionSerializer(many=True, read_only=True)
+    #collections = CollectionSerializer(many=True, read_only=True)
     owner = UserNameSerializer(read_only=True)
     is_owner = serializers.SerializerMethodField('check_if_owner')
     can_create_collection = serializers.SerializerMethodField()
@@ -22,7 +22,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Group
-        fields = ['id', 'name', 'description', 'members', 'collections', 'owner', 'is_owner','is_member','can_create_collection',
+        fields = ['id', 'name', 'description', 'members',  'owner', 'is_owner','is_member','can_create_collection',
                   'organization', 'can_join','requires_password']
 
     def check_if_owner(self, group):

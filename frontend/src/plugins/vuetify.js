@@ -11,6 +11,7 @@ Vue.use(Vuetify)
 
 
 const vuetify = new Vuetify({
+
     theme: {
         themes: {
             light: {

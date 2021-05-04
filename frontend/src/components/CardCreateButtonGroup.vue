@@ -1,8 +1,9 @@
 <template>
   <v-btn-toggle
+
       v-model="value"
       @change="updateParent"
-      color="deep-purple accent-3"
+      color="primary"
     mandatory
       >
     <v-btn

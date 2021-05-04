@@ -1,5 +1,6 @@
 <template>
-  <v-container fluid>
+  <v-container class="px-15" fluid>
+    <p class="error-message" v-if="this.$route.query.nextUrl">{{$t("login.notAuhtenticated")}}</p>
     <v-tabs v-model="tab" icons-and-text grow>
       <v-tab v-for="i in tabs" :key="i.name">
         <v-icon large>{{ i.icon }}</v-icon>
@@ -7,7 +8,7 @@
       </v-tab>
     </v-tabs>
 
-    <v-tabs-items v-model="tab" reverse>
+    <v-tabs-items v-model="tab" >
       <v-tab-item key="Login">
         <v-card class="px-4">
           <v-card-text>
@@ -225,7 +226,7 @@ export default {
     },
     login() {
       if (this.$refs.loginForm.validate()) {
-        this.signIn(new Login(this.loginEmail, this.loginPassword))
+        this.signIn(new Login(this.loginEmail.toLowerCase(), this.loginPassword))
           .then(() => {
             if (this.$route.query.nextUrl)
               this.$router.push(this.$route.query.nextUrl);
@@ -246,7 +247,7 @@ export default {
           this.signUp(
             new Register(
               this.username,
-              this.email,
+              this.email.toLowerCase(),
               this.password,
               this.password,
               location.data.id,
@@ -255,7 +256,7 @@ export default {
           );
           if (this.$route.query.nextUrl)
             this.$router.push(this.$route.query.nextUrl);
-          else this.$router.push("/");
+          else this.$router.push("/start");
         } catch {
           this.failureMessage = "Benutzername oder Passwort stimmen nicht!";
           this.snackbarFailure = true;
@@ -270,8 +271,15 @@ export default {
       this.$emit("inputData", this.zip);
     },
   },
+
 };
 </script>
 
 <style scoped>
+.error-message{
+  border-radius: 10px;
+  border: thin solid red;
+  padding: 7px;
+
+}
 </style>

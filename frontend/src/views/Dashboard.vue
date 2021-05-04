@@ -1,5 +1,5 @@
 <template>
-  <v-container style="max-width: 2000rem !important" fluid>
+  <v-container  fluid>
     <div class="hidden-md-and-up">
       <p class="text-h4">{{ $t("dashboard.title") }}</p>
 
@@ -114,7 +114,7 @@
       class="hidden-sm-and-down"
       :style="
         $vuetify.breakpoint.lgAndUp
-          ? ' height:85vh;margin-left:10rem;'
+          ? ' height:85vh;'
           : ' height:85vh;' + ' margin-top:3rem;'
       "
     >

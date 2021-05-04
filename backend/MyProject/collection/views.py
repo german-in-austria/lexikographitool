@@ -80,21 +80,29 @@ class CollectionView(ListAPIView):
     serializer_class = CollectionSimpleSerializer
     pagination_class = MyPagination
     pagination_class.page_size = 16
+
     filter_backends = [filters.SearchFilter]
     search_fields = ['name','description']
 
     def get_queryset(self):
-        queryset = Collection.objects.all()
-        
         if self.request.user:
             user = self.request.user
             if 'public' in self.request.GET:
                 public = self.request.GET['public']
                 if public == 'False':
-                    return queryset.filter(Q(author=user))
-            else:
-                return queryset.filter(Q(author=user) | Q(group__members=user) |  Q(group__owner=user) | Q(public=True))
-        return queryset.filter(public=True)
+                    if 'group' in self.request.GET:
+                        return Collection.objects.filter((Q(group__members=user) | Q(group__owner=user)) & Q(group=self.request.GET['group'])).distinct().order_by("date_created")
+                    return Collection.objects.filter(Q(author=user) & Q(group__isnull=True)).distinct().order_by("date_created")
+                return Collection.objects.filter(Q(public=True)).order_by("date_created")
+            #Filtering by group
+            if('group' in self.request.GET):
+                try:
+                    group = Group.objects.get(id=self.request.GET['group'])
+                except Group.DoesNotExist:
+                    return Response(status=status.HTTP_404_NOT_FOUND)
+
+            return Collection.objects.filter((Q(author=user) | Q(group__members=user) |  Q(group__owner=user) | Q(public=True))& Q(group=group)).distinct().order_by("date_created")
+        return Collection.objects.filter(public=True).distinct().order_by("date_created")
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, ])

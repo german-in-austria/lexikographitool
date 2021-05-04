@@ -1,3 +1,5 @@
+import string
+
 from .models import Account
 from rest_framework import serializers
 
@@ -24,7 +26,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     def save(self):
         account = Account(
-            email=self.validated_data['email'],
+            email=self.validated_data['email'].lower(),
             username=self.validated_data['username'],
             age=self.validated_data['age'],
             home=self.validated_data['home'],
@@ -61,6 +63,8 @@ class UserSerializer(serializers.ModelSerializer):
 
         locations = Address.objects.filter(pk__in=location_list)
         instance.locations.set(locations)   
+        instance.username=validated_data['username']
+        print(instance.username)
         instance.age=validated_data['age']
         instance.home = home
         instance.show_sensitive_words = validated_data['show_sensitive_words']

@@ -3,18 +3,20 @@
         <v-row no-gutters>
           <v-col col="12">
             <p class="text-h3 ma-0">{{ group.name }}</p>
+            <p class="text-body-2 ">{{$t("groupDetails.created")}} <span class="font-weight-bold">{{ group.owner.username }}</span></p>
+
             <p class="text-body-2 ">{{ group.organization }}</p>
             <p class="text-body-1">{{ group.description }}</p>
           </v-col>
           <v-col class="col-auto" cols="1">
-            <v-menu left v-if="group.is_member">
+            <v-menu left v-if="group.is_member || isSuperUser">
               <template v-slot:activator="{ on, attrs }">
                 <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical </v-icon>
               </template>
               <v-list>
                 <group-settings-dialog
                   :group="group"
-                  v-if="group.is_owner"
+                  v-if="group.is_owner || isSuperUser"
                 ></group-settings-dialog>
                 <GroupDetailMemberDialog v-if="group.is_member" :group="group"></GroupDetailMemberDialog>
                 <group-detail-invitation-link-dialog v-if="group.is_owner"></group-detail-invitation-link-dialog>
@@ -23,12 +25,12 @@
                     $t("groupDetails.leaveGroup")
                   }}</span></v-list-item
                 >
-                <v-list-item @click="deleteGroup" v-if="group.is_owner"
+                <v-list-item @click="deleteGroup" v-if="group.is_owner  || isSuperUser"
                   ><span class="error--text">{{
                     $t("groupDetails.deleteGroup")
                   }}</span></v-list-item
                 >
-              </v-list>
+              </v-list>m
             </v-menu>
             <v-btn outlined v-if="!group.is_member & group.can_join & !group.requires_password" @click="join">Gruppe beitreten</v-btn>
             <group-detail-join-with-password-dialog v-if="!group.is_member & group.can_join & group.requires_password" :group="group"></group-detail-join-with-password-dialog>
@@ -56,8 +58,8 @@
 
           <v-col
             md="4"
-            sd="6"
-            v-for="collection in group.collections"
+            sm="6"
+            v-for="collection in collections"
             :key="collection.id"
           >
             <card-collection
@@ -65,8 +67,17 @@
               class="ma-1"
             ></card-collection>
           </v-col>
-          <p v-if="!group.collections.length">{{ $t("groupDetails.noCollectionMessages") }}</p>
+          <p v-if="!collections.length">{{ $t("groupDetails.noCollectionMessages") }}</p>
         </v-row>
+          <v-row>
+            <v-progress-circular
+                class="ma-auto"
+                v-if="!!loading"
+                :size="150"
+                indeterminate
+            ></v-progress-circular>
+            <v-btn v-if="!loading & !!collectionsNext " class="ma-auto" outlined @click="loadMore">Mehr laden</v-btn>
+          </v-row>
         </v-sheet>
 
 
@@ -83,6 +94,7 @@ import axios from "axios";
 import GroupDetailMemberDialog from "@/components/GroupDetailMemberDialog";
 import GroupDetailInvitationLinkDialog from "@/components/GroupDetailInvitationLinkDialog";
 import GroupDetailJoinWithPasswordDialog from "@/components/GroupDetailJoinWithPasswordDialog";
+import Axios from "axios";
 export default {
   components: {
     GroupDetailJoinWithPasswordDialog,
@@ -98,8 +110,16 @@ export default {
     collectionAdd: "",
     inviteLink: "",
     password:'',
+    collections : [],
+    collectionsNext : null,
+    loading : false,
   }),
   mounted() {
+    this.loading = true
+    axios.get("collections/?group="+this.$route.params.id).then(response => {
+      this.collections = response.data.results
+      this.collectionsNext = response.data.next
+    }).finally(()=>this.loading =false)
     RequestHandler.getGroup(this.$route.params.id).then((response) => {
       this.group = response.data;
       if (this.group.is_owner)
@@ -123,7 +143,13 @@ export default {
         .put("/collection/group/" + value.id + "/" + this.group.id + "/")
         .then(() => this.$router.push("/collections/" + value.id));
     },
-
+    loadMore(){
+      this.loading = true
+      Axios.get(this.collectionsNext).then((response) => {
+        this.collections = this.collections.concat(response.data.results);
+        this.collectionsNext = response.data.links.next;
+      }).finally(()=>this.loading=false);
+    },
 
     deleteGroup() {
       axios.delete("group/" + this.group.id + "/").then(() => {
@@ -154,6 +180,7 @@ export default {
     ...mapGetters({
       authenticated: "auth/authenticated",
       userSignedIn: "auth/user",
+      isSuperUser: "auth/isSuperUser",
     }),
   },
 };

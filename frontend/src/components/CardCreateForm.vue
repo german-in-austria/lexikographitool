@@ -1,6 +1,6 @@
 <template>
   <div>
-      <v-row no-gutters class="ma-3 create-section">
+      <v-row no-gutters class="mb-3 mt-3 create-section">
       <v-col cols="12">
         <v-subheader>{{$t('createWord.lemma')}}<input-tool-tip
             :tip="$t('createWord.lemmaToolTip')"
@@ -17,6 +17,7 @@
       
         </v-text-field>
       </v-col>
+        <v-expand-transition>
       <v-col cols="12" v-if="!easy & !medium">
         <v-subheader>{{$t('createWord.pronunciation')}}<input-tool-tip
             :tip="$t('createWord.pronunciationToolTip')"
@@ -30,16 +31,20 @@
         
         </input-multiple>
       </v-col>
+        </v-expand-transition>
+        <v-expand-transition>
 
-      <v-col cols="12" v-if="!easy">
+        <v-col cols="12" v-if="!easy">
 
         <input-button-group
             v-model="lexeme.kind"
             :items="kindItems"
         ></input-button-group>
       </v-col>
-      <v-expand-transition>
-      <v-col class="mt-4" cols="12" v-if="lexeme.kind=='N'">
+          </v-expand-transition>
+
+          <v-expand-transition>
+      <v-col class="mt-4" cols="12" v-if="lexeme.kind=='N' && !easy">
 
         <input-button-group
             v-model="lexeme.genus"
@@ -49,7 +54,7 @@
       </v-expand-transition>
       </v-row>
 
-      <v-row no-gutters class="ma-3 create-section">
+      <v-row no-gutters class="mb-3 mt-3  create-section">
       <v-col cols="12">
 
         <v-subheader>
@@ -83,6 +88,7 @@
 
         </v-textarea>
       </v-col>
+        <v-expand-transition>
 
       <v-col cols="12" v-if="!easy">
         <v-subheader>
@@ -92,8 +98,9 @@
         <input-multiple :label="$t('createWord.example')" v-model="lexeme.examples">
         </input-multiple>
       </v-col>
+          </v-expand-transition>
 
-
+      <v-expand-transition>
       <v-col cols="12" v-if="!easy & !medium">
         <v-subheader>
           {{$t('createWord.etymology')}}<input-tool-tip
@@ -103,9 +110,12 @@
 
         </input-multiple>
       </v-col>
+      </v-expand-transition>
 
       </v-row>
-    <v-row no-gutters class="ma-3 create-section">
+    <v-row no-gutters class="mb-3 mt-3  create-section">
+      <v-expand-transition>
+
       <v-col cols="12" v-if="!easy">
         <v-subheader>
           {{$t('createWord.category')}}<input-tool-tip
@@ -114,6 +124,7 @@
         <card-create-add-category :solo="true" :model="lexeme.categories"></card-create-add-category>
 
       </v-col>
+        </v-expand-transition>
 
       <v-col cols="12">
         <v-subheader>
@@ -129,10 +140,14 @@
         </input-lemma-box>
       </v-col>
     </v-row>
-    <v-row no-gutters class="ma-3 create-section">
+    <v-row no-gutters class="mb-3 mt-3  create-section">
+      <v-subheader>
+        {{$t('createWord.usedIn')}}</v-subheader>
       <v-col cols="12">
         <input-field-location :solo="true" :loadHome="loadHome" v-model="lexeme.location"></input-field-location>
       </v-col>
+      <v-expand-transition>
+
       <v-col cols="12" v-if="!easy">
         <v-textarea
             solo
@@ -145,7 +160,9 @@
 
         </v-textarea>
       </v-col>
-      <v-col>
+        </v-expand-transition>
+
+        <v-col>
         <v-checkbox
             v-model="lexeme.sensitive"
             :label="$t('createWord.sensitive')"
@@ -166,7 +183,7 @@ import Axios from "axios";
 import CardCreateAddCategory from "@/components/CardCreateAddCategory";
 
 export default {
-  props: ["lexeme", 'medium', 'easy','loadHome'],
+  props: ["lexeme",'loadHome', 'level'],
   components: {
     CardCreateAddCategory,
     InputButtonGroup,
@@ -247,6 +264,15 @@ export default {
         (response) => (this.category_list = response.data)
     );
   },
+  computed:{
+      easy(){
+        return this.level==='easy'
+      },
+      medium(){
+          return this.level==='medium'
+
+      }
+  }
 
 };
 </script>
@@ -255,7 +281,6 @@ export default {
   padding:20px;
   border-radius: 20px;
   border-color: lightgray;
-  margin-top: 10px;
   background-color: rgb(0,0,0,0.05);
 }
 

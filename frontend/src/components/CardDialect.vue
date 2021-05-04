@@ -2,84 +2,97 @@
   <div>
     <v-hover v-slot="{ hover }">
       <v-card
-        :elevation="hover && !allInformation ? 5 : 0"
+          :elevation="hover && !allInformation ? 5 : 0"
 
-        :to="allInformation ? false : '/lexeme/' + card.id"
-        :color="color + ' lighten-4'"
-        class="transition-swing"
+          :to="allInformation ? null : '/lexeme/' + card.id"
+          :color="color + ' lighten-4'"
+          class="transition-swing"
       >
-        <v-card-text class="text-body-2">
-          <p v-if="card.sensitive" ><v-icon color="error"> mdi-alert</v-icon> <span class="text-caption error--text"> {{$t("card.sensitive")}}</span>
+        <v-card-text style="min-height: 200px" class="text-body-2">
+          <p v-if="card.sensitive">
+            <v-icon color="error"> mdi-alert</v-icon>
+            <span class="text-caption error--text"> {{ $t("card.sensitive") }}</span>
           </p>
           <span>{{ card.word }}</span>
           <span v-if="!card.word">{{ card.description }}</span>
 
-          <v-tooltip bottom  open-delay="100">
+          <v-tooltip bottom open-delay="100" v-if="!allInformation">
             <template v-slot:activator="{ on, attrs }">
-          <p v-bind="attrs"
-             v-on="on" :class="color + '--text text--darken-4 text-h4 text-truncate' ">
+              <p v-bind="attrs"
+                 v-on="on" :class="color + '--text text--darken-4 text-h4 text-truncate' ">
+                {{ card.dialectWord }}
+              </p>
+            </template>
+            {{ card.dialectWord }}
+          </v-tooltip>
+          <p v-else
+             :class="color + '--text text--darken-4 text-h4' ">
             {{ card.dialectWord }}
           </p>
-            </template>
-            {{card.dialectWord}}
-          </v-tooltip>
-          <p ><span v-if="card.kind">{{ kind }}</span><span v-if="card.kind === 'N'">, {{ genus }}</span>
+
+          <p><span v-if="card.kind">{{ kind }}</span><span v-if="card.kind === 'N'">, {{ genus }}</span>
           </p>
 
           <p v-if="card.description && !!card.word">
-            Beschreibung: {{ card.description }}
+            <span class="font-weight-bold">Beschreibung:</span> {{ card.description }}
           </p>
-          <p v-if="!!card.examples && card.examples.length && allInformation">
-            Beispiel:
+          <p v-if="!!card.examples && !!card.examples.length && allInformation">
+            <span class="font-weight-bold">  Beispiel:</span>
             <span v-for="(example, index) in card.examples" :key="index">
               {{ example.example }},
             </span>
           </p>
 
-          <p v-if="card.variety">Varietät: {{ card.variety }}</p>
+          <p v-if="card.variety"><span class="font-weight-bold">Varietät:</span> {{ card.variety }}</p>
 
-          <p>Verwendet in {{ card.origin.name }}</p>
+          <p v-if="!!card.origin & !!card.origin.name"><span class="font-weight-bold">Verwendet in</span>
+            {{ card.origin.name }}</p>
 
-          <p v-if="!!card.categories && card.categories.length && allInformation">
-            Kategorie:
+          <p v-if="!!card.categories && !!card.categories.length && allInformation">
+            <span class="font-weight-bold"> Kategorie:</span>
             <span v-for="(category, index) in card.categories" :key="index">
               {{ category.category }},
             </span>
           </p>
 
           <p
-            v-if="!!card.pronunciations && card.pronunciations.length && allInformation"
+              v-if="!!card.pronunciations && !!card.pronunciations.length && allInformation"
           >
-            Aussprache:
+            <span class="font-weight-bold">  Aussprache:</span>
             <span
-              v-for="(pronunciation, index) in card.pronunciations"
-              :key="index"
+                v-for="(pronunciation, index) in card.pronunciations"
+                :key="index"
             >
               {{ pronunciation.pronunciation }},
             </span>
           </p>
 
-          <p v-if="!!card.etymologies && card.etymologies.length && allInformation">
-            Etymologie:
+          <p v-if="!!card.etymologies && !!card.etymologies.length && allInformation">
+            <span class="font-weight-bold">Etymologie:</span>
             <span v-for="(etymology, index) in card.etymologies" :key="index">
               {{ etymology.etymology }},
             </span>
           </p>
-          <p v-if="allInformation">
-            Erstellt von <span class="font-weight-bold">{{ card.author }}</span>
+          <p v-if="allInformation" class="mt-5">
+            <span class="font-weight-bold"> erstellt von </span><span class="font-weight-bold">{{ card.author }}</span>
           </p>
           <p v-if="allInformation">
-            zuletzt geändert: <span class="font-weight-bold">{{dateCreated(card.date_updated)}}</span>
+            <span class="font-weight-bold">  zuletzt geändert: </span><span
+              class="font-weight-bold">{{ dateCreated(card.date_updated) }}</span>
           </p>
         </v-card-text>
-        <v-card-actions v-if="authenticated">
-          <v-btn icon>
-            <v-icon v-if="!card.liked" @click.prevent="like"
-              >mdi-thumb-up-outline</v-icon
+        <v-card-actions class="pb-0" v-if="authenticated">
+          <v-btn text @click.prevent="like">
+            <v-icon v-if="!card.liked"
+            >mdi-thumb-up-outline
+            </v-icon
             >
-            <v-icon v-else @click.prevent="unlike" color="success"
-              >mdi-thumb-up</v-icon
+            <v-icon v-else color="success"
+            >mdi-thumb-up
+            </v-icon
             >
+           <span :class="card.liked ? 'success--text' :''">{{ likeName }}</span>
+
           </v-btn>
           <v-spacer></v-spacer>
           <v-btn icon v-if="!card.in_favorites" @click.prevent="addToFavorites">
@@ -95,24 +108,21 @@
           <v-menu left>
             <template v-slot:activator="{ on, attrs }">
               <v-icon
-                style="position: absolute; top: 6px; right: 6px"
-                v-bind="attrs"
-                v-on="on"
-                @click.prevent=""
-                >mdi-dots-vertical
+                  style="position: absolute; top: 6px; right: 6px"
+                  v-bind="attrs"
+                  v-on="on"
+                  @click.prevent=""
+              >mdi-dots-vertical
               </v-icon>
             </template>
             <v-list>
               <report-dialog
-                :button="true"
-                kind="lexeme"
-                :item="card"
+                  :button="true"
+                  kind="lexeme"
+                  :item="card"
               ></report-dialog>
-              <lexeme-edit-dialog
-                v-if="card.can_edit"
-                style="display: inline-block; float: right"
-                :lexeme="card"
-              ></lexeme-edit-dialog>
+              <lexeme-edit-dialog v-if="card.can_edit" :lexeme="card"></lexeme-edit-dialog>
+<!--              <v-list-item :to="'/lexeme_edit/' + card.id" v-if="card.can_edit">{{ $t("card.edit") }}</v-list-item>-->
               <slot name="menuItem"></slot>
               <v-divider v-if="isSuperUser"></v-divider>
               <v-list-item v-if="isSuperUser" @click="deleteLexeme">
@@ -121,6 +131,15 @@
             </v-list>
           </v-menu>
         </v-card-actions>
+        <v-card-text class="mt-n2 pt-0 pb-3" style="min-height: 30px">
+          <v-expand-transition>
+            <div v-if="!!card.likes_amount">
+            <span v-if="card.likes_amount == 1" class="text-caption">findet eine Person {{likedName}}</span>
+
+          <span v-if="card.likes_amount >= 2" class="text-caption">finden {{ card.likes_amount }} Personen {{likedName}}</span>
+          </div>
+          </v-expand-transition>
+        </v-card-text>
       </v-card>
     </v-hover>
   </div>
@@ -131,12 +150,13 @@
 import RequestHandler from "../utils/RequestHandler.js";
 import CollectionAddLexeme from "@/components/CollectionAddLexeme";
 import ReportDialog from "@/components/ReportDialog";
-import LexemeEditDialog from "@/components/LexemeEditDialog";
-import { mapGetters } from "vuex";
+import {mapGetters} from "vuex";
 import axios from "axios";
 import moment from "moment";
+import LexemeEditDialog from "@/components/LexemeEditDialog";
+
 export default {
-  components: { CollectionAddLexeme, ReportDialog, LexemeEditDialog },
+  components: {LexemeEditDialog, CollectionAddLexeme, ReportDialog},
   props: ["card", "allInformation"],
   name: "CardDialect",
   data: () => ({
@@ -152,24 +172,35 @@ export default {
     },
     addToFavorites() {
       RequestHandler.addLexemeToFavorite(this.card.id).then(
-        () => (this.card.in_favorites = true)
+          () => (this.card.in_favorites = true)
       );
     },
     removeFromFavorites() {
       RequestHandler.removeLexemeFromFavorite(this.card.id).then(
-        () => (this.card.in_favorites = false)
+          () => (this.card.in_favorites = false)
       );
     },
-    getColor() {},
+    getColor() {
+    },
     like() {
+      if (this.card.liked) {
+        this.unlike();
+        return;
+      }
       axios
-        .post("/lexeme/like/" + this.card.id + "/")
-        .then(() => (this.card.liked = true));
+          .post("/lexeme/like/" + this.card.id + "/")
+          .then(() => {
+            this.card.liked = true
+            this.card.likes_amount++
+          });
     },
     unlike() {
       axios
-        .delete("/lexeme/like/" + this.card.id + "/")
-        .then(() => (this.card.liked = false));
+          .delete("/lexeme/like/" + this.card.id + "/")
+          .then(() => {
+            this.card.liked = false
+            this.card.likes_amount--
+          });
     },
     deleteLexeme() {
       axios.delete("lexeme/" + this.card.id + "/");
@@ -180,13 +211,12 @@ export default {
     },
   },
   computed: {
-
     color() {
       const crypto = require("crypto");
       const hash = crypto
-        .createHash("sha1")
-        .update(this.card.dialectWord + this.card.word + this.card.description)
-        .digest("hex");
+          .createHash("sha1")
+          .update(this.card.dialectWord + this.card.word + this.card.description)
+          .digest("hex");
 
       const colors = [
         "card1",
@@ -224,7 +254,7 @@ export default {
       }
     },
     genus() {
-      if( !this.card.kind)
+      if (!this.card.kind)
         return null
       switch (this.card.genus) {
 
@@ -235,18 +265,70 @@ export default {
 
         case "N":
           return this.$t("createWord.neuter");
-       
+
         default:
           return null;
       }
     },
-    
+    likeName(){
+      const likeNames=[
+        "gfallt ma",
+        "nice",
+        "cool",
+        "fulminant",
+        "exquisit",
+        "lässig",
+        "positiv",
+        "leiwand",
+        "bärig",
+        "dufte",
+        "knorke",
+        "formidabel",
+        "edel",
+        "fett",
+        "schnafte",
+        "astrein",
+        "toll",
+        "klass",
+        "klasse",
+        "urig",
+        "räntig"]
+      return likeNames[Math.floor(Math.random() * likeNames.length)];
+    },
+    likedName(){
+      const likeNames=[
+        "nice",
+        "cool",
+        "fulminant",
+        "exquisit",
+        "lässig",
+        "positiv",
+        "leiwand",
+        "hammermäßig",
+        "bärig",
+        "dufte",
+        "knorke",
+        "formidabel",
+        "edel",
+        "fett",
+        "schnafte",
+        "astrein",
+        "tolll",
+        "klass",
+        "klasse",
+        "urig",
+        "räntig",
+        "hervorragend",
+        "ausgezeichnet"]
+      return likeNames[Math.floor(Math.random() * likeNames.length)];
+    }
+
   },
 };
 </script>
 
 <style scoped>
-p{
+p {
   margin-bottom: 3px;
 
   text-align: left;

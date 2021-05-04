@@ -14,7 +14,7 @@
       <v-icon>mdi-file-multiple-outline</v-icon>
     </v-btn>
 
-    <v-btn  v-if="authenticated" disabled color="deep-purple accent-4" to="/" icon>
+    <v-btn  v-if="authenticated" disabled color="deep-purple accent-4" to="/start" icon>
       <v-icon>mdi-home-outline</v-icon>
     </v-btn>
 
@@ -56,6 +56,7 @@ name: "NavigationMobile",
   border-style: solid;
   border-width: thin;
   border-color: lightgray;
+
 }
 </style>
 
