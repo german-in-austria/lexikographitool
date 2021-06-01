@@ -3,64 +3,70 @@
     <v-container fluid v-scroll="onScroll">
       <div class="sticky1">
         <v-row>
-          <v-col><p class="text-h4">Wörterecke</p> {{search}}</v-col>
-          <v-col class="col-auto" >
+          <v-col><p class="text-h4">Wörterecke </p></v-col>
+          <v-col v-if="$vuetify.breakpoint.xs">
+            <v-btn-toggle color="primary"
+                          v-model="view" dense style="position: absolute;right: 25px;">
+              <v-btn :small="$vuetify.breakpoint.xs">
+                <v-icon>mdi-view-grid</v-icon>
+              </v-btn>
+              <v-btn :small="$vuetify.breakpoint.xs">
+                <v-icon>mdi-view-headline</v-icon>
+              </v-btn>
+            </v-btn-toggle>
+
+          </v-col>
+          <v-col class="col-auto">
             <v-menu left>
               <template v-slot:activator="{ on, attrs }">
                 <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical</v-icon>
               </template>
               <v-list>
-              <v-list-item @click="createPdf">{{ $t("collectionDetail.pdf") }}</v-list-item>
-              <v-list-item @click="beforeConvert" >{{ $t("collectionDetail.csv") }}</v-list-item>
+                <v-list-item @click="createPdf">{{ $t("collectionDetail.pdf") }}</v-list-item>
+                <v-list-item @click="beforeConvert">{{ $t("collectionDetail.csv") }}</v-list-item>
 
 
-              </v-list></v-menu></v-col>
-          <v-col v-if="$vuetify.breakpoint.xs" class="col-auto pt-5">
-            <v-btn-toggle color="primary"
-                          v-model="view" dense style="position: absolute;right: 0;">
-              <v-btn :small="$vuetify.breakpoint.xs">
-                <v-icon>mdi-view-grid</v-icon>
-              </v-btn>
-              <v-btn :small="$vuetify.breakpoint.xs">
-                <v-icon>mdi-view-headline</v-icon>
-              </v-btn>
-            </v-btn-toggle>
+              </v-list>
+            </v-menu>
           </v-col>
+
         </v-row>
       </div>
       <v-row no-gutters><p class="text-body-1">
-        {{ $t("lexemes.desciption", {amount:lexemeAmount}) }}
-        <span v-if="authenticated && myLexemeAmount.length >= 1">{{ $t("lexemes.authorizedAdded", {amount:myLexemeAmount}) }}</span>
-        <span v-if="!authenticated">{{$t("lexemes.notAuthorized")}}</span>
+        {{ $t("lexemes.desciption", {amount: lexemeAmount}) }}
+        <span v-if="authenticated && myLexemeAmount >= 1">{{
+            $t("lexemes.authorizedAdded", {amount: myLexemeAmount})
+          }}</span>
+        <span v-if="!authenticated">{{ $t("lexemes.notAuthorized") }}</span>
       </p></v-row>
 
-        <div class="sticky2">
+      <div class="sticky2">
         <v-app-bar
             hide-on-scroll
             absolute
-            @searchBarHeight="updateSearchHeight"
             :height="searchBarHeight"
-                    fixed
-                    flat
-         >
+            fixed
+            flat
+        >
           <v-row no-gutters>
-          <v-col>
-            <search-bar class="" v-on:input="search = $event"></search-bar>
-          </v-col>
-          <v-col v-if="!$vuetify.breakpoint.xs" class="col-auto">
-            <v-btn-toggle color="primary"
-                          v-model="view" dense>
-              <v-btn>
-                <v-icon>mdi-view-grid</v-icon>
-              </v-btn>
-              <v-btn>
-                <v-icon>mdi-view-headline</v-icon>
-              </v-btn>
-            </v-btn-toggle>
-          </v-col>
+            <v-col>
+              <search-bar @searchBarHeight="updateSearchHeight"
+                          class="" v-on:input="search = $event"></search-bar>
+            </v-col>
+            <v-col v-if="!$vuetify.breakpoint.xs" class="col-auto">
+              <v-btn-toggle color="primary"
+                            v-model="view" dense style="margin-top: 22px;">
+                <v-btn>
+                  <v-icon>mdi-view-grid</v-icon>
+                </v-btn>
+                <v-btn>
+                  <v-icon>mdi-view-headline</v-icon>
+                </v-btn>
+              </v-btn-toggle>
+            </v-col>
           </v-row>
         </v-app-bar>
-        </div>
+      </div>
 
 
       <v-row no-gutters v-if="!view" style="margin-top: 8rem">
@@ -96,7 +102,9 @@
               <td>{{ item.word }}</td>
               <td>{{ item.description }}</td>
               <td>{{ item.variety }}</td>
-              <td><div v-if="item.origin"><span>{{ item.origin.name }}</span><span v-if="!!item.origin.state">, {{ item.origin.state }}</span></div>
+              <td>
+                <div v-if="item.origin"><span>{{ item.origin.name }}</span><span
+                    v-if="!!item.origin.state">, {{ item.origin.state }}</span></div>
               </td>
               <td>
                 <CollectionAddLexeme :card-id="item.id"></CollectionAddLexeme>
@@ -109,16 +117,16 @@
           </template>
         </v-simple-table>
       </v-row>
-<v-row>
-  <v-progress-circular
-      class="ma-auto"
-      v-if="!!loading"
-      :size="150"
-      indeterminate
-  ></v-progress-circular>
-  <v-btn v-if="!loading & !!next " class="ma-auto" outlined @click="loadMore">Mehr laden</v-btn>
+      <v-row>
+        <v-progress-circular
+            class="ma-auto"
+            v-if="!!loading"
+            :size="150"
+            indeterminate
+        ></v-progress-circular>
+        <v-btn v-if="!loading & !!next " class="ma-auto" outlined @click="loadMore">Mehr laden</v-btn>
 
-</v-row>
+      </v-row>
 
     </v-container>
 
@@ -132,8 +140,8 @@ import SearchBar from "../components/SearchBar.vue";
 import CollectionAddLexeme from "../components/CollectionAddLexeme.vue";
 import {mapGetters} from "vuex";
 import Axios from "axios";
-import {jsPDF} from "jspdf";
 import ObjectToCsv from "@/components/ObjectToCsv";
+
 export default {
   components: {CardDialect, SearchBar, CollectionAddLexeme},
   data: () => ({
@@ -150,15 +158,15 @@ export default {
       {text: "hochdeutsche Bedeutung", value: "word"},
       {text: "Bedeutung", value: "description"},
       {text: "Varietät", value: "variety"},
-      {text: "Ursrpung", value: "origin"},
+      {text: "Ursprung", value: "origin"},
       {text: "", value: "info"},
       {text: "", value: "addToCollection"},
     ],
     scroller: {},
     timeout: null,
-    lexemeAmount:0,
-    myLexemeAmount:0,
-    searchBarHeight:"100px",
+    lexemeAmount: 0,
+    myLexemeAmount: 0,
+    searchBarHeight: "100px",
   }),
   mounted() {
 
@@ -185,7 +193,9 @@ export default {
     },
   },
   methods: {
-    updateSearchHeight(value){this.searchBarHeight = value},
+    updateSearchHeight(value) {
+      this.searchBarHeight = value
+    },
     loadFromApi() {
       this.loading = true;
       axios
@@ -199,7 +209,6 @@ export default {
           .finally(() => (this.loading = false));
     },
     onScroll(e) {
-      console.log(e.target.scrollingElement.clientHeight);
       if (
           e.target.scrollingElement.scrollTop + 400 >
           e.target.scrollingElement.scrollTopMax &&
@@ -208,7 +217,7 @@ export default {
 
         this.next = null
         this.page += 1;
-        this.loading=true;
+        this.loading = true;
         axios
             .get("/lexemes/?page=" + this.page + "&" + this.search)
             .then((response) => {
@@ -221,34 +230,26 @@ export default {
       }
     },
     loadMore() {
-      this.loading=true;
+      this.loading = true;
       Axios.get(this.next).then((response) => {
         this.items = this.items.concat(response.data.results);
         this.pageCount = response.data.total_pages;
         this.count = response.data.count;
         this.next = response.data.links.next;
-      }).finally(()=>this.loading=false);
+      }).finally(() => this.loading = false);
     },
 
     createPdf() {
 
-        require('jspdf-autotable');
-        const lex = this.items.map(val => [val.dialectWord, val.word, val.meaning, val.variety, val.origin?.name])
-        const doc = new jsPDF('p', 'pt', 'a4', true);
-        doc.autoTable({
-          theme:'plain',
-          head: [this.headers.map(val => val.text)],
-          body: lex
-        })
-        doc.save("wortgut.pdf")
+      ObjectToCsv.toPdf(this.items, "Wörterecke",null,null)
 
     },
-    async beforeConvert(){
+    async beforeConvert() {
 
       ObjectToCsv.convert(this.items, "wortgut")
     }
   },
-  computed:{
+  computed: {
     ...mapGetters({
       authenticated: "auth/authenticated"
     }),
@@ -267,7 +268,7 @@ export default {
 }
 
 .sticky2 {
-top:10rem;
+  top: 10rem;
   position: sticky;
   z-index: 2;
 }

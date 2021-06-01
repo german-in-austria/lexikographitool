@@ -10,10 +10,8 @@ document.body.appendChild(overlayInstance.$el)
 export default {
   bind(el, bindings) {
     if (bindings.value.show !== false) {
-      console.log(el)
       const element = el.querySelector('input') || el
       element.addEventListener('focus', () => {
-        console.log('focussed')
         const instance = overlayInstance
         // update the instance with the new props.
         instance.aElement = element

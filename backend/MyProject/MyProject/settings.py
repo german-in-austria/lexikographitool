@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'collection',
     'group',
     'post',
+    'notification'
 ]
 
 MIDDLEWARE = [

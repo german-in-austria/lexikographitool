@@ -10,7 +10,7 @@
         {{ $t("card.addToCollectionToolTip") }}
       </v-tooltip>
     </template>
-    <v-card>
+    <v-card height="80vh">
       <v-card-title>{{ $t("card.myCollections") }}</v-card-title>
       <v-divider></v-divider>
       <v-card-text>

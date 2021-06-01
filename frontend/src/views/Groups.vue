@@ -127,7 +127,6 @@ export default {
       }).finally(()=>this.loading=false);
     },
     onScroll(e) {
-      console.log(this.next);
       if (
           e.target.scrollingElement.scrollTop + 400 >
           e.target.scrollingElement.scrollTopMax &&

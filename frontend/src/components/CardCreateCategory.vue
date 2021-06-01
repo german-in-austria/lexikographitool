@@ -50,7 +50,6 @@ name: "CardCreateCategory",
       RequestHandler.searchCategories(this.load).then(response => (
           this.items = response.data
       )).catch(err => {
-        console.log(err)
       })
           .finally(() => (this.isLoading = false))
     },

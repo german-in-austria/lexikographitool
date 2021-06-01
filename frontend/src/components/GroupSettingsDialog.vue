@@ -78,7 +78,6 @@ export default {
             organization: this.grp.organization,
           })
           .then(() => {
-            console.log(this.grp)
             this.group.name = this.grp.name;
 
             this.group.description = this.grp.description;

@@ -86,7 +86,6 @@ export default {
   name: "Footer",
   methods: {
     openLink() {
-      console.log('hoi')
       // window.location.href = 'http://example.com/';
     }
   }

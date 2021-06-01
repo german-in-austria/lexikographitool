@@ -14,7 +14,6 @@
             <span class="text-caption error--text"> {{ $t("card.sensitive") }}</span>
           </p>
           <span>{{ card.word }}</span>
-          <span v-if="!card.word">{{ card.description }}</span>
 
           <v-tooltip bottom open-delay="100" v-if="!allInformation">
             <template v-slot:activator="{ on, attrs }">
@@ -33,7 +32,7 @@
           <p><span v-if="card.kind">{{ kind }}</span><span v-if="card.kind === 'N'">, {{ genus }}</span>
           </p>
 
-          <p v-if="card.description && !!card.word">
+          <p v-if="card.description">
             <span class="font-weight-bold">Beschreibung:</span> {{ card.description }}
           </p>
           <p v-if="!!card.examples && !!card.examples.length && allInformation">

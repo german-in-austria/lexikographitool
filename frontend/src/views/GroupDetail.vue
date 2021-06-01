@@ -138,7 +138,7 @@ export default {
       axios.post("group/leave/" + this.group.id + "/").then(()=>this.$router.go());
     },
     collectionCreated(value) {
-      this.group.collections.push(value);
+      this.collections.push(value);
       axios
         .put("/collection/group/" + value.id + "/" + this.group.id + "/")
         .then(() => this.$router.push("/collections/" + value.id));
@@ -170,9 +170,7 @@ export default {
       this.isLoading = true;
       RequestHandler.getUsersByUsername(this.loadUsers)
         .then((response) => (this.users = response.data))
-        .catch((err) => {
-          console.log(err);
-        })
+
         .finally(() => (this.isLoading = false));
     },
   },

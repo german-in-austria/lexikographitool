@@ -78,7 +78,6 @@ export default {
     },
     'model.value': function(val, prev) {
 
-        console.log(val, prev)
 
         if (val.length === prev.length) return
         this.model.value = val.map(v => {
@@ -88,7 +87,6 @@ export default {
             }
 
             this.items.push(v)
-            console.log(this.items)
           }
           return v
         })

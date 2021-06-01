@@ -72,7 +72,7 @@ class CollectionSimpleSerializerWithContainment(serializers.ModelSerializer):
 
     class Meta:
         model = Collection
-        fields = ['id','name', 'description' ,'in_collection']
+        fields = ['id','name', 'count_lexemes', 'description' ,'in_collection']
 
     def ifcontained(self, collection):
         if collection.lexemes.filter(id=self.context['lexeme_id']).exists():

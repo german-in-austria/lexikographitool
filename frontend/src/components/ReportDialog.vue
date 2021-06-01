@@ -39,7 +39,6 @@ export default {
   methods:
       {
         report() {
-          console.log(this.kind)
           Axios.post('report/' + this.kind + '/' + this.item.id + '/', {message: this.reportMessage}).then(() => {
             this.dialog = false;
             this.reportMessage = '';

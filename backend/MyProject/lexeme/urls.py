@@ -36,5 +36,6 @@ urlpatterns = [
     path('lexemes_count/', get_lexemes_count),
     path('lexemes_my_count/', get_my_lexemes_count),
     path('highscore/', HighscoreView.as_view()),
+    path('identical/', get_lexemes_with_same_dialectWord_and_word),
 
 ]

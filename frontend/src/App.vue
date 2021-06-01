@@ -1,6 +1,6 @@
 <template>
 
-  <Main></Main>
+  <Main ></Main>
 </template>
 
 <script>
@@ -20,15 +20,20 @@ export default {
     if(this.isSuperUser){
       axios.get("reports/amount/").then(response => this.setAmountReports(response.data))
     }
+    if(this.authenticated){
+      axios.get("notifications/").then(response => this.setNotifications(response.data))
+    }
   },
   methods:{
     ...mapActions({
-      setAmountReports: 'reports/setAmountReports'
+      setAmountReports: 'reports/setAmountReports',
+      setNotifications: "notifications/setNotifications"
     })
   },
   computed:{
     ...mapGetters({
       isSuperUser: 'auth/isSuperUser',
+      authenticated: "auth/authenticated"
     })
   },
   watch:{
@@ -45,5 +50,8 @@ export default {
 p {
   text-align: justify;
 }
+
+
+
 
 </style>

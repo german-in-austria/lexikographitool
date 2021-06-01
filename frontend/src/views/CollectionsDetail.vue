@@ -159,7 +159,6 @@ import CollectionAddLexemeDialog from "@/components/CollectionAddLexemeDialog";
 import CollectionDetailTrashCanDialog from "@/components/CollectionDetailTrashCanDialog";
 import axios from "axios";
 import LoadingOverlay from "@/components/LoadingOverlay";
-import {jsPDF} from "jspdf";
 import ObjectToCsv from "@/components/ObjectToCsv.js";
 
 import Axios from "axios";
@@ -183,7 +182,7 @@ export default {
       {text: "hochdeutsche Bedeutung", value: "word"},
       {text: "Bedeutung", value: "description"},
       {text: "Varietät", value: "variety"},
-      {text: "Ursrpung", value: "origin"},
+      {text: "Ursprung", value: "origin"},
       {text: "", value: "info"},
     ],
     printing: false,
@@ -222,20 +221,11 @@ export default {
     createPdf() {
       this.loadData = true;
       this.loadAll().then(() => {
-        this.loadData = false
-        require('jspdf-autotable');
-        const lex = this.lexemes.map(val => [val.dialectWord, val.word, val.meaning, val.variety, val.origin?.name])
-        const doc = new jsPDF('p', 'pt', 'a4', true);
-        doc.autoTable({
-          theme:'plain',
-          head: [this.headers.map(val => val.text)],
-          body: lex
-        })
-        doc.save(this.collection.name +".pdf")
-      })
+              ObjectToCsv.toPdf(this.lexemes, this.collection.name, this.collection.description,this.collection.organization)
+
+        }).finally(()=>this.loadData=false);
     },
     removeLexeme(card, index) {
-      console.log(index);
       this.lexemes.splice(index, 1);
 
       axios.delete("collection/" + this.collection.id + "/" + card.id + "/");

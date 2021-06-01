@@ -54,7 +54,6 @@ export default {
             return { category: x };
           }),
         };
-        console.log(this.col.categories);
         this.col.canAddLexemePublic = this.collection.can_add_lexemes_public;
         this.col.canRemoveLexemePublic = this.collection.can_remove_lexemes_public;
         this.col.canAddLexemeGroup = this.collection.can_add_lexemes_group;

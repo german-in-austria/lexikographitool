@@ -105,7 +105,6 @@ export default {
       this.isActive = false;
     },
     save() {
-      console.log("hoi");
       axios
         .post("lexeme/", {
           dialectWord: this.dialectWord,

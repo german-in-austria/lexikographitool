@@ -30,5 +30,6 @@ urlpatterns = [
     path('account/', include('account.urls')),
     path('', include('collection.urls')),
     path('', include('post.urls')),
+    path('', include('notification.urls')),
 
 ]

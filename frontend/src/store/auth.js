@@ -26,7 +26,6 @@ export default {
         SET_USER(state, user) {
 
             state.user = user
-            console.log(state.user)
 
         },
 

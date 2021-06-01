@@ -74,7 +74,6 @@ export default {
             this.locations = res.data
           })
           .catch(err => {
-            console.log(err)
           })
           .finally(() => (this.isLoading = false))
     },

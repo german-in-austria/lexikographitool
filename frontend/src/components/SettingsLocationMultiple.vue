@@ -51,7 +51,6 @@ export default {
   },
   watch: {
     favorite() {
-      console.log("asd");
       this.$emit("inputFav", this.favorite);
     },
   },

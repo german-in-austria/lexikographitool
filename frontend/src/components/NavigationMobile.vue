@@ -1,6 +1,6 @@
 <template>
 
-  <div style="position: relative">
+  <div style="position: fixed">
     <v-btn  v-if="authenticated" style="z-index: 5" to="/card-create" class="btn-round " width="5rem" height="5rem" fab x-large  elevation="0"  fixed >
       <v-icon>mdi-plus</v-icon>
     </v-btn>

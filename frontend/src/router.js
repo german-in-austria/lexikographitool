@@ -22,6 +22,7 @@ import Reports from "@/views/Reports";
 import Imprint from "@/views/Imprint";
 import DataProtection from "@/views/DataProtection";
 import Highscore from "@/views/Highscore";
+import FAQ from "@/views/FAQ";
 
 Vue.use(VueRouter);
 Vue.use(VueMeta,{
@@ -149,6 +150,12 @@ const router = new VueRouter({
             path: '/imprint',
             name: 'imprint',
             component: Imprint,
+
+        },
+        {
+            path: '/faq',
+            name: 'faq',
+            component: FAQ,
 
         },{
             path: '/dataprotection',

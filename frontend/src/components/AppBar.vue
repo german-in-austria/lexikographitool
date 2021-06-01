@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <v-app-bar fixed flat height="90rem" outlined>
+<div style="position: sticky; top:0; z-index: 5;">
+    <v-app-bar  flat height="90rem" >
 
 
       <v-app-bar-nav-icon
@@ -65,7 +65,7 @@
         <v-btn outlined v-else to="/login" class="mb-4">Login</v-btn>
       </div>
     </v-app-bar>
-    <v-navigation-drawer v-model="drawer" app fixed temporary>
+    <v-navigation-drawer disable-resize-watcher  v-model="drawer" app absolute   style="z-index: 999999 !important;">
       <v-list nav dense>
         <v-list-item-group
             active-class="deep-purple--text text--accent-4"
@@ -84,7 +84,9 @@
             </v-list-item-icon>
             <v-list-item-title>Pinnwand</v-list-item-title>
           </v-list-item>
-          <v-list-item to="/highscore" v-if="authenticated">
+          <v-divider ></v-divider>
+
+          <v-list-item to="/highscore">
             <v-list-item-icon>
               <v-icon> mdi-chart-line
               </v-icon>
@@ -98,6 +100,7 @@
             </v-list-item-icon>
             <v-list-item-title>Einstellungen</v-list-item-title>
           </v-list-item>
+          <v-divider v-if="isSuperUser"></v-divider>
           <v-list-item v-if="isSuperUser" to="/reports">
             <v-list-item-icon>
               <v-badge overlap color="error" :value="!!amountReports" :content="amountReports">
@@ -107,23 +110,33 @@
             <v-list-item-title>Meldungen</v-list-item-title>
           </v-list-item>
           <v-divider></v-divider>
-
-          <v-list-item v-if="authenticated" @click="signOut">
+          <v-list-item v-if="isSuperUser" to="/faq">
             <v-list-item-icon>
-              <v-icon>mdi-logout</v-icon>
+                <v-icon>mdi-help-circle-outline</v-icon>
             </v-list-item-icon>
-            <v-list-item-title>Abmelden</v-list-item-title>
+            <v-list-item-title>Hilfe</v-list-item-title>
           </v-list-item>
+          <v-divider></v-divider>
 
-          <v-list-item v-if="!authenticated" to="/login">
-            <v-list-item-icon>
-              <v-icon>mdi-login</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Einloggen</v-list-item-title>
-          </v-list-item>
+
         </v-list-item-group>
       </v-list>
+
+      <template v-slot:append>
+        <div class="pa-2 mb-10">
+
+          <v-btn block  color="primary" v-if="!authenticated" to="/login">
+              <v-icon>mdi-login</v-icon>
+            Einloggen
+          </v-btn>
+          <v-btn block  color="error" v-if="authenticated" @click="signOut">
+            <v-icon>mdi-logout</v-icon>
+            Abmelden
+          </v-btn>
+        </div>
+      </template>
     </v-navigation-drawer>
+
   </div>
 </template>
 

@@ -20,26 +20,20 @@ let methods = {
 
         etymologies.forEach((item) => {
             const obj = new Etymology(item.value, wordid);
-            axios.post('etymology/', obj).catch(err => {
-                console.log(err)
-            })
+            axios.post('etymology/', obj)
         })
     },
     postPronunciations(pronunciations, wordid) {
 
         pronunciations.forEach((item) => {
             const obj = new Pronunciation(item.value, wordid);
-            axios.post('pronunciation/', obj).catch(err => {
-                console.log(err)
-            })
+            axios.post('pronunciation/', obj)
         })
     },
     postExamples(examples, wordid) {
         examples.forEach((item) => {
             const obj = new DExample(item.value, wordid);
-            axios.post('example/', obj).catch(err => {
-                console.log(err)
-            })
+            axios.post('example/', obj)
         })
     },
     searchLexemesByWord(word) {
@@ -58,12 +52,9 @@ let methods = {
         return axios.post('dialect/', dialect)
     },
     addCategoriesWithLexeme(categories, lexemeId) {
-        console.log(categories)
         categories.forEach((item) => {
             const obj = new Category(item.category);
-            axios.post('category/' + lexemeId + '/', obj).catch(err => {
-                console.log(err)
-            })
+            axios.post('category/' + lexemeId + '/', obj)
         })
 
 

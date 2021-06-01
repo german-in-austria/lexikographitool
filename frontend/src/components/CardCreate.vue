@@ -3,18 +3,18 @@
 
     <p class="text-h3">{{ $t("card_create.title") }}</p>
     <p class="text-body-1">{{ $t("card_create.description") }}</p>
-    <v-btn-toggle       color="primary"
-                        style="width: 100%" v-model="level" mandatory class="pb-2">
+    <v-btn-toggle color="primary"
+                  style="width: 100%" v-model="level" mandatory class="pb-2">
       <v-btn :width="100/3 + '%'" value="easy"> {{ $t("card_create.tab_title1") }}</v-btn>
       <v-btn :width="100/3 + '%'" value="medium">{{ $t("card_create.tab_title2") }}</v-btn>
       <v-btn :width="100/3 + '%'" value="expert">{{ $t("card_create.tab_title3") }}</v-btn>
 
     </v-btn-toggle>
-  <v-form     ref="form"
-              v-model="valid"
-              lazy-validation>
-    <card-create-form :level="level" :loadHome="true" :lexeme="lex"></card-create-form>
-  </v-form>
+    <v-form ref="form"
+            v-model="valid"
+            lazy-validation>
+      <card-create-form :level="level" :loadHome="true" :lexeme="lex"></card-create-form>
+    </v-form>
     <v-row no-gutters class="mb-3 mt-3 create-section">
       <v-col cols="12">
         <v-subheader>{{ $t("createWord.collection") }}
@@ -50,6 +50,7 @@
     <v-snackbar v-model="snackbarFailure" :timeout="2000" color="error" top>
       {{ $t("card_create.failureMessage") }}
     </v-snackbar>
+    <confirm-dialog-lexeme-already-exists ref="confirm" :items="similarLexemes"></confirm-dialog-lexeme-already-exists>
   </v-container>
 </template>
 
@@ -63,10 +64,12 @@ import CardCreateForm from "@/components/CardCreateForm";
 import InputToolTip from "@/components/InputToolTip";
 import CardCreateAddCollection from "@/components/CardCreateAddCollection";
 import axios from "axios";
+import ConfirmDialogLexemeAlreadyExists from "@/components/ConfirmDialogLexemeAlreadyExists";
 
 export default {
   name: "CardCreate",
   components: {
+    ConfirmDialogLexemeAlreadyExists,
     CardCreateAddCollection,
     CardCreateForm,
     InputToolTip
@@ -92,7 +95,8 @@ export default {
     valid: false,
     tab: null,
     collections: {value: []},
-    level: "easy"
+    level: "easy",
+    similarLexemes: []
   }),
   methods: {
     async createNewLexeme(finishedOption) {
@@ -112,6 +116,12 @@ export default {
           this.lex.source,
           this.lex.genus,
       );
+
+      var similar = await axios.post("identical/", lexeme)
+      this.similarLexemes = similar.data
+      if (similar.data && similar.data.length != 0)
+        if (!await this.$refs.confirm.open('Delete', 'Are you sure?', {color: 'primary'}))
+          return
 
       lexeme = await requestHandler.postLexeme(lexeme);
 
@@ -140,8 +150,8 @@ export default {
       else if (finishedOption == 'addMeaning')
         this.resetPartForm();
     },
-    submit() {
-      console.log(this.$refs)
+    async submit() {
+
       if (this.$refs.form.validate()) {
         this.createNewLexeme('leave');
       }

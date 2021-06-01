@@ -17,6 +17,10 @@ from lexeme.permissions import IsSuperUser
 
 from lexeme.views import MyCustomOrdering
 
+from notification.models import Notification
+
+from lexeme.models import Lexeme
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, ])
@@ -28,6 +32,32 @@ def create_post(request):
 
         if serializer.is_valid():
             serializer.save()
+            #create notification
+            notification = Notification()
+            if 'lexeme' in request.data and request.data['lexeme'] is not None:
+                print(type(request.data['lexeme']))
+                try:
+
+                    lexeme = Lexeme.objects.get(id=request.data['lexeme'])
+                except Post.DoesNotExist:
+                    return Response(status=status.HTTP_404_NOT_FOUND)
+                if lexeme.author.username != account.username:
+
+                    notification.user = lexeme.author
+                    notification.refers_to_lexeme = lexeme
+                    notification.message = account.username + " hat deinen Beitrag kommentiert."
+                    notification.save()
+            if 'parent' in request.data and request.data['parent'] is not None:
+                try:
+                    parent = Post.objects.get(id=request.data['parent'])
+                except Post.DoesNotExist:
+                    return Response(status=status.HTTP_404_NOT_FOUND)
+                if parent.author.username != account.username:
+
+                    notification.user = parent.author
+                    notification.refers_to_posting = parent
+                    notification.message = account.username + " hat deinen Beitrag kommentiert."
+                    notification.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

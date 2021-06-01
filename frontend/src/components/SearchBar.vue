@@ -201,10 +201,11 @@ export default {
   },
   mounted() {
     //check if params are passed
-    console.log(this.$route.params)
     if (this.$route.params.search) {
       this.search = this.$route.params.search
     }
+    this.$emit("searchBarHeight",this.searchBarHeight+"px")
+
   },
   methods: {
     addToFilter() {
@@ -230,7 +231,8 @@ export default {
       this.$emit("input", this.requestString);
     },
     searchBarHeight(){
-      this.$emit("searchBarHeight", this.searchBarHeight)
+      this.$emit("searchBarHeight",this.searchBarHeight+"px")
+
     }
 
   },
@@ -267,7 +269,7 @@ export default {
       var height = 0
       switch (this.$vuetify.breakpoint.name) {
         case "xs":
-          height =150;
+          height =180;
           break;
 
         case "sm":
@@ -286,7 +288,7 @@ export default {
       }
       if (this.filters.length >= 1)
         height +=20;
-      return height + "px"
+      return height
     }
   },
 };

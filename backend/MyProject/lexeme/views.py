@@ -209,7 +209,7 @@ class LexemeSimpleListView(ListAPIView):
 class LexemeView(ListAPIView):
     serializer_class = CardSerializer
     pagination_class = MyPagination
-    pagination_class.page_size = 4
+    pagination_class.page_size = 16
     filter_backends = [MyCustomOrdering, filters.SearchFilter]
     ordering_fields = ['content__word', 'content__dialectWord', 'date_created']
     search_fields = ['content__word', 'content__dialectWord', 'content__description', 'content__variety',
@@ -256,6 +256,18 @@ def get_lexemes_count(request):
 def get_my_lexemes_count(request):
     return Response(Lexeme.objects.filter(author=request.user).count())
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, ])
+def get_lexemes_with_same_dialectWord_and_word(request):
+    account = request.user
+    if request.method == 'POST':
+
+        if 'word' not in request.data:
+            return Response([])
+        lexemes = Lexeme.objects.filter(Q(content__dialectWord__iexact=request.data['dialectWord']) & Q(content__word__iexact= request.data['word']))
+
+        serializers = CardSerializer(lexemes,many=True)
+        return Response(serializers.data)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, ])
