@@ -107,7 +107,7 @@ def get_update_group(request, groupId):
         group = Group.objects.get(id=groupId)
     except Group.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    has_access = group.owner == account or account in group.members.all() or group.settings.public
+    has_access = account.is_superuser or group.owner == account or account in group.members.all() or group.settings.public
     if not has_access:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
     if request.method == 'GET':
@@ -198,6 +198,9 @@ class GroupView(ListAPIView):
 
         if self.request.user:
             user = self.request.user
+            if 'all' in self.request.GET and user.is_superuser:
+                print('hallo')
+                return queryset.all()
             if 'public' in self.request.GET:
                 public = self.request.GET['public']
                 if public == 'False':
@@ -221,11 +224,13 @@ def get_group_name_by_id(request, groupId):
 @permission_classes([IsAuthenticated, ])
 def get_update_group_settings(request, groupId):
     account = request.user
+
     try:
         group = Group.objects.get(id=groupId)
     except GroupSettings.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    if group.owner != account:
+    print(account.is_superuser)
+    if group.owner != account and not account.is_superuser:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     settings = group.settings

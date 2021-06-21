@@ -100,6 +100,8 @@ class CollectionView(ListAPIView):
                     group = Group.objects.get(id=self.request.GET['group'])
                 except Group.DoesNotExist:
                     return Response(status=status.HTTP_404_NOT_FOUND)
+            if user.is_superuser:
+                return Collection.objects.filter( Q(group=group)).distinct().order_by("date_created")
 
             return Collection.objects.filter((Q(author=user) | Q(group__members=user) |  Q(group__owner=user) | Q(public=True))& Q(group=group)).distinct().order_by("date_created")
         return Collection.objects.filter(public=True).distinct().order_by("date_created")
@@ -133,7 +135,7 @@ def get_update_collection(request, collectionId):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        has_access = collection.author == account or collection.public or\
+        has_access = account.is_superuser or collection.author == account or collection.public or\
                      collection.group != None and (account == collection.group.owner or \
                                                    account in collection.group.members.all())
 

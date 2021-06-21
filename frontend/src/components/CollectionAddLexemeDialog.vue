@@ -123,7 +123,7 @@ export default {
       if (e.target.scrollTop === e.target.scrollTopMax && !!this.next) {
         this.page += 1;
         axios
-          .get("/lexemes/?page=" + this.page + "&" + this.search+
+          .get("/lexemes/?page=" + this.page + "&search=" + this.search+
                 "&in_collection=" +
                 this.collection.id)
           .then((response) => {

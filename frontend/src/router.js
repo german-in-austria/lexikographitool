@@ -2,27 +2,8 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import store from "@/store";
 import VueMeta from 'vue-meta'
-import PostDetail from "@/views/PostDetail";
-import LexemeEdit from "@/views/LexemeEdit";
-import Postings from "@/views/Postings";
-import CardCreate from "@/components/CardCreate";
-import Start from "@/views/Start";
-import Collections from "@/views/Collections";
-import Dashboard from "@/views/Dashboard";
+
 import Search from "@/views/Search";
-import CollectionsDetail from "@/views/CollectionsDetail";
-import GroupDetail from "@/views/GroupDetail";
-import GroupJoin from "@/views/GroupJoin";
-import Groups from "@/views/Groups";
-import LexemeDetail from "@/views/LexemeDetail";
-import Settings from "@/views/Settings";
-import Lexemes from "@/views/Lexemes";
-import Login from "@/views/Login";
-import Reports from "@/views/Reports";
-import Imprint from "@/views/Imprint";
-import DataProtection from "@/views/DataProtection";
-import Highscore from "@/views/Highscore";
-import FAQ from "@/views/FAQ";
 
 Vue.use(VueRouter);
 Vue.use(VueMeta,{
@@ -42,19 +23,21 @@ const router = new VueRouter({
         path: '/start',
         name: 'start',
 
-        // component: () => import(/*webpackChunkName: "Start"*/ "./views/Home.vue")
-        component: Start
+        component: () => import(/*webpackChunkName: "Start"*/ "./views/Start.vue")
+
     },
         {
             path: '/collections',
             name: 'collections',
-            component: Collections,
+            component: () => import(/*webpackChunkName: "Collections"*/ "./views/Collections.vue"),
+
             meta: {requiresAuth: true}
         },
         {
             path: '/dashboard',
             name: 'dashboard',
-            component: Dashboard,
+            component: () => import(/*webpackChunkName: "Dashboard"*/ "./views/Dashboard.vue"),
+
             meta: {requiresAuth: true}
         },
         {
@@ -66,101 +49,115 @@ const router = new VueRouter({
         {
             path: '/',
             name: 'Home',
-            // component: () => import(/*webpackChunkName: "Collections"*/ "./views/Start.vue"),
-            component: Lexemes,
+            component: () => import(/*webpackChunkName: "Collections"*/ "./views/Lexemes.vue"),
             meta: {requiresAuth: false}
         }, {
             path: '/collections/:id',
             name: 'collection',
-            component: CollectionsDetail,
+            component: () => import(/*webpackChunkName: "CollectionsDetail"*/ "./views/CollectionsDetail.vue"),
+
             meta: {requiresAuth: true}
         }, {
             path: '/groups/:id',
             name: 'group',
-            component: GroupDetail,
+            component: () => import(/*webpackChunkName: "GroupDetail"*/ "./views/GroupDetail.vue"),
+
             meta: {requiresAuth: true}
         }, {
             path: '/groups/join/:id/:hash',
             name: 'groupJoin',
-            component: GroupJoin,
+            component: () => import(/*webpackChunkName: "GroupJoin"*/ "./views/GroupJoin.vue"),
+
             meta: {requiresAuth: true}
         }, {
             path: '/groups',
             name: 'groups',
-            component: Groups,
+            component: () => import(/*webpackChunkName: "Groups"*/ "./views/Groups.vue"),
+
             meta: {requiresAuth: true}
         }, {
             path: '/lexeme/:id',
             name: 'lexeme',
-            component: LexemeDetail
+            component: () => import(/*webpackChunkName: "LexemeDetail"*/ "./views/LexemeDetail.vue"),
         }, {
             path: '/posting/:id',
             name: 'post',
-            component: PostDetail
+            component: () => import(/*webpackChunkName: "PostDetail"*/ "./views/PostDetail.vue"),
+
         },
         {
             path: '/lexeme_Edit/:id',
             name: 'lexemeEdit',
-            component: LexemeEdit,
-            meta: {requiresAuth: true}
+            meta: {requiresAuth: true},
+            component: () => import(/*webpackChunkName: "LexemeEdit"*/ "./views/LexemeEdit.vue"),
 
         },
         {
             path: '/postings',
             name: 'postings',
-            component: Postings
+            component: () => import(/*webpackChunkName: "Postings"*/ "./views/Postings.vue"),
+
         }
         ,
         {
             path: '/card-create',
             name: 'card-create',
-            component: CardCreate,
-            meta: {requiresAuth: true}
+            meta: {requiresAuth: true},
+            component: () => import(/*webpackChunkName: "CardCreate"*/ "./components/CardCreate.vue"),
+
         },
         {
             path: '/lexemes',
             name: 'lexemes',
-            component: Lexemes,
+            component: () => import(/*webpackChunkName: "Lexemes"*/ "./views/Lexemes.vue"),
+
             meta: {requiresAuth: false}
         },
 
         {
             path: '/account',
             name: 'account',
-            component: Settings,
+            component: () => import(/*webpackChunkName: "Settings"*/ "./views/Settings.vue"),
+
             meta: {requiresAuth: true}
         },
         {
             path: '/login',
             name: 'login',
-            component: Login,
+            component: () => import(/*webpackChunkName: "Login"*/ "./views/Login.vue"),
+
         }, {
             path: '/reports',
             name: 'reports',
-            component: Reports,
-            meta: {requiresSuperUser: true}
+            meta: {requiresSuperUser: true},
+            component: () => import(/*webpackChunkName: "Reports"*/ "./views/Reports.vue"),
+
 
         }, {
             path: '/highscore',
             name: 'highscore',
-            component: Highscore,
+            component: () => import(/*webpackChunkName: "Highscore"*/ "./views/Highscore.vue"),
+
 
         },
         {
             path: '/imprint',
             name: 'imprint',
-            component: Imprint,
+            component: () => import(/*webpackChunkName: "Imprint"*/ "./views/Imprint.vue"),
+
 
         },
         {
             path: '/faq',
             name: 'faq',
-            component: FAQ,
+            component: () => import(/*webpackChunkName: "FAQ"*/ "./views/FAQ.vue"),
+
 
         },{
             path: '/dataprotection',
             name: 'dataprotection',
-            component: DataProtection,
+            component: () => import(/*webpackChunkName: "DataProtection"*/ "./views/DataProtection.vue"),
+
 
         },
     ]

@@ -35,7 +35,8 @@
 
       >
         <v-btn :small="$vuetify.breakpoint.xs" width="50%" class="text-truncate" :value="false"> Meine Gruppen</v-btn>
-        <v-btn :small="$vuetify.breakpoint.xs"  width="50%" class="text-truncate" :value="true"> öffentliche Gruppen</v-btn>
+        <v-btn :small="$vuetify.breakpoint.xs"  :width="isSuperUser ? '25%' : '50%'" class="text-truncate" :value="true"> öffentliche Gruppen</v-btn>
+        <v-btn v-if="isSuperUser" :small="$vuetify.breakpoint.xs"  width="25%" class="text-truncate"  @click="loadAllGroups" >alle Gruppen</v-btn>
       </v-btn-toggle>
       <v-text-field
           v-model="search"
@@ -97,6 +98,7 @@
 import TrashCanDialog from "../components/TrashCanDialog.vue";
 import Axios from "axios";
 import GroupCreateButton from "../components/GroupCreateButton.vue";
+import {mapGetters} from "vuex";
 
 export default {
   components: {TrashCanDialog, GroupCreateButton},
@@ -119,6 +121,17 @@ export default {
       Axios.get(
           "groups/public/?page=1&page_size=25&public=" +
           public_python_param +
+          "&search=" +
+          this.search
+      ).then((response) => {
+        this.groups = response.data.results;
+        this.next = response.data.links.next;
+      }).finally(()=>this.loading=false);
+    },
+    loadAllGroups() {
+      this.loading=true
+      Axios.get(
+          "groups/public/?page=1&page_size=25&all" +
           "&search=" +
           this.search
       ).then((response) => {
@@ -171,6 +184,11 @@ export default {
       }, 500);
     },
   },
+  computed:{
+    ...mapGetters({
+      isSuperUser: 'auth/isSuperUser',
+    })
+  }
 };
 </script>
 

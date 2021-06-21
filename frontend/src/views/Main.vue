@@ -71,9 +71,9 @@ export default {
     },
     cssVars() {
       if (this.$vuetify.breakpoint.smAndDown)
-        return {'--margin-left': 0 + 'px', '--padding': 1 + 'rem','--margin-top': 0 + 'px', }
-      if (!this.collapsedNav) return {'--margin-left': 200 + 'px', '--padding': 2 + 'rem','--margin-top': -600 + 'px',}
-      return {'--margin-left': 70 + 'px', '--padding': 2 + 'rem','--margin-top': -600 + 'px',}
+        return {'--margin-left': 0 + 'px', '--padding': 1 + 'rem','--margin-top': 0 + 'px','--margin-bottom': 5 + 'rem' }
+      if (!this.collapsedNav) return {'--margin-left': 200 + 'px', '--padding': 2 + 'rem','--margin-top': -600 + 'px','--margin-bottom': 0+ 'rem'}
+      return {'--margin-left': 70 + 'px', '--padding': 2 + 'rem','--margin-top': -600 + 'px','--margin-bottom': 0 + 'rem'}
     }
   },
 };
@@ -103,14 +103,16 @@ export default {
 }
 
 .containerContent {
-  min-height: 40rem;
   width: auto;
   border-left: solid 1px lightgray;
+  min-height: 120vh;
   margin-top: var(--margin-top);
   transition: all 0.2s;
   margin-left: var(--margin-left);
+  margin-bottom: var(--margin-bottom);
   padding: var(--padding);
   padding-top: 2rem;
+
 
 }
 

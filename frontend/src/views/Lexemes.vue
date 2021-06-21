@@ -24,6 +24,7 @@
               <v-list>
                 <v-list-item @click="createPdf">{{ $t("collectionDetail.pdf") }}</v-list-item>
                 <v-list-item @click="beforeConvert">{{ $t("collectionDetail.csv") }}</v-list-item>
+                <v-list-item @click="convertAllToCsv">{{ $t("lexemes.downloadAllAsCSV") }}</v-list-item>
 
 
               </v-list>
@@ -129,6 +130,7 @@
       </v-row>
 
     </v-container>
+    <loading-overlay :loading="loadData"></loading-overlay>
 
   </v-app>
 </template>
@@ -141,9 +143,10 @@ import CollectionAddLexeme from "../components/CollectionAddLexeme.vue";
 import {mapGetters} from "vuex";
 import Axios from "axios";
 import ObjectToCsv from "@/components/ObjectToCsv";
+import LoadingOverlay from "@/components/LoadingOverlay";
 
 export default {
-  components: {CardDialect, SearchBar, CollectionAddLexeme},
+  components: {LoadingOverlay, CardDialect, SearchBar, CollectionAddLexeme},
   data: () => ({
     items: [],
     pageCount: 0,
@@ -167,6 +170,7 @@ export default {
     lexemeAmount: 0,
     myLexemeAmount: 0,
     searchBarHeight: "100px",
+    loadData: false,
   }),
   mounted() {
 
@@ -199,7 +203,7 @@ export default {
     loadFromApi() {
       this.loading = true;
       axios
-          .get("/lexemes/?page=" + this.page + "&" + this.search)
+          .get("/lexemes/?page=" + this.page + "&page_size=24&" + this.search)
           .then((response) => {
             this.items = response.data.results;
             this.pageCount = response.data.total_pages;
@@ -219,7 +223,7 @@ export default {
         this.page += 1;
         this.loading = true;
         axios
-            .get("/lexemes/?page=" + this.page + "&" + this.search)
+            .get("/lexemes/?page=" + this.page + "&page_size=24&" + this.search)
             .then((response) => {
               this.items = this.items.concat(response.data.results);
               this.pageCount = response.data.total_pages;
@@ -241,8 +245,22 @@ export default {
 
     createPdf() {
 
-      ObjectToCsv.toPdf(this.items, "Wörterecke",null,null)
+      ObjectToCsv.toPdf(this.items, "Wörterecke", null, null)
 
+    },
+    async loadAll() {
+      if (this.next) {
+        const response = await axios.get(this.next);
+        this.items = this.items.concat(response.data.results);
+        this.next = response.data.links.next;
+        await this.loadAll()
+      }
+    },
+    async convertAllToCsv() {
+      this.loadData = true;
+      await this.loadAll()
+      ObjectToCsv.convert(this.items, "Wortgut.csv")
+      this.loadData = false;
     },
     async beforeConvert() {
 

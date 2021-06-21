@@ -58,4 +58,4 @@ def can_add_collection_to_group(group,user):
 
 
 def can_see_lexemes_of_collection(collection,user):
-    return collection.author == user or collection.public or (collection.group and (user in collection.group.members.all() or user == collection.group.owner))
+    return collection.author == user or user.is_superuser or collection.public or (collection.group and (user in collection.group.members.all() or user == collection.group.owner))

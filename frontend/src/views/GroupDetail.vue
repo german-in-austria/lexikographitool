@@ -30,7 +30,7 @@
                     $t("groupDetails.deleteGroup")
                   }}</span></v-list-item
                 >
-              </v-list>m
+              </v-list>
             </v-menu>
             <v-btn outlined v-if="!group.is_member & group.can_join & !group.requires_password" @click="join">Gruppe beitreten</v-btn>
             <group-detail-join-with-password-dialog v-if="!group.is_member & group.can_join & group.requires_password" :group="group"></group-detail-join-with-password-dialog>
