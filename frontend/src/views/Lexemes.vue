@@ -33,7 +33,10 @@
 
         </v-row>
       </div>
-      <v-row no-gutters><p class="text-body-1">
+      <v-row no-gutters>
+
+        <p class="text-body-1">
+
         {{ $t("lexemes.desciption", {amount: lexemeAmount}) }}
         <span v-if="authenticated && myLexemeAmount >= 1">{{
             $t("lexemes.authorizedAdded", {amount: myLexemeAmount})
@@ -171,6 +174,7 @@ export default {
     myLexemeAmount: 0,
     searchBarHeight: "100px",
     loadData: false,
+
   }),
   mounted() {
 
@@ -213,9 +217,11 @@ export default {
           .finally(() => (this.loading = false));
     },
     onScroll(e) {
+
+      console.log(e.target.scrollingElement)
       if (
-          e.target.scrollingElement.scrollTop + 400 >
-          e.target.scrollingElement.scrollTopMax &&
+          e.target.scrollingElement.scrollTop + 1000 >
+          document.body.scrollHeight &&
           !!this.next
       ) {
 

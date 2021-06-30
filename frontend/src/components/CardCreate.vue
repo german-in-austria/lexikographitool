@@ -26,7 +26,7 @@
       </v-col>
     </v-row>
     <v-col>
-      <v-btn color="primary" @click="submit">{{
+      <v-btn :disabled="commitDisabled" color="primary" @click="submit">{{
           $t("card_create.createButton1")
         }}
       </v-btn>
@@ -90,6 +90,7 @@ export default {
       genus: null,
       source: '',
     },
+    commitDisabled: false,
     snackbarSuccessful: false,
     snackbarFailure: false,
     valid: false,
@@ -100,6 +101,7 @@ export default {
   }),
   methods: {
     async createNewLexeme(finishedOption) {
+      this.commitDisabled = true
       let location = {data: {id: this.lex.location.id}}
       if (this.lex.location.id === '-1')
         location = await axios.post('location/', this.lex.location)
@@ -140,6 +142,7 @@ export default {
 
 
       //add to collections
+      this.commitDisabled = false
 
 
       this.addToCollection(lexeme.data.lexeme)

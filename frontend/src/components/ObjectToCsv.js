@@ -20,17 +20,22 @@ export default {
     },
     format(obj) {
         const newObj = {};
-        newObj.categories = obj.categories.map(val => val.category).join(',')
-        newObj.examples = obj.examples.map(val => val.example).join(',')
-        newObj.pronunciations = obj.pronunciations.map(val => val.pronunciation).join(',')
-        newObj.etymologies = obj.etymologies.map(val => val.etymology).join(',')
-        newObj.kind = obj.kind
         newObj.dialectWord = obj.dialectWord
         newObj.word = obj.word
         newObj.description = obj.description
-        newObj.variety = obj.variety
+        newObj.kind = obj.kind
         newObj.genus = obj.genus
+
+        newObj.pronunciations = obj.pronunciations.map(val => val.pronunciation).join(',')
+        newObj.examples = obj.examples.map(val => val.example).join(',')
+
+        newObj.categories = obj.categories.map(val => val.category).join(',')
+        newObj.etymologies = obj.etymologies.map(val => val.etymology).join(',')
+        newObj.variety = obj.variety
         newObj.origin = obj.origin?.name
+        newObj.latitude = obj.origin?.latitude
+        newObj.longitude = obj.origin?.longitude
+
         newObj.source = obj.source
 
         return newObj

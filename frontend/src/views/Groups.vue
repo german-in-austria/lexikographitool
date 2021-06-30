@@ -141,8 +141,8 @@ export default {
     },
     onScroll(e) {
       if (
-          e.target.scrollingElement.scrollTop + 400 >
-          e.target.scrollingElement.scrollTopMax &&
+          e.target.scrollingElement.scrollTop + 1000 >
+          document.body.scrollHeight &&
           !!this.next
       ) {
         const next = this.next;

@@ -3,9 +3,10 @@
     <template v-slot:activator="{ on, attrs }">
       <v-btn v-bind="attrs" v-on="on" elevation="0" large> {{$t("collectionDetail.addWords")}} </v-btn>
     </template>
-    <v-card height="80vh">
+    <v-card height="40rem">
       <v-card-title class="d-block">
         {{$t("collectionDetail.addWords")}}
+        {{a}};{{b}}
         <v-text-field class="mt-5" solo-inverted dense flat label="Suche" v-model="search">{{$t("general.search")}}</v-text-field>
 </v-card-title>
 
@@ -55,6 +56,8 @@ export default {
     search: "",
     page: 1,
     next: null,
+    a:0,
+    b:0,
   }),
   watch: {
     dialog(visible) {
@@ -119,13 +122,17 @@ export default {
       });
     },
     onScroll(e) {
-      
-      if (e.target.scrollTop === e.target.scrollTopMax && !!this.next) {
+      this.a = e.target.scrollTop
+      this.b = e.target.scrollHeight
+      console.log(e.target )
+
+      if (e.target.scrollTop + 510 > e.target.scrollHeight && !!this.next) {
+        let nextUrl= this.next
+        this.next = null
+
         this.page += 1;
         axios
-          .get("/lexemes/?page=" + this.page + "&search=" + this.search+
-                "&in_collection=" +
-                this.collection.id)
+          .get(nextUrl)
           .then((response) => {
             (this.items = this.items.concat(response.data.results)),
               (this.pageCount = response.data.total_pages),

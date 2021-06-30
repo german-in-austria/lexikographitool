@@ -13,7 +13,8 @@
   "lexemes":{
     "desciption":  "Hier findest du alle {amount} Wörter, die in Wortgut bis jetzt gesammelt worden sind und kannst unsere Sammlung durchsuchen und Wörter zu deinen Sammlungen hinzufügen.",
     "authorizedAdded": "Du hast bereits {amount} Wörter hinzugefügt. Mach weiter so!",
-    "notAuthorized":  "Wenn du auch anderen helfen willst neue Wörter zu entdecken, dann melde dich an und füge deine eigenen Wörter hinzu."
+    "notAuthorized":  "Wenn du auch anderen helfen willst neue Wörter zu entdecken, dann melde dich an und füge deine eigenen Wörter hinzu.",
+    "downloadAllAsCSV": "Gesamte Datenbank als CSV-Datei herunterladen"
   },
   "collections": {
     "title": "Sammlungen",
