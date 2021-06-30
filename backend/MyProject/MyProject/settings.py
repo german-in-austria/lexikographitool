@@ -14,7 +14,7 @@ from pathlib import Path
 import environ
 env = environ.Env()
 environ.Env.read_env()
-
+CONN_MAX_AGE = 60
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
