@@ -123,7 +123,7 @@
       </v-list>
 
       <template v-slot:append>
-        <div class="pa-2 mb-10">
+        <div class="pa-2 mb-15 pb-10">
 
           <v-btn block  color="primary" v-if="!authenticated" to="/login">
               <v-icon>mdi-login</v-icon>
