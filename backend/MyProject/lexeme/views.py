@@ -34,9 +34,9 @@ from django.core import serializers
 
 class MyCustomOrdering(filters.OrderingFilter):
     allowed_fields = ['content', 'word', 'dialectWord', 'kind',
-                      'dialect', 'categories', 'description']
+                      'dialect', 'categories', 'description','author']
     allowed_custom_filters = ['content', 'dialectWord', '-dialectWord',
-                              'date_created', '-date_created', 'word', '-word']
+                              'date_created', '-date_created', 'word', '-word','author']
 
     # def get_ordering(self, request, queryset, view):
 
@@ -213,7 +213,7 @@ class LexemeView(ListAPIView):
     filter_backends = [MyCustomOrdering, filters.SearchFilter]
     ordering_fields = ['content__word', 'content__dialectWord', 'date_created']
     search_fields = ['content__word', 'content__dialectWord', 'content__description', 'content__variety',
-                     'content__categories__category', 'content__kind']
+                     'content__categories__category', 'content__kind', 'author__username']
 
     def get_serializer_context(self):
         collection = -1
