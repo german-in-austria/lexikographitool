@@ -10,7 +10,7 @@
       <v-col>
       <v-card outlined>
         <v-card-title>Insgesamt</v-card-title>
-      <v-simple-table>
+      <v-simple-table v-if="highscore.results">
         <template v-slot:default>
           <thead>
           <tr>
@@ -27,7 +27,7 @@
           </thead>
           <tbody>
           <tr
-              v-for="(item,index) in highscoreList"
+              v-for="(item,index) in highscore.results"
               :key="item.name"
           >
             <td>{{ index+1 }}</td>
@@ -36,13 +36,21 @@
           </tr>
           </tbody>
         </template>
-      </v-simple-table>
+      </v-simple-table >
+        <div class="text-center" v-if="highscore.total_pages > 1">
+          <v-pagination
+              v-model="highscorePage"
+              :length="highscore.total_pages"
+              :total-visible="5"
+              circle
+          ></v-pagination>
+        </div>
       </v-card>
       </v-col>
       <v-col>
         <v-card outlined>
           <v-card-title>In den letzten zwei Wochen</v-card-title>
-          <v-simple-table>
+          <v-simple-table v-if="highscoreLastTwoWeeks.results">
             <template v-slot:default>
               <thead>
               <tr>
@@ -59,7 +67,7 @@
               </thead>
               <tbody>
               <tr
-                  v-for="(item,index) in highscoreListLastTwoWeeks"
+                  v-for="(item,index) in highscoreLastTwoWeeks.results"
                   :key="item.name"
               >
                 <td>{{ index +1}}</td>
@@ -69,6 +77,14 @@
               </tbody>
             </template>
           </v-simple-table>
+          <div class="text-center" v-if="highscoreLastTwoWeeks.total_pages > 1">
+            <v-pagination
+                v-model="highscoreLastTwoWeeksPage"
+                :length="highscoreLastTwoWeeks.total_pages"
+                :total-visible="5"
+                circle
+            ></v-pagination>
+          </div>
         </v-card>
       </v-col>
     </v-row>
@@ -81,12 +97,23 @@ import axios from "axios";
 export default {
 name: "Highscore",
   data:()=>({
-    highscoreList:[],
-    highscoreListLastTwoWeeks:[]
+    highscore:{},
+    highscorePage:1,
+    highscoreLastTwoWeeks:{},
+    highscoreLastTwoWeeksPage:1,
+
   }),
   mounted() {
-    axios.get("highscore/").then(response => this.highscoreList = response.data.results)
-    axios.get("highscore/?daysPast=14").then(response => this.highscoreListLastTwoWeeks = response.data.results)
+    axios.get("highscore/").then(response => this.highscore = response.data)
+    axios.get("highscore/?daysPast=14").then(response => this.highscoreLastTwoWeeks = response.data)
+  },
+  watch:{
+  highscorePage(){
+    axios.get("highscore/?page=" + this.highscorePage).then(response => this.highscore = response.data)
+  },
+    highscoreLastTwoWeeksPage(){
+      axios.get("highscore/?daysPast=14&page=" + this.highscoreLastTwoWeeksPage).then(response => this.highscoreLastTwoWeeks = response.data)
+    }
   }
 }
 </script>
