@@ -4,10 +4,10 @@
       <v-col>
         <p class="mb-0">
 
-          <span class="text-h4">{{ $route.params.username }}</span>
+          <span class="text-h4 text-capitalize">{{ $route.params.username }}</span>
 
 
-        <p class="caption">{{ $route.params.username}} hat bereits <span class="font-weight-bold">{{ count }}</span>
+        <p class="caption text-capitalize">{{ $route.params.username}} hat bereits <span class="font-weight-bold">{{ count }}</span>
           Begriffe hinzugefügt.</p>
       </v-col>
 
@@ -45,7 +45,7 @@
       </v-btn-toggle>
     </v-row>
     <p v-if="lexemes.length === 0" class="pa-10 text-body-1">
-      <span class="font-weight-bold">{{  $route.params.username }}</span> hat noch keine Wörter hizugefügt.
+      <span class="font-weight-bold text-capitalize">{{  $route.params.username }}</span> hat noch keine Wörter hizugefügt.
     </p>
     <v-scale-transition v-if="!view & !!lexemes.length" group class="row no-gutters">
 
