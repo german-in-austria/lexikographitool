@@ -93,6 +93,12 @@ const router = new VueRouter({
 
         },
         {
+            path: '/account/:username',
+            name: 'sccount',
+            component: () => import(/*webpackChunkName: "AccountDetail"*/ "./views/AccountDetail"),
+
+        },
+        {
             path: '/postings',
             name: 'postings',
             component: () => import(/*webpackChunkName: "Postings"*/ "./views/Postings.vue"),
