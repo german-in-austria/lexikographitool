@@ -7,7 +7,7 @@
           <span class="text-h4 text-capitalize">{{ $route.params.username }}</span>
 
 
-        <p class="caption text-capitalize">{{ $route.params.username}} hat bereits <span class="font-weight-bold">{{ count }}</span>
+        <p class="caption"> <span class="text-capitalize">{{ $route.params.username}}</span> hat bereits <span class="font-weight-bold">{{ count }}</span>
           Begriffe hinzugefügt.</p>
       </v-col>
 
