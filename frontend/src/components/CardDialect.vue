@@ -73,7 +73,7 @@
             </span>
           </p>
           <p v-if="allInformation" class="mt-5">
-            <span class="font-weight-bold"> erstellt von </span><span class="font-weight-bold">{{ card.author }}</span>
+            <span class="font-weight-bold"> erstellt von </span><router-link :to="'/account/' + card.author"  class="text-decoration-none font-weight-bold" >{{ card.author }}</router-link>
           </p>
           <p v-if="allInformation">
             <span class="font-weight-bold">  zuletzt geändert: </span><span
