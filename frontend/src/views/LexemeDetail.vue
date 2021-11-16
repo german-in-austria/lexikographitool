@@ -27,7 +27,7 @@
           </v-chip>
         </div>
       </v-col>
-    </v-row>
+    </v-row>pdf
 
     <p class="text--secondary mt-15">Meinungen</p>
     <p class="body-1" v-if="!posts.length">Hier hat noch niemand kommentiert. Lass uns deine Meinung zu diesem Wort hören.</p>
@@ -37,9 +37,14 @@
         <v-list-item-content>
           <p style="white-space: pre-line" class="text-body-2">{{ answer.text }} </p>
 
-          <v-list-item-subtitle><span class="font-weight-bold">{{
+          <v-list-item-subtitle>
+            <router-link class="text-decoration-none font-weight-bold text--secondary" :to="`/account/${answer.author.username}`">
+
+
+            {{
               answer.author.username
-            }}</span>, {{ dateCreated(answer.date_created) }}
+            }}
+            </router-link>, {{ dateCreated(answer.date_created) }}
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>

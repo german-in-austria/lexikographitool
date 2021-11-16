@@ -11,7 +11,10 @@
           <v-card-subtitle style="height: 70px">
             <p class="text--primary">
               <v-icon> mdi-account</v-icon>
+              <router-link class="text-decoration-none" :to="`/account/${post.author.username}`">
+
               {{ post.author.username }}
+              </router-link>
             </p>
             <p
                 style="margin-left: 5px; margin-top: -15px"
@@ -104,9 +107,12 @@
             <v-list-item-content>
               <span class="text-body-2">{{ answer.text }}</span>
 
-            <v-list-item-subtitle><span class="font-weight-bold">{{
+            <v-list-item-subtitle>
+                            <router-link class="text-decoration-none font-weight-bold text--secondary" :to="`/account/${answer.author.username}`">
+
+              {{
                 answer.author.username
-              }}</span>, {{ dateCreated(answer.date_created) }}
+                              }}</router-link>, {{ dateCreated(answer.date_created) }}
             </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>

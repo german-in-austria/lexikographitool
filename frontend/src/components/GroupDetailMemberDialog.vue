@@ -15,7 +15,10 @@
 
       <v-list-item>
         <v-list-item-title>
+          <router-link class="text-decoration-none" :to="`/account/${group.owner.username}`">
+
           {{ group.owner.username }}
+          </router-link>
         </v-list-item-title>
       </v-list-item>
 
@@ -24,7 +27,8 @@
           :key="member.username"
       >
         <v-list-item-title>
-          {{ member.username }}
+          <router-link class="text-decoration-none" :to="`/account/${member.username}`">
+          {{ member.username }}</router-link>
         </v-list-item-title>
         <v-list-item-icon v-if="group.is_owner"
         ><v-icon @click="removeMember(member.username, index)"
