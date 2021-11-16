@@ -43,6 +43,7 @@ export default {
 
     toPdf(lexemes, name, description, author) {
 
+
         var fonts = {
             Roboto: {
                 normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf',
@@ -91,6 +92,7 @@ export default {
         docDefinition.content.push({text: name, style: "header"})
         if (description != null)
             docDefinition.content.push({text: description, lineHeight: 2.5})
+        lexemes = [...lexemes].sort((a,b) => a.dialectWord.localeCompare(b.dialectWord));
         lexemes.forEach(lexeme => {
             var line = []
             //  let line = `<p style="text-indent: -2em; margin-left: 2em;"><span><b>${lexeme.dialectWord} </b></span>`
@@ -133,6 +135,7 @@ export default {
                 var ending = /[.!?;]$/.test(etymology.etymology) ? "" : ";"
                 line.push({text: " " + etymology.etymology + ending})
             })
+
             docDefinition.content.push({text: line, style: 'lead', lineHeight: 1.5,})
         })
 
