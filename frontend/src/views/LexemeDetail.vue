@@ -27,7 +27,7 @@
           </v-chip>
         </div>
       </v-col>
-    </v-row>pdf
+    </v-row>
 
     <p class="text--secondary mt-15">Meinungen</p>
     <p class="body-1" v-if="!posts.length">Hier hat noch niemand kommentiert. Lass uns deine Meinung zu diesem Wort hören.</p>
