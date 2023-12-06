@@ -2,9 +2,19 @@
 # We Use an official Python runtime as a parent image
 FROM python:3
 
+ARG DB_PASSWORD
+ARG DB_USER
+ARG DB_HOST
+ARG DB_NAME
+
 # The enviroment variable ensures that the python output is set straight
 # to the terminal with out buffering it first
 ENV PYTHONUNBUFFERED 1
+
+ENV POSTGRES_PASSWORD $DB_PASSWORD
+ENV POSTGRES_DB $DB_NAME
+ENV POSTGRES_USER $DB_USER
+ENV POSTGRES_HOST $DB_HOST
 
 # create root directory for our project in the container
 RUN mkdir /backend
