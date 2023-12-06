@@ -1,5 +1,8 @@
 # build stage
 FROM node:lts-alpine as build-stage
+
+ENV VUE_APP_API_ENDPOINT "http://localhost:8000/"
+
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
