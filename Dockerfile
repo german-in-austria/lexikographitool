@@ -31,7 +31,6 @@ RUN pip install -r requirements.txt
 
 EXPOSE $BACKEND_PORT
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:${$BACKEND_PORT}"]
 # build stage Frontend
 FROM node:13-alpine as build-stage
 
@@ -48,9 +47,13 @@ RUN \
 # production stage
 FROM nginx:stable-alpine as production-stage
 COPY ./frontend/nginx.config /etc/nginx/conf.d/default.conf
+COPY --from=backend-stage /backend /backend
+COPY --from=build-stage /app /app
 #COPY --from=build-stage /app/dist /usr/share/nginx/html
 # COPY --from=build-stage /app/dist /app
 
 EXPOSE $ENTRY_PORT
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:${$BACKEND_PORT}"]
 CMD ["nginx", "-g", "daemon off;"]
 
